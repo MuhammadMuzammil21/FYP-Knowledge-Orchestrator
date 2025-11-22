@@ -1,4 +1,4 @@
-import { APP_CONFIG } from '@/config/constants';
+import { APP_CONFIG } from '../../../src/config/constants';
 
 /**
  * Validate uploaded file

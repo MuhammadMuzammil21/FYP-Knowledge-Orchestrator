@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { API_BASE_URL } from '@/config/constants';
+import { API_BASE_URL } from '../../../src/config/constants';
 
 class ApiClient {
   private client: AxiosInstance;

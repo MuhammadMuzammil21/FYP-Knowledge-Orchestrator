@@ -64,37 +64,55 @@ npm install
 
 3. Start the development server:
 ```bash
-npm start
+npm run dev
 ```
 
 The application will open at `http://localhost:3000`
 
+**Note**: For production builds, use:
+```bash
+npm run build
+npm start
+```
+
 ## 📁 Project Structure
 
 ```
-ai-meeting-orchestrator/
+FYP-Knowledge-Orchestrator/
 ├── backend/
 │   ├── main.py              # FastAPI application
 │   ├── requirements.txt     # Python dependencies
 │   └── uploads/            # Uploaded audio files (created automatically)
 │
 ├── frontend/
-│   ├── public/
+│   ├── public/             # Static assets
 │   ├── src/
-│   │   ├── components/     # React components
-│   │   │   ├── UploadForm.jsx
-│   │   │   ├── MeetingList.jsx
-│   │   │   ├── TranscriptViewer.jsx
-│   │   │   ├── SearchBar.jsx
-│   │   │   └── EntityPanel.jsx
-│   │   ├── pages/          # Page components
-│   │   │   ├── HomePage.jsx
-│   │   │   └── MeetingDetailPage.jsx
-│   │   ├── services/       # API services
-│   │   │   └── api.js
-│   │   ├── App.jsx
-│   │   └── App.css
-│   └── package.json
+│   │   ├── app/            # Next.js App Router pages
+│   │   │   ├── layout.tsx  # Root layout
+│   │   │   ├── page.tsx    # Home page
+│   │   │   ├── providers.tsx # React Query & other providers
+│   │   │   └── globals.css # Global styles
+│   │   ├── lib/
+│   │   │   ├── api/        # API client & services
+│   │   │   │   ├── client.ts      # Axios client configuration
+│   │   │   │   └── meetings.ts    # Meeting API endpoints
+│   │   │   ├── hooks/      # Custom React hooks
+│   │   │   │   ├── useMeetings.ts
+│   │   │   │   └── useTranscript.ts
+│   │   │   └── utils/      # Utility functions
+│   │   │       ├── cn.ts           # Class name utilities
+│   │   │       ├── formatters.ts   # Date/time formatters
+│   │   │       └── validation.ts   # Form validation
+│   │   ├── config/         # Configuration constants
+│   │   │   └── constants.ts
+│   │   └── types/          # TypeScript type definitions
+│   │       └── index.ts
+│   ├── package.json
+│   ├── next.config.ts      # Next.js configuration
+│   ├── tailwind.config.ts  # Tailwind CSS configuration
+│   └── tsconfig.json       # TypeScript configuration
+│
+└── README.md
 ```
 
 ## 🎯 Usage
@@ -152,6 +170,16 @@ GET /api/meetings/{meeting_id}/search?q={query}
 GET /api/meetings/{meeting_id}/entities
 ```
 
+### Get Processing Status
+```
+GET /api/meetings/{meeting_id}/status
+```
+
+### Mock Complete (Testing)
+```
+POST /api/meetings/{meeting_id}/mock-complete
+```
+
 ## 🧪 Testing with Mock Data
 
 For development purposes, you can simulate completed processing:
@@ -173,17 +201,52 @@ allowed_extensions = {".mp3", ".wav", ".m4a", ".ogg", ".flac"}
 
 ### Change Upload Size Limit
 
-Edit `UploadForm.jsx`:
-```javascript
-const maxSize = 200 * 1024 * 1024; // 200MB
+Edit `frontend/src/config/constants.ts`:
+```typescript
+export const APP_CONFIG = {
+  maxFileSize: parseInt(process.env.NEXT_PUBLIC_MAX_FILE_SIZE || '104857600'), // 100MB
+  // ...
+};
 ```
 
 ### Adjust Speaker Colors
 
-Edit `TranscriptViewer.jsx`:
-```javascript
-const colors = ['#1890ff', '#52c41a', '#fa8c16', '#eb2f96', '#722ed1'];
+Edit `frontend/src/config/constants.ts`:
+```typescript
+export const SPEAKER_COLORS = [
+  '#1890ff',
+  '#52c41a',
+  '#fa8c16',
+  '#eb2f96',
+  '#722ed1',
+  '#13c2c2',
+] as const;
 ```
+
+### Change API Base URL
+
+Create a `.env.local` file in the `frontend` directory:
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000/api
+```
+
+## 🛠️ Tech Stack
+
+### Frontend
+- **Next.js 16** - React framework with App Router
+- **React 19** - UI library
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **TanStack Query** - Data fetching and caching
+- **Zustand** - State management
+- **Axios** - HTTP client
+- **Lucide React** - Icons
+
+### Backend
+- **FastAPI** - Python web framework
+- **Uvicorn** - ASGI server
+- **Pydantic** - Data validation
+- **aiofiles** - Async file operations
 
 ## 📝 Next Steps (Future Development)
 
@@ -195,14 +258,15 @@ const colors = ['#1890ff', '#52c41a', '#fa8c16', '#eb2f96', '#722ed1'];
 - [ ] Add user authentication
 - [ ] Implement task management features
 - [ ] Export functionality (PDF, Word)
+- [ ] Add database persistence (currently in-memory)
 
 ## 🐛 Troubleshooting
 
 ### CORS Errors
-Make sure the backend is running on port 8000 and frontend on port 3000.
+Make sure the backend is running on port 8000 and frontend on port 3000. The backend CORS middleware is configured to allow requests from `http://localhost:3000`.
 
 ### File Upload Fails
-Check that the `uploads` directory exists and has write permissions.
+Check that the `uploads` directory exists in the backend folder and has write permissions. It should be created automatically on first run.
 
 ### Port Already in Use
 Kill the process using the port:
@@ -214,6 +278,16 @@ taskkill /PID <PID> /F
 # Linux/Mac
 lsof -ti:8000 | xargs kill -9
 ```
+
+### Next.js Build Errors
+If you encounter TypeScript errors during build, ensure all dependencies are installed:
+```bash
+cd frontend
+npm install
+```
+
+### Environment Variables
+If the API URL is not working, check that `NEXT_PUBLIC_API_URL` is set correctly in your `.env.local` file or use the default `http://localhost:8000/api`.
 
 ## 👥 Team
 
@@ -229,4 +303,5 @@ This project is part of the Final Year Project at FAST-NUCES, Karachi Campus.
 
 - OpenAI Whisper for ASR capabilities
 - FastAPI for the backend framework
-- React for the frontend framework
+- Next.js for the frontend framework
+- TanStack Query for data fetching

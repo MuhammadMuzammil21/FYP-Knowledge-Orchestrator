@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { meetingsApi } from '@/lib/api/meetings';
-import { QUERY_KEYS } from '@/config/constants';
-import type { TranscriptResponse, Entities, SearchResponse } from '@/types';
+import { meetingsApi } from '../../../src/lib/api/meetings';
+import { QUERY_KEYS } from '../../../src/config/constants';
+import type { TranscriptResponse, Entities, SearchResponse } from '../../../src/types';
 
 /**
  * Hook to fetch meeting transcript

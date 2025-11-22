@@ -7,6 +7,7 @@ import uuid
 import aiofiles
 from datetime import datetime
 from pathlib import Path
+import re
 
 app = FastAPI(title="AI Meeting Orchestrator API")
 
@@ -55,9 +56,15 @@ class Decision(BaseModel):
     decidedBy: str
     timestamp: float
 
+class KeyPoint(BaseModel):
+    id: str
+    point: str
+    timestamp: float
+
 class Entities(BaseModel):
     tasks: List[Task]
     decisions: List[Decision]
+    keyPoints: List[KeyPoint]
 
 @app.get("/")
 async def root():
@@ -96,7 +103,7 @@ async def upload_meeting(file: UploadFile = File(...)):
         "speakerCount": 0,
         "audioUrl": str(file_path),
         "transcript": [],
-        "entities": {"tasks": [], "decisions": []}
+        "entities": {"tasks": [], "decisions": [], "keyPoints": []}
     }
     
     meetings_db[meeting_id] = meeting
@@ -148,20 +155,51 @@ async def get_transcript(meeting_id: str):
 
 @app.get("/api/meetings/{meeting_id}/search")
 async def search_transcript(meeting_id: str, q: str):
-    """Search within transcript"""
+    """Search within transcript with highlighted snippets"""
     if meeting_id not in meetings_db:
         raise HTTPException(status_code=404, detail="Meeting not found")
     
     transcript = meetings_db[meeting_id]["transcript"]
     results = []
     
+    # Create a regex pattern for case-insensitive matching
+    pattern = re.compile(re.escape(q), re.IGNORECASE)
+    
     for idx, segment in enumerate(transcript):
-        if q.lower() in segment["text"].lower():
+        text = segment["text"]
+        if pattern.search(text):
+            # Find all matches and create highlighted snippets
+            matches = list(pattern.finditer(text))
+            highlighted_text = text
+            # Replace matches with highlighted version (using HTML-like tags)
+            # We'll replace from end to start to preserve indices
+            for match in reversed(matches):
+                start, end = match.span()
+                highlighted_text = (
+                    highlighted_text[:start] + 
+                    f"<mark>{highlighted_text[start:end]}</mark>" + 
+                    highlighted_text[end:]
+                )
+            
+            # Create snippet with context (50 chars before and after first match)
+            first_match = matches[0]
+            snippet_start = max(0, first_match.start() - 50)
+            snippet_end = min(len(text), first_match.end() + 50)
+            snippet = text[snippet_start:snippet_end]
+            
+            # Highlight the query in the snippet
+            snippet_highlighted = pattern.sub(
+                lambda m: f"<mark>{m.group()}</mark>", 
+                snippet
+            )
+            
             results.append({
                 "segmentIndex": idx,
                 "speaker": segment["speaker"],
                 "timestamp": segment["timestamp"],
-                "text": segment["text"]
+                "text": segment["text"],
+                "highlightedText": highlighted_text,
+                "snippet": snippet_highlighted
             })
     
     return {
@@ -234,6 +272,18 @@ async def mock_complete(meeting_id: str):
                     "id": str(uuid.uuid4()),
                     "statement": "Focus on client retention as top priority",
                     "decidedBy": "Speaker 2",
+                    "timestamp": 45.2
+                }
+            ],
+            "keyPoints": [
+                {
+                    "id": str(uuid.uuid4()),
+                    "point": "Q3 revenue goals need to be achieved",
+                    "timestamp": 15.5
+                },
+                {
+                    "id": str(uuid.uuid4()),
+                    "point": "Client retention is the primary focus area",
                     "timestamp": 45.2
                 }
             ]
