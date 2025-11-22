@@ -8,6 +8,7 @@ import aiofiles
 from datetime import datetime
 from pathlib import Path
 import re
+from auth import router as auth_router
 
 app = FastAPI(title="AI Meeting Orchestrator API")
 
@@ -19,6 +20,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Include auth router
+app.include_router(auth_router)
 
 # Create uploads directory
 UPLOAD_DIR = Path("uploads")

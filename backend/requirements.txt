@@ -5,6 +5,7 @@ python-multipart==0.0.9
 pydantic==2.9.2
 python-dotenv==1.0.1
 aiofiles==24.1.0
+bcrypt==4.1.2
 
 # Database (for later integration)
 # neo4j==5.14.1

@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { UploadForm } from '@/components/features/upload/UploadForm';
 import { MeetingList } from '@/components/features/meetings/MeetingList';
+import { UserMenu } from '@/components/layout/UserMenu';
 
 export default function HomePage() {
   const router = useRouter();
@@ -26,6 +27,7 @@ export default function HomePage() {
                 Transform meetings into structured, searchable knowledge
               </p>
             </div>
+            <UserMenu />
           </div>
         </div>
       </header>
