@@ -59,9 +59,18 @@ export default function SignUpPage() {
 
       const userData = await response.json();
       
-      toast.success('Account created!', {
-        description: 'Signing you in...',
-      });
+      // Check if verification token was returned (development mode)
+      if (userData.verification_token) {
+        console.log('Verification token (dev only):', userData.verification_token);
+        toast.info('Verification Email Sent', {
+          description: `Check your email or use token: ${userData.verification_token.substring(0, 20)}...`,
+          duration: 10000,
+        });
+      } else {
+        toast.success('Account created!', {
+          description: 'Please check your email to verify your account.',
+        });
+      }
 
       // Small delay to ensure backend has processed the user
       await new Promise(resolve => setTimeout(resolve, 100));

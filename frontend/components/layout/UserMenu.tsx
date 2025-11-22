@@ -1,6 +1,7 @@
 'use client';
 
 import { signOut, useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -15,6 +16,7 @@ import { LogOut, User } from 'lucide-react';
 
 export function UserMenu() {
   const { data: session } = useSession();
+  const router = useRouter();
 
   if (!session?.user) {
     return null;
@@ -28,6 +30,10 @@ export function UserMenu() {
 
   const handleSignOut = () => {
     signOut({ callbackUrl: '/auth/signin' });
+  };
+
+  const handleProfileClick = () => {
+    router.push('/profile');
   };
 
   return (
@@ -49,7 +55,7 @@ export function UserMenu() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={handleProfileClick}>
           <User className="mr-2 h-4 w-4" />
           <span>Profile</span>
         </DropdownMenuItem>
