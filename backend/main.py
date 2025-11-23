@@ -222,13 +222,86 @@ async def get_entities(meeting_id: str):
 
 @app.get("/api/meetings/{meeting_id}/status")
 async def get_status(meeting_id: str):
-    """Get processing status"""
+    """Get processing status with stages and progress"""
     if meeting_id not in meetings_db:
         raise HTTPException(status_code=404, detail="Meeting not found")
     
+    meeting = meetings_db[meeting_id]
+    status = meeting["status"]
+    
+    # Determine current stage and progress based on status
+    stages = ["uploading", "transcribing", "extracting", "complete"]
+    current_stage = "complete"
+    overall_progress = 100
+    
+    # Stage-specific progress (0-100 for each stage)
+    stage_progress = {
+        "uploading": 100,  # Always complete if we're past upload
+        "transcribing": 0,
+        "extracting": 0,
+        "complete": 0
+    }
+    
+    if status == "processing":
+        # Determine stage based on what data is available
+        has_transcript = len(meeting.get("transcript", [])) > 0
+        has_entities = (
+            len(meeting.get("entities", {}).get("tasks", [])) > 0 or
+            len(meeting.get("entities", {}).get("decisions", [])) > 0
+        )
+        
+        if has_entities:
+            current_stage = "extracting"
+            overall_progress = 90
+            stage_progress["transcribing"] = 100
+            stage_progress["extracting"] = 75  # Partially complete
+        elif has_transcript:
+            current_stage = "extracting"
+            overall_progress = 60
+            stage_progress["transcribing"] = 100
+            stage_progress["extracting"] = 10  # Just started
+        else:
+            current_stage = "transcribing"
+            overall_progress = 30
+            stage_progress["transcribing"] = 50  # In progress
+    elif status == "complete":
+        current_stage = "complete"
+        overall_progress = 100
+        stage_progress["transcribing"] = 100
+        stage_progress["extracting"] = 100
+        stage_progress["complete"] = 100
+    elif status == "failed":
+        current_stage = "failed"
+        overall_progress = 0
+    
     return {
         "meeting_id": meeting_id,
-        "status": meetings_db[meeting_id]["status"]
+        "status": status,
+        "stage": current_stage,
+        "progress": overall_progress,
+        "stage_progress": stage_progress,
+        "stages": {
+            "uploading": {
+                "completed": True,
+                "current": current_stage == "uploading",
+                "progress": stage_progress["uploading"]
+            },
+            "transcribing": {
+                "completed": current_stage in ["extracting", "complete"],
+                "current": current_stage == "transcribing",
+                "progress": stage_progress["transcribing"]
+            },
+            "extracting": {
+                "completed": current_stage == "complete",
+                "current": current_stage == "extracting",
+                "progress": stage_progress["extracting"]
+            },
+            "complete": {
+                "completed": current_stage == "complete",
+                "current": current_stage == "complete",
+                "progress": stage_progress["complete"]
+            }
+        }
     }
 
 # Mock endpoint to simulate processing completion (for testing)

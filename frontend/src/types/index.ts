@@ -78,6 +78,34 @@ export interface UploadResponse {
   message: string;
 }
 
+// Processing Status Types
+export type ProcessingStage = 'uploading' | 'transcribing' | 'extracting' | 'complete' | 'failed';
+
+export interface ProcessingStageInfo {
+  completed: boolean;
+  current: boolean;
+  progress?: number; // 0-100 for individual stage progress
+}
+
+export interface ProcessingStatus {
+  meeting_id: string;
+  status: 'processing' | 'complete' | 'failed';
+  stage: ProcessingStage;
+  progress: number; // Overall progress 0-100
+  stage_progress?: {
+    uploading: number;
+    transcribing: number;
+    extracting: number;
+    complete: number;
+  };
+  stages: {
+    uploading: ProcessingStageInfo;
+    transcribing: ProcessingStageInfo;
+    extracting: ProcessingStageInfo;
+    complete: ProcessingStageInfo;
+  };
+}
+
 // Component Props Types
 export interface UploadFormProps {
   onUploadSuccess?: (meetingId: string) => void;

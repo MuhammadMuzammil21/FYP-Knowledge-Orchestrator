@@ -3,9 +3,11 @@
 import { useRouter } from 'next/navigation';
 import { Clock, Users, CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { formatDate, formatDuration } from '../../../src/lib/utils/formatters';
 import { cn } from '../../../src/lib/utils/cn';
 import type { Meeting } from '../../../src/types';
+import { useMeetingStatus } from '../../../src/lib/hooks/useMeetings';
 
 interface MeetingCardProps {
   meeting: Meeting;
@@ -13,6 +15,12 @@ interface MeetingCardProps {
 
 export function MeetingCard({ meeting }: MeetingCardProps) {
   const router = useRouter();
+  
+  // Get real-time status if processing
+  const { data: processingStatus } = useMeetingStatus(
+    meeting.id,
+    meeting.status === 'processing'
+  );
 
   const handleClick = () => {
     if (meeting.status === 'complete') {
@@ -87,9 +95,20 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
         )}
       </div>
 
-      {/* Status Badge */}
-      <div className="flex items-center justify-end">
-        {getStatusBadge()}
+      {/* Status Badge and Progress */}
+      <div className="space-y-2">
+        {meeting.status === 'processing' && processingStatus && (
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between text-xs text-muted-foreground">
+              <span>{processingStatus.stage}</span>
+              <span>{processingStatus.progress}%</span>
+            </div>
+            <Progress value={processingStatus.progress} className="h-1.5" />
+          </div>
+        )}
+        <div className="flex items-center justify-end">
+          {getStatusBadge()}
+        </div>
       </div>
     </div>
   );

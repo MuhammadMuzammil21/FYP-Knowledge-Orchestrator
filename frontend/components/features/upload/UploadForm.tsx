@@ -1,15 +1,16 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Upload, X, FileAudio, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
-import { useUploadMeeting, useMockComplete } from '../../../src/lib/hooks/useMeetings';
+import { useUploadMeeting, useMockComplete, useMeetingStatus } from '../../../src/lib/hooks/useMeetings';
 import { validateFile } from '../../../src/lib/utils/validation';
 import { formatFileSize } from '../../../src/lib/utils/formatters';
 import { cn } from '../../../src/lib/utils/cn';
+import { CompactProgressBar } from '../meetings/CompactProgressBar';
 
 interface UploadFormProps {
   onUploadSuccess?: (meetingId: string) => void;
@@ -19,9 +20,16 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
   const [file, setFile] = useState<File | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadedMeetingId, setUploadedMeetingId] = useState<string | null>(null);
   
   const uploadMutation = useUploadMeeting();
   const mockCompleteMutation = useMockComplete();
+  
+  // Get processing status if we've uploaded a file
+  const { data: processingStatus } = useMeetingStatus(
+    uploadedMeetingId || '',
+    !!uploadedMeetingId
+  );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -80,6 +88,9 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
         description: 'Processing your meeting...',
       });
 
+      // Set the meeting ID to start tracking processing
+      setUploadedMeetingId(response.meeting_id);
+
       // Simulate processing completion (remove in production)
       setTimeout(async () => {
         await mockCompleteMutation.mutateAsync(response.meeting_id);
@@ -92,9 +103,12 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
           onUploadSuccess(response.meeting_id);
         }
 
-        // Reset form
-        setFile(null);
-        setUploadProgress(0);
+        // Reset form after a delay
+        setTimeout(() => {
+          setFile(null);
+          setUploadProgress(0);
+          setUploadedMeetingId(null);
+        }, 2000);
       }, 2000);
 
     } catch (error) {
@@ -184,17 +198,20 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
             </div>
 
             {/* Upload Progress */}
-            {isUploading && (
+            {isUploading && uploadProgress < 100 && (
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">
-                    {uploadProgress < 100 ? 'Uploading...' : 'Processing...'}
-                  </span>
-                  <span className="font-medium">
-                    {uploadProgress < 100 ? `${uploadProgress}%` : 'Please wait'}
-                  </span>
+                  <span className="text-muted-foreground">Uploading...</span>
+                  <span className="font-medium">{uploadProgress}%</span>
                 </div>
                 <Progress value={uploadProgress} />
+              </div>
+            )}
+
+            {/* Processing Progress (after upload completes) */}
+            {uploadProgress >= 100 && uploadedMeetingId && processingStatus && (
+              <div className="space-y-2 pt-2 border-t">
+                <CompactProgressBar status={processingStatus} size="sm" />
               </div>
             )}
 

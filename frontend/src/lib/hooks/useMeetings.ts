@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { meetingsApi } from '../../../src/lib/api/meetings';
 import { QUERY_KEYS } from '../../../src/config/constants';
-import type { Meeting, MeetingDetail, UploadResponse, TranscriptResponse, Entities, SearchResponse } from '../../../src/types';
+import type { Meeting, MeetingDetail, UploadResponse, TranscriptResponse, Entities, SearchResponse, ProcessingStatus } from '../../../src/types';
 
 /**
  * Hook to fetch all meetings
@@ -103,10 +103,12 @@ export function useSearchTranscript(meetingId: string, query: string) {
 }
 
 /**
- * Hook to poll meeting status
+ * Hook to poll meeting status with real-time updates
  */
 export function useMeetingStatus(meetingId: string, enabled: boolean = true) {
-  return useQuery({
+  const queryClient = useQueryClient();
+
+  return useQuery<ProcessingStatus, Error>({
     queryKey: ['status', meetingId],
     queryFn: () => meetingsApi.getStatus(meetingId),
     enabled: enabled && !!meetingId,
@@ -114,9 +116,15 @@ export function useMeetingStatus(meetingId: string, enabled: boolean = true) {
       // Stop polling if status is complete or failed
       const status = query.state.data?.status;
       if (status === 'complete' || status === 'failed') {
+        // Invalidate meeting data when complete to refresh
+        if (status === 'complete') {
+          queryClient.invalidateQueries({ queryKey: QUERY_KEYS.meeting(meetingId) });
+          queryClient.invalidateQueries({ queryKey: QUERY_KEYS.meetings });
+        }
         return false;
       }
-      return 3000; // Poll every 3 seconds
+      return 2000; // Poll every 2 seconds for real-time updates
     },
+    staleTime: 0, // Always consider stale to get fresh updates
   });
 }

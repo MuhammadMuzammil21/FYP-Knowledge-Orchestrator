@@ -44,7 +44,7 @@ export const meetingsApi = {
   },
 
   // Get processing status
-  getStatus: async (meetingId: string): Promise<{ meeting_id: string; status: string }> => {
+  getStatus: async (meetingId: string): Promise<import('@/types').ProcessingStatus> => {
     return apiClient.get(`/meetings/${meetingId}/status`);
   },
 
