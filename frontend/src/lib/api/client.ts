@@ -20,11 +20,13 @@ class ApiClient {
     // Request interceptor
     this.client.interceptors.request.use(
       (config) => {
-        // Add auth token here if needed
-        // const token = localStorage.getItem('token');
-        // if (token) {
-        //   config.headers.Authorization = `Bearer ${token}`;
-        // }
+        // Add auth token from localStorage
+        if (typeof window !== 'undefined') {
+          const token = localStorage.getItem('access_token');
+          if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+          }
+        }
         return config;
       },
       (error) => {
@@ -36,6 +38,17 @@ class ApiClient {
     this.client.interceptors.response.use(
       (response) => response,
       (error: AxiosError) => {
+        // Handle authentication errors
+        if (error.response?.status === 401 || error.response?.status === 403) {
+          // Clear invalid token
+          if (typeof window !== 'undefined') {
+            localStorage.removeItem('access_token');
+            // Redirect to login if not already there
+            if (window.location.pathname !== '/auth/signin') {
+              window.location.href = '/auth/signin';
+            }
+          }
+        }
         this.handleError(error);
         return Promise.reject(error);
       }

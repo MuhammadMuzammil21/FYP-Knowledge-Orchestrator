@@ -1,4 +1,4 @@
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://asim.daaimali.site/api';
 
 export const APP_CONFIG = {
   name: process.env.NEXT_PUBLIC_APP_NAME || 'AI Meeting Orchestrator',

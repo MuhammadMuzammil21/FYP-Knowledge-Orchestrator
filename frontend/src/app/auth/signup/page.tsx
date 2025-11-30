@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://asim.daaimali.site/api';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -58,6 +58,11 @@ export default function SignUpPage() {
       }
 
       const userData = await response.json();
+      
+      // Store access token in localStorage for API calls
+      if (userData.access_token) {
+        localStorage.setItem('access_token', userData.access_token);
+      }
       
       // Check if verification token was returned (development mode)
       if (userData.verification_token) {

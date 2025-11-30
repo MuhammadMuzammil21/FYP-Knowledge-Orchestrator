@@ -1,55 +1,81 @@
 import { apiClient } from './client';
 import type {
-  Meeting,
-  MeetingDetail,
-  MeetingsResponse,
-  TranscriptResponse,
-  SearchResponse,
-  UploadResponse,
-  Entities,
+    Meeting,
+    MeetingDetail,
+    UploadResponse,
+    TranscriptResponse,
+    Entities,
+    SearchResponse,
+    ProcessingStatus,
+    RAGResponse,
+    ConflictResponse,
+    MeetingsResponse
 } from '@/types';
 
 export const meetingsApi = {
-  // Upload a new meeting
-  uploadMeeting: async (file: File, onProgress?: (progress: number) => void): Promise<UploadResponse> => {
-    return apiClient.upload<UploadResponse>('/meetings/upload', file, onProgress);
-  },
+    // Upload a meeting
+    uploadMeeting: async (file: File, onProgress?: (progress: number) => void): Promise<UploadResponse> => {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('project_id', 'default'); // TODO: Get from context
 
-  // Get all meetings
-  getAllMeetings: async (): Promise<Meeting[]> => {
-    const response = await apiClient.get<MeetingsResponse>('/meetings');
-    return response.meetings;
-  },
+        return apiClient.post<UploadResponse>('/meetings/upload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+            onUploadProgress: (progressEvent) => {
+                if (onProgress && progressEvent.total) {
+                    const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                    onProgress(progress);
+                }
+            },
+        });
+    },
 
-  // Get single meeting details
-  getMeeting: async (meetingId: string): Promise<MeetingDetail> => {
-    return apiClient.get<MeetingDetail>(`/meetings/${meetingId}`);
-  },
+    // Get all meetings
+    getAllMeetings: async (limit = 50, offset = 0): Promise<Meeting[]> => {
+        const response = await apiClient.get<MeetingsResponse>('/meetings', {
+            params: { limit, offset }
+        });
+        return response.meetings;
+    },
 
-  // Get meeting transcript
-  getTranscript: async (meetingId: string): Promise<TranscriptResponse> => {
-    return apiClient.get<TranscriptResponse>(`/meetings/${meetingId}/transcript`);
-  },
+    // Get single meeting details
+    getMeeting: async (meetingId: string): Promise<MeetingDetail> => {
+        return apiClient.get<MeetingDetail>(`/meetings/${meetingId}`);
+    },
 
-  // Search transcript
-  searchTranscript: async (meetingId: string, query: string): Promise<SearchResponse> => {
-    return apiClient.get<SearchResponse>(`/meetings/${meetingId}/search`, {
-      params: { q: query },
-    });
-  },
+    // Get meeting transcript
+    getTranscript: async (meetingId: string): Promise<TranscriptResponse> => {
+        return apiClient.get<TranscriptResponse>(`/meetings/${meetingId}/transcript`);
+    },
 
-  // Get extracted entities
-  getEntities: async (meetingId: string): Promise<Entities> => {
-    return apiClient.get<Entities>(`/meetings/${meetingId}/entities`);
-  },
+    // Search transcript
+    searchTranscript: async (meetingId: string, query: string): Promise<SearchResponse> => {
+        return apiClient.get<SearchResponse>(`/meetings/${meetingId}/search`, {
+            params: { q: query },
+        });
+    },
 
-  // Get processing status
-  getStatus: async (meetingId: string): Promise<import('@/types').ProcessingStatus> => {
-    return apiClient.get(`/meetings/${meetingId}/status`);
-  },
+    // Get extracted entities
+    getEntities: async (meetingId: string): Promise<Entities> => {
+        return apiClient.get<Entities>(`/meetings/${meetingId}/entities`);
+    },
 
-  // Mock complete (for testing)
-  mockComplete: async (meetingId: string): Promise<{ message: string; meeting_id: string }> => {
-    return apiClient.post(`/meetings/${meetingId}/mock-complete`);
-  },
+    // Get processing status
+    getStatus: async (meetingId: string): Promise<ProcessingStatus> => {
+        return apiClient.get<ProcessingStatus>(`/meetings/${meetingId}/status`);
+    },
+
+    // Get RAG query result
+    ragQuery: async (meetingId: string, query: string): Promise<RAGResponse> => {
+        return apiClient.get<RAGResponse>(`/meetings/${meetingId}/rag/query`, {
+            params: { q: query }
+        });
+    },
+
+    // Get conflicts
+    getConflicts: async (meetingId: string): Promise<ConflictResponse> => {
+        return apiClient.get<ConflictResponse>(`/meetings/${meetingId}/conflicts`);
+    }
 };

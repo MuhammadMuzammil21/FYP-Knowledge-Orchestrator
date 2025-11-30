@@ -29,6 +29,10 @@ export function UserMenu() {
     .toUpperCase() || 'U';
 
   const handleSignOut = () => {
+    // Clear access token from localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('access_token');
+    }
     signOut({ callbackUrl: '/auth/signin' });
   };
 
