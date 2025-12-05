@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Meeting Analysis System",
+  title: "HarBaat AI - Meeting Analysis System",
   description: "AI-powered meeting transcription and analysis",
 };
 

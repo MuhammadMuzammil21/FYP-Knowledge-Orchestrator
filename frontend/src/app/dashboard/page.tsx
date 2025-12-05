@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
-import { Mic, Upload, Radio } from 'lucide-react';
+import { Mic, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { uploadMeeting } from '@/lib/api/meetings';
 import { getErrorMessage } from '@/lib/api/client';
@@ -15,7 +15,6 @@ import { ALLOWED_FILE_EXTENSIONS, MAX_FILE_SIZE } from '@/lib/constants';
 export default function DashboardPage() {
     const router = useRouter();
     const [file, setFile] = useState<File | null>(null);
-    const [encounterType, setEncounterType] = useState<'in-person' | 'virtual'>('in-person');
     const [context, setContext] = useState('');
     const [isUploading, setIsUploading] = useState(false);
 
@@ -49,7 +48,6 @@ export default function DashboardPage() {
 
         try {
             const metadata = {
-                encounter_type: encounterType,
                 context: context || undefined,
             };
 
@@ -69,8 +67,8 @@ export default function DashboardPage() {
             <Card className="w-full max-w-2xl p-8">
                 {/* Header */}
                 <div className="mb-8 text-center">
-                    <h1 className="mb-2 text-3xl font-bold">Start New Encounter</h1>
-                    <p className="text-gray-600">Upload a meeting recording to begin analysis</p>
+                    <h1 className="mb-2 text-3xl font-bold">Upload Meeting Recording</h1>
+                    <p className="text-gray-600">Get AI-powered insights from your meetings</p>
                 </div>
 
                 {/* Microphone Icon */}
@@ -92,31 +90,16 @@ export default function DashboardPage() {
                     />
                 </div>
 
-                {/* Encounter Type Selector */}
-                <div className="mb-6 space-y-2">
-                    <Label>Encounter Type</Label>
-                    <div className="flex gap-4">
-                        <Button
-                            type="button"
-                            variant={encounterType === 'in-person' ? 'default' : 'outline'}
-                            className="flex-1"
-                            onClick={() => setEncounterType('in-person')}
-                            disabled={isUploading}
-                        >
-                            <Radio className="mr-2 h-4 w-4" />
-                            In-person
-                        </Button>
-                        <Button
-                            type="button"
-                            variant={encounterType === 'virtual' ? 'default' : 'outline'}
-                            className="flex-1"
-                            onClick={() => setEncounterType('virtual')}
-                            disabled={isUploading}
-                        >
-                            <Mic className="mr-2 h-4 w-4" />
-                            Virtual
-                        </Button>
-                    </div>
+                {/* How It Works Disclaimer */}
+                <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
+                    <h3 className="mb-2 font-semibold text-blue-900">How It Works</h3>
+                    <ul className="space-y-1 text-sm text-blue-800">
+                        <li>• Upload your meeting audio file (MP3, WAV, M4A, or OGG)</li>
+                        <li>• Our AI transcribes and analyzes the conversation</li>
+                        <li>• Extract key insights: speakers, topics, tasks, and decisions</li>
+                        <li>• Detect conflicts with previous meetings automatically</li>
+                        <li>• Ask questions about your meeting using RAG search</li>
+                    </ul>
                 </div>
 
                 {/* File Upload */}
@@ -150,7 +133,7 @@ export default function DashboardPage() {
                     size="lg"
                 >
                     <Upload className="mr-2 h-5 w-5" />
-                    {isUploading ? 'Uploading...' : 'Start Encounter'}
+                    {isUploading ? 'Uploading...' : 'Start Analysis'}
                 </Button>
             </Card>
         </div>

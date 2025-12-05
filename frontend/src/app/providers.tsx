@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { SessionProvider } from 'next-auth/react';
 import { Toaster } from '@/components/ui/sonner';
+import { NavbarWrapper } from '@/components/layout/NavbarWrapper';
 import { useState } from 'react';
 
 export function Providers({ children }: { children: React.ReactNode }) {
@@ -21,6 +22,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     return (
         <SessionProvider>
             <QueryClientProvider client={queryClient}>
+                <NavbarWrapper />
                 {children}
                 <Toaster />
             </QueryClientProvider>

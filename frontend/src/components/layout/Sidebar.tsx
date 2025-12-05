@@ -9,9 +9,6 @@ import {
     Plus,
     Calendar,
     Settings,
-    HelpCircle,
-    Sparkles,
-    Mail,
     LogOut,
     User
 } from 'lucide-react';
@@ -34,7 +31,7 @@ export function Sidebar() {
         <div className="flex h-screen w-64 flex-col border-r bg-white">
             {/* Header */}
             <div className="flex h-16 items-center justify-between px-4">
-                <h1 className="text-xl font-bold">Meeting AI</h1>
+                <h1 className="text-xl font-bold">HarBaat AI</h1>
             </div>
 
             <Separator />
@@ -59,8 +56,8 @@ export function Sidebar() {
                     <Link
                         href="/meetings"
                         className={`block rounded-lg px-3 py-2 text-sm transition-colors ${isActive('/meetings')
-                                ? 'bg-blue-50 text-blue-700'
-                                : 'text-gray-700 hover:bg-gray-100'
+                            ? 'bg-blue-50 text-blue-700'
+                            : 'text-gray-700 hover:bg-gray-100'
                             }`}
                     >
                         All Meetings
@@ -70,35 +67,17 @@ export function Sidebar() {
 
             <Separator />
 
-            {/* Footer Links */}
-            <div className="space-y-1 p-4">
+            {/* Footer - Settings Only */}
+            <div className="p-4">
                 <Link
                     href="/settings"
-                    className="flex items-center rounded-lg px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
+                    className={`flex items-center rounded-lg px-3 py-2 text-sm transition-colors ${isActive('/settings')
+                        ? 'bg-blue-50 text-blue-700'
+                        : 'text-gray-700 hover:bg-gray-100'
+                        }`}
                 >
                     <Settings className="mr-2 h-4 w-4" />
                     Settings
-                </Link>
-                <Link
-                    href="/help"
-                    className="flex items-center rounded-lg px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
-                >
-                    <HelpCircle className="mr-2 h-4 w-4" />
-                    Help
-                </Link>
-                <Link
-                    href="/whats-new"
-                    className="flex items-center rounded-lg px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
-                >
-                    <Sparkles className="mr-2 h-4 w-4" />
-                    What's new
-                </Link>
-                <Link
-                    href="/contact"
-                    className="flex items-center rounded-lg px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100"
-                >
-                    <Mail className="mr-2 h-4 w-4" />
-                    Contact us
                 </Link>
             </div>
 
