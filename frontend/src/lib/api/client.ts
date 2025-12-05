@@ -1,112 +1,71 @@
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios';
-import { API_BASE_URL } from '../../../src/config/constants';
+import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
+import { API_BASE_URL } from '../constants';
 
-class ApiClient {
-  private client: AxiosInstance;
 
-  constructor() {
-    this.client = axios.create({
-      baseURL: API_BASE_URL,
-      headers: {
+// Create axios instance
+const apiClient: AxiosInstance = axios.create({
+    baseURL: API_BASE_URL,
+    headers: {
         'Content-Type': 'application/json',
-      },
-      timeout: 30000, // 30 seconds
-    });
+    },
+});
 
-    this.setupInterceptors();
-  }
-
-  private setupInterceptors() {
-    // Request interceptor
-    this.client.interceptors.request.use(
-      (config) => {
-        // Add auth token from localStorage
+// Request interceptor to add JWT token
+apiClient.interceptors.request.use(
+    async (config: InternalAxiosRequestConfig) => {
+        // Get token from session (will be set by NextAuth)
         if (typeof window !== 'undefined') {
-          const token = localStorage.getItem('access_token');
-          if (token) {
-            config.headers.Authorization = `Bearer ${token}`;
-          }
+            // Client-side: get token from session
+            const session = await fetch('/api/auth/session').then((res) => res.json());
+            if (session?.accessToken) {
+                config.headers.Authorization = `Bearer ${session.accessToken}`;
+            }
         }
         return config;
-      },
-      (error) => {
+    },
+    (error) => {
         return Promise.reject(error);
-      }
-    );
-
-    // Response interceptor
-    this.client.interceptors.response.use(
-      (response) => response,
-      (error: AxiosError) => {
-        // Handle authentication errors
-        if (error.response?.status === 401 || error.response?.status === 403) {
-          // Clear invalid token
-          if (typeof window !== 'undefined') {
-            localStorage.removeItem('access_token');
-            // Redirect to login if not already there
-            if (window.location.pathname !== '/auth/signin') {
-              window.location.href = '/auth/signin';
-            }
-          }
-        }
-        this.handleError(error);
-        return Promise.reject(error);
-      }
-    );
-  }
-
-  private handleError(error: AxiosError) {
-    if (error.response) {
-      // Server responded with error
-      console.error('API Error:', error.response.status, error.response.data);
-    } else if (error.request) {
-      // Request made but no response
-      console.error('Network Error:', error.message);
-    } else {
-      // Something else happened
-      console.error('Error:', error.message);
     }
-  }
+);
 
-  async get<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.client.get<T>(url, config);
-    return response.data;
-  }
-
-  async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.client.post<T>(url, data, config);
-    return response.data;
-  }
-
-  async put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.client.put<T>(url, data, config);
-    return response.data;
-  }
-
-  async delete<T>(url: string, config?: AxiosRequestConfig): Promise<T> {
-    const response = await this.client.delete<T>(url, config);
-    return response.data;
-  }
-
-  // For file uploads
-  async upload<T>(url: string, file: File, onProgress?: (progress: number) => void): Promise<T> {
-    const formData = new FormData();
-    formData.append('file', file);
-
-    const response = await this.client.post<T>(url, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-      onUploadProgress: (progressEvent) => {
-        if (progressEvent.total && onProgress) {
-          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          onProgress(progress);
+// Response interceptor for error handling
+apiClient.interceptors.response.use(
+    (response) => response,
+    (error: AxiosError) => {
+        if (error.response) {
+            // Handle specific error codes
+            if (error.response.status === 401) {
+                // Unauthorized - redirect to login
+                if (typeof window !== 'undefined') {
+                    window.location.href = '/login';
+                }
+            } else if (error.response.status === 403) {
+                // Forbidden - might be email not verified
+                console.error('Access forbidden:', error.response.data);
+            }
         }
-      },
-    });
+        return Promise.reject(error);
+    }
+);
 
-    return response.data;
-  }
+export default apiClient;
+
+// Helper function to handle API errors
+export function getErrorMessage(error: unknown): string {
+    if (axios.isAxiosError(error)) {
+        const data = error.response?.data as any;
+        if (data?.detail) {
+            if (typeof data.detail === 'string') {
+                return data.detail;
+            } else if (Array.isArray(data.detail)) {
+                // Validation errors
+                return data.detail.map((err: any) => err.msg).join(', ');
+            }
+        }
+        return error.message;
+    }
+    if (error instanceof Error) {
+        return error.message;
+    }
+    return 'An unknown error occurred';
 }
-
-export const apiClient = new ApiClient();

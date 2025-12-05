@@ -1,28 +1,40 @@
-import { auth } from "./auth";
-import { NextResponse } from "next/server";
+import { auth } from '@/auth';
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
 export default auth((req) => {
-  const isLoggedIn = !!req.auth;
-  const isAuthPage = req.nextUrl.pathname.startsWith('/auth');
+    const { pathname } = req.nextUrl;
+    const session = req.auth;
 
-  if (isAuthPage) {
-    if (isLoggedIn) {
-      // Redirect logged-in users away from auth pages
-      return NextResponse.redirect(new URL('/', req.url));
+    // Public routes that don't require authentication
+    const publicRoutes = ['/login', '/signup', '/forgot-password', '/reset-password'];
+    const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route));
+
+    // If not authenticated and trying to access protected route
+    if (!session && !isPublicRoute) {
+        const loginUrl = new URL('/login', req.url);
+        loginUrl.searchParams.set('callbackUrl', pathname);
+        return NextResponse.redirect(loginUrl);
     }
+
+    // If authenticated but email not verified, redirect to verification page
+    if (
+        session &&
+        !session.user.email_verified &&
+        pathname !== '/verify-email' &&
+        !isPublicRoute
+    ) {
+        return NextResponse.redirect(new URL('/verify-email', req.url));
+    }
+
+    // If authenticated and trying to access auth pages, redirect to dashboard
+    if (session && isPublicRoute) {
+        return NextResponse.redirect(new URL('/dashboard', req.url));
+    }
+
     return NextResponse.next();
-  }
-
-  if (!isLoggedIn && !isAuthPage) {
-    // Redirect non-authenticated users to sign in
-    const signInUrl = new URL('/auth/signin', req.url);
-    signInUrl.searchParams.set('callbackUrl', req.nextUrl.pathname);
-    return NextResponse.redirect(signInUrl);
-  }
-
-  return NextResponse.next();
 });
 
 export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+    matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 };

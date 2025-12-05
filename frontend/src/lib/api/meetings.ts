@@ -1,81 +1,140 @@
-import { apiClient } from './client';
+import apiClient from './client';
+import { API_ENDPOINTS } from '../constants';
 import type {
     Meeting,
     MeetingDetail,
-    UploadResponse,
+    MeetingStatusDetail,
+    MeetingUploadResponse,
+    MeetingListResponse,
     TranscriptResponse,
-    Entities,
-    SearchResponse,
-    ProcessingStatus,
-    RAGResponse,
+    EntityResponse,
     ConflictResponse,
-    MeetingsResponse
+    SearchResponse,
+    RAGResponse,
+    PaginationParams,
 } from '@/types';
 
-export const meetingsApi = {
-    // Upload a meeting
-    uploadMeeting: async (file: File, onProgress?: (progress: number) => void): Promise<UploadResponse> => {
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('project_id', 'default'); // TODO: Get from context
+export async function uploadMeeting(
+    file: File,
+    projectId: string,
+    metadata?: Record<string, any>
+): Promise<MeetingUploadResponse> {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('project_id', projectId);
+    if (metadata) {
+        formData.append('metadata', JSON.stringify(metadata));
+    }
 
-        return apiClient.post<UploadResponse>('/meetings/upload', formData, {
+    const response = await apiClient.post<MeetingUploadResponse>(
+        API_ENDPOINTS.MEETINGS_UPLOAD,
+        formData,
+        {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
-            onUploadProgress: (progressEvent) => {
-                if (onProgress && progressEvent.total) {
-                    const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-                    onProgress(progress);
-                }
-            },
-        });
-    },
+        }
+    );
+    return response.data;
+}
 
-    // Get all meetings
-    getAllMeetings: async (limit = 50, offset = 0): Promise<Meeting[]> => {
-        const response = await apiClient.get<MeetingsResponse>('/meetings', {
-            params: { limit, offset }
-        });
-        return response.meetings;
-    },
+export async function getMeetings(
+    params?: PaginationParams & { project_id?: string }
+): Promise<MeetingListResponse> {
+    const response = await apiClient.get<MeetingListResponse>(
+        API_ENDPOINTS.MEETINGS_LIST,
+        { params }
+    );
+    return response.data;
+}
 
-    // Get single meeting details
-    getMeeting: async (meetingId: string): Promise<MeetingDetail> => {
-        return apiClient.get<MeetingDetail>(`/meetings/${meetingId}`);
-    },
+export async function getMeeting(meetingId: string): Promise<MeetingDetail> {
+    const response = await apiClient.get<MeetingDetail>(
+        API_ENDPOINTS.MEETING_DETAIL(meetingId)
+    );
+    return response.data;
+}
 
-    // Get meeting transcript
-    getTranscript: async (meetingId: string): Promise<TranscriptResponse> => {
-        return apiClient.get<TranscriptResponse>(`/meetings/${meetingId}/transcript`);
-    },
+export async function getMeetingStatus(meetingId: string): Promise<MeetingStatusDetail> {
+    const response = await apiClient.get<MeetingStatusDetail>(
+        API_ENDPOINTS.MEETING_STATUS(meetingId)
+    );
+    return response.data;
+}
 
-    // Search transcript
-    searchTranscript: async (meetingId: string, query: string): Promise<SearchResponse> => {
-        return apiClient.get<SearchResponse>(`/meetings/${meetingId}/search`, {
-            params: { q: query },
-        });
-    },
+export async function getTranscript(
+    meetingId: string,
+    type: 'raw' | 'final' = 'final'
+): Promise<TranscriptResponse> {
+    const response = await apiClient.get<TranscriptResponse>(
+        API_ENDPOINTS.MEETING_TRANSCRIPT(meetingId),
+        { params: { type } }
+    );
+    return response.data;
+}
 
-    // Get extracted entities
-    getEntities: async (meetingId: string): Promise<Entities> => {
-        return apiClient.get<Entities>(`/meetings/${meetingId}/entities`);
-    },
+export async function getEntities(meetingId: string): Promise<EntityResponse> {
+    const response = await apiClient.get<EntityResponse>(
+        API_ENDPOINTS.MEETING_ENTITIES(meetingId)
+    );
+    return response.data;
+}
 
-    // Get processing status
-    getStatus: async (meetingId: string): Promise<ProcessingStatus> => {
-        return apiClient.get<ProcessingStatus>(`/meetings/${meetingId}/status`);
-    },
+export async function getConflicts(meetingId: string): Promise<ConflictResponse> {
+    const response = await apiClient.get<ConflictResponse>(
+        API_ENDPOINTS.MEETING_CONFLICTS(meetingId)
+    );
+    return response.data;
+}
 
-    // Get RAG query result
-    ragQuery: async (meetingId: string, query: string): Promise<RAGResponse> => {
-        return apiClient.get<RAGResponse>(`/meetings/${meetingId}/rag/query`, {
-            params: { q: query }
-        });
-    },
+export async function searchMeeting(
+    meetingId: string,
+    query: string
+): Promise<SearchResponse> {
+    const response = await apiClient.get<SearchResponse>(
+        API_ENDPOINTS.MEETING_SEARCH(meetingId),
+        { params: { q: query } }
+    );
+    return response.data;
+}
 
-    // Get conflicts
-    getConflicts: async (meetingId: string): Promise<ConflictResponse> => {
-        return apiClient.get<ConflictResponse>(`/meetings/${meetingId}/conflicts`);
-    }
-};
+export async function ragQuery(meetingId: string, query: string): Promise<RAGResponse> {
+    const response = await apiClient.get<RAGResponse>(
+        API_ENDPOINTS.MEETING_RAG_QUERY(meetingId),
+        { params: { q: query } }
+    );
+    return response.data;
+}
+
+// Helper function to create SSE connection for transcript streaming
+export function createTranscriptStream(
+    meetingId: string,
+    token: string,
+    onPartial: (text: string) => void,
+    onDone: () => void,
+    onError: (error: Error) => void
+): EventSource {
+    const url = `${API_ENDPOINTS.MEETING_TRANSCRIPT_STREAM(meetingId)}`;
+    const eventSource = new EventSource(url);
+
+    eventSource.addEventListener('partial', (event) => {
+        try {
+            const data = JSON.parse(event.data);
+            onPartial(data.text);
+        } catch (error) {
+            onError(error as Error);
+        }
+    });
+
+    eventSource.addEventListener('done', () => {
+        onDone();
+        eventSource.close();
+    });
+
+    eventSource.onerror = (error) => {
+        onError(new Error('Stream connection error'));
+        eventSource.close();
+    };
+
+    return eventSource;
+}

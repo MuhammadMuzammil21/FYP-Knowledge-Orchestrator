@@ -1,202 +1,176 @@
 'use client';
 
-import { useState } from 'react';
-import { useParams } from 'next/navigation';
-import { Loader2, AlertCircle, MessageSquare, List } from 'lucide-react';
-import { TranscriptViewer } from '@/components/features/transcript/TranscriptViewer';
-import { SearchBar } from '@/components/features/transcript/SearchBar';
-import { EntityPanel } from '@/components/features/entities/EntityPanel';
-import { ChatInterface } from '@/components/features/chat/ChatInterface';
-import { Navbar } from '@/components/layout/Navbar';
-import { useMeeting, useTranscript, useEntities, useSearchTranscript, useMeetingStatus } from '../../../lib/hooks/useMeetings';
-import { ProcessingStatusIndicator } from '@/components/features/meetings/ProcessingStatusIndicator';
-import { CompactProgressBar } from '@/components/features/meetings/CompactProgressBar';
-import { formatDate, formatDuration } from '../../../lib/utils/formatters';
-import { Badge } from '@/components/ui/badge';
+import { use } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { TranscriptViewer } from '@/components/meetings/TranscriptViewer';
+import { EntitiesPanel } from '@/components/meetings/EntitiesPanel';
+import { ConflictsPanel } from '@/components/meetings/ConflictsPanel';
+import { RAGSearch } from '@/components/meetings/RAGSearch';
+import { ProgressBar } from '@/components/meetings/ProgressBar';
+import { StatusBadge } from '@/components/meetings/StatusBadge';
+import { useMeeting, useTranscript, useEntities, useConflicts } from '@/hooks/useMeetingDetail';
+import { useMeetingStatus } from '@/hooks/useMeetingStatus';
+import { ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
-export default function MeetingDetailPage() {
-    const params = useParams();
-    const meetingId = params.id as string;
+interface MeetingDetailPageProps {
+    params: Promise<{ id: string }>;
+}
 
-    const [searchQuery, setSearchQuery] = useState('');
-    const [currentSearchIndex, setCurrentSearchIndex] = useState(0);
+export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
+    const { id } = use(params);
 
-    // Fetch data
-    const { data: meeting, isLoading: meetingLoading, isError: meetingError } = useMeeting(meetingId);
-    const { data: transcriptData, isLoading: transcriptLoading } = useTranscript(meetingId);
-    const { data: entities, isLoading: entitiesLoading } = useEntities(meetingId);
-    const { data: searchResults } = useSearchTranscript(meetingId, searchQuery);
+    const { data: meeting, isLoading: meetingLoading } = useMeeting(id);
+    const { data: status } = useMeetingStatus(id, true);
+    const { data: transcriptData, isLoading: transcriptLoading } = useTranscript(id);
+    const { data: entitiesData, isLoading: entitiesLoading } = useEntities(id);
+    const { data: conflictsData, isLoading: conflictsLoading } = useConflicts(id);
 
-    // Real-time status updates
-    const { data: processingStatus } = useMeetingStatus(
-        meetingId,
-        meeting?.status === 'processing'
-    );
-
-    const handleSearch = (query: string) => {
-        setSearchQuery(query);
-        setCurrentSearchIndex(0);
-    };
-
-    const handleNavigateSearch = (direction: 'prev' | 'next') => {
-        if (!searchResults?.results) return;
-
-        if (direction === 'next') {
-            setCurrentSearchIndex((prev) =>
-                prev + 1 >= searchResults.results.length ? 0 : prev + 1
-            );
-        } else {
-            setCurrentSearchIndex((prev) =>
-                prev - 1 < 0 ? searchResults.results.length - 1 : prev - 1
-            );
-        }
-    };
-
-    const handleTimestampClick = (timestamp: number) => {
-        console.log('Jump to timestamp:', timestamp);
-        // TODO: Implement jump to timestamp in TranscriptViewer
-    };
-
-    // Loading state
     if (meetingLoading) {
         return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
-                <Navbar />
-                <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
-                    <div className="text-center space-y-4">
-                        <Loader2 className="h-12 w-12 animate-spin mx-auto text-primary" />
-                        <p className="text-muted-foreground">Loading meeting...</p>
-                    </div>
+            <div className="h-full p-8">
+                <Skeleton className="mb-4 h-8 w-64" />
+                <Skeleton className="mb-8 h-4 w-96" />
+                <Skeleton className="h-96" />
+            </div>
+        );
+    }
+
+    if (!meeting) {
+        return (
+            <div className="flex h-full items-center justify-center">
+                <div className="text-center">
+                    <h2 className="mb-2 text-2xl font-bold text-gray-600">Meeting Not Found</h2>
+                    <Link href="/meetings" className="text-blue-600 hover:underline">
+                        Back to meetings
+                    </Link>
                 </div>
             </div>
         );
     }
 
-    // Error state
-    if (meetingError || !meeting) {
-        return (
-            <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
-                <Navbar />
-                <div className="flex items-center justify-center min-h-[calc(100vh-4rem)]">
-                    <div className="text-center space-y-4">
-                        <AlertCircle className="h-12 w-12 mx-auto text-destructive" />
-                        <h2 className="text-2xl font-semibold">Meeting not found</h2>
-                        <p className="text-muted-foreground">
-                            The meeting you're looking for doesn't exist or has been deleted.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+    const formattedDate = new Date(meeting.created_at).toLocaleDateString('en-US', {
+        month: 'long',
+        day: 'numeric',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+    });
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
-            {/* Navbar */}
-            <Navbar />
-
-            {/* Meeting Header */}
-            <div className="border-b bg-white/80 dark:bg-slate-950/80 backdrop-blur-sm">
-                <div className="container mx-auto px-4 py-6">
-                    <div className="space-y-3">
-                        <h1 className="text-3xl font-bold">{meeting.title}</h1>
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                            <span>{formatDate(meeting.uploadDate)}</span>
-                            <span>•</span>
-                            {meeting.duration > 0 && (
-                                <>
-                                    <span>{formatDuration(meeting.duration)}</span>
-                                    <span>•</span>
-                                </>
-                            )}
-                            {meeting.speakerCount > 0 && (
-                                <>
-                                    <span>{meeting.speakerCount} speakers</span>
-                                    <span>•</span>
-                                </>
-                            )}
-                            <Badge variant={meeting.status === 'complete' ? 'default' : 'secondary'}>
-                                {meeting.status}
-                            </Badge>
-                        </div>
-
-                        {/* Compact Progress Bar in Header */}
-                        {meeting.status === 'processing' && processingStatus && (
-                            <div className="pt-2 max-w-md">
-                                <CompactProgressBar status={processingStatus} size="sm" />
-                            </div>
-                        )}
+        <div className="h-full overflow-y-auto p-8">
+            {/* Header */}
+            <div className="mb-6">
+                <Link
+                    href="/meetings"
+                    className="mb-4 inline-flex items-center text-sm text-blue-600 hover:underline"
+                >
+                    <ArrowLeft className="mr-1 h-4 w-4" />
+                    Back to meetings
+                </Link>
+                <div className="flex items-start justify-between">
+                    <div>
+                        <h1 className="mb-2 text-3xl font-bold">
+                            Meeting {meeting.meeting_id.slice(0, 8)}
+                        </h1>
+                        <p className="text-gray-600">{formattedDate}</p>
                     </div>
+                    <StatusBadge status={meeting.status} />
                 </div>
             </div>
 
-            {/* Main Content */}
-            <main className="container mx-auto px-4 py-8 max-w-7xl">
-                {/* Processing Status Indicator - Show when processing */}
-                {(meeting.status === 'processing' || meeting.status === 'failed') && processingStatus && (
-                    <div className="mb-6">
-                        <ProcessingStatusIndicator status={processingStatus} />
-                    </div>
-                )}
+            {/* Progress Bar */}
+            {status && meeting.status === 'processing' && (
+                <Card className="mb-6 p-4">
+                    <ProgressBar status={status} />
+                </Card>
+            )}
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    {/* Left Column - Transcript */}
-                    <div className="lg:col-span-2 space-y-4">
-                        <SearchBar
-                            onSearch={handleSearch}
-                            resultCount={searchResults?.count || 0}
-                            currentIndex={currentSearchIndex}
-                            onNavigate={handleNavigateSearch}
+            {/* Tabs */}
+            <Tabs defaultValue="transcript" className="h-[calc(100%-200px)]">
+                <TabsList className="mb-4">
+                    <TabsTrigger value="transcript">Transcript</TabsTrigger>
+                    <TabsTrigger value="entities">Entities</TabsTrigger>
+                    <TabsTrigger value="conflicts">Conflicts</TabsTrigger>
+                    <TabsTrigger value="rag">RAG Search</TabsTrigger>
+                </TabsList>
+
+                {/* Transcript Tab */}
+                <TabsContent value="transcript" className="h-full">
+                    {transcriptLoading ? (
+                        <Skeleton className="h-full" />
+                    ) : transcriptData ? (
+                        <TranscriptViewer
+                            transcript={transcriptData.transcript}
+                            isLlmRewritten={transcriptData.is_llm_rewritten}
                         />
+                    ) : (
+                        <Card className="flex h-full items-center justify-center">
+                            <p className="text-gray-500">
+                                {meeting.status === 'completed'
+                                    ? 'No transcript available'
+                                    : 'Transcript will be available once processing is complete'}
+                            </p>
+                        </Card>
+                    )}
+                </TabsContent>
 
-                        {transcriptLoading ? (
-                            <div className="flex items-center justify-center py-12">
-                                <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                            </div>
-                        ) : (
-                            <TranscriptViewer
-                                segments={transcriptData?.segments || []}
-                                searchQuery={searchQuery}
-                                onTimestampClick={handleTimestampClick}
-                            />
-                        )}
-                    </div>
+                {/* Entities Tab */}
+                <TabsContent value="entities" className="h-full overflow-y-auto">
+                    {entitiesLoading ? (
+                        <div className="space-y-4">
+                            <Skeleton className="h-32" />
+                            <Skeleton className="h-32" />
+                            <Skeleton className="h-32" />
+                        </div>
+                    ) : entitiesData ? (
+                        <EntitiesPanel entities={entitiesData.entities} />
+                    ) : (
+                        <Card className="flex h-full items-center justify-center">
+                            <p className="text-gray-500">
+                                {meeting.status === 'completed'
+                                    ? 'No entities extracted'
+                                    : 'Entities will be available once processing is complete'}
+                            </p>
+                        </Card>
+                    )}
+                </TabsContent>
 
-                    {/* Right Column - Entities & Chat */}
-                    <div className="lg:col-span-1">
-                        <Tabs defaultValue="insights" className="w-full">
-                            <TabsList className="grid w-full grid-cols-2 mb-4">
-                                <TabsTrigger value="insights" className="flex items-center gap-2">
-                                    <List className="h-4 w-4" />
-                                    Insights
-                                </TabsTrigger>
-                                <TabsTrigger value="chat" className="flex items-center gap-2">
-                                    <MessageSquare className="h-4 w-4" />
-                                    Chat
-                                </TabsTrigger>
-                            </TabsList>
+                {/* Conflicts Tab */}
+                <TabsContent value="conflicts" className="h-full overflow-y-auto">
+                    {conflictsLoading ? (
+                        <div className="space-y-4">
+                            <Skeleton className="h-24" />
+                            <Skeleton className="h-24" />
+                        </div>
+                    ) : conflictsData ? (
+                        <ConflictsPanel conflicts={conflictsData.conflicts} />
+                    ) : (
+                        <Card className="flex h-full items-center justify-center">
+                            <p className="text-gray-500">
+                                {meeting.status === 'completed'
+                                    ? 'No conflicts detected'
+                                    : 'Conflicts will be checked once processing is complete'}
+                            </p>
+                        </Card>
+                    )}
+                </TabsContent>
 
-                            <TabsContent value="insights" className="mt-0">
-                                {entitiesLoading ? (
-                                    <div className="flex items-center justify-center py-12">
-                                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                                    </div>
-                                ) : (
-                                    <EntityPanel
-                                        entities={entities || { tasks: [], decisions: [] }}
-                                        onTimestampClick={handleTimestampClick}
-                                    />
-                                )}
-                            </TabsContent>
-
-                            <TabsContent value="chat" className="mt-0">
-                                <ChatInterface meetingId={meetingId} />
-                            </TabsContent>
-                        </Tabs>
-                    </div>
-                </div>
-            </main>
+                {/* RAG Search Tab */}
+                <TabsContent value="rag" className="h-full overflow-y-auto">
+                    {meeting.status === 'completed' ? (
+                        <RAGSearch meetingId={id} />
+                    ) : (
+                        <Card className="flex h-full items-center justify-center">
+                            <p className="text-gray-500">
+                                RAG search will be available once processing is complete
+                            </p>
+                        </Card>
+                    )}
+                </TabsContent>
+            </Tabs>
         </div>
     );
 }

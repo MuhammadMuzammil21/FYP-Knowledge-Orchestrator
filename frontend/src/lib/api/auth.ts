@@ -1,70 +1,69 @@
-import { apiClient } from './client';
+import apiClient from './client';
+import { API_ENDPOINTS } from '../constants';
+import type {
+    LoginCredentials,
+    SignupCredentials,
+    TokenResponse,
+    User,
+} from '@/types';
 
-
-export interface ForgotPasswordResponse {
-  message: string;
-  token?: string; // Only in development
+export async function login(credentials: LoginCredentials): Promise<TokenResponse> {
+    const response = await apiClient.post<TokenResponse>(
+        API_ENDPOINTS.AUTH_LOGIN,
+        credentials
+    );
+    return response.data;
 }
 
-export interface ResetPasswordRequest {
-  token: string;
-  new_password: string;
+export async function signup(credentials: SignupCredentials): Promise<TokenResponse> {
+    const response = await apiClient.post<TokenResponse>(
+        API_ENDPOINTS.AUTH_SIGNUP,
+        credentials
+    );
+    return response.data;
 }
 
-export interface UpdateProfileRequest {
-  name?: string;
-  email?: string;
-}
-
-export interface UserProfile {
-  id: string;
-  name: string;
-  email: string;
-  created_at: string;
-  email_verified?: boolean;
-}
-
-export interface VerifyEmailResponse {
-  message: string;
-}
-
-export interface ResendVerificationResponse {
-  message: string;
-  token?: string; // Only in development
-}
-
-export const authApi = {
-  // Request password reset
-  forgotPassword: async (email: string): Promise<ForgotPasswordResponse> => {
-    return apiClient.post<ForgotPasswordResponse>('/auth/forgot-password', { email });
-  },
-
-  // Reset password with token
-  resetPassword: async (token: string, newPassword: string): Promise<{ message: string }> => {
-    return apiClient.post<{ message: string }>('/auth/reset-password', {
-      token,
-      new_password: newPassword,
+export async function getCurrentUser(token: string): Promise<User> {
+    const response = await apiClient.get<User>(API_ENDPOINTS.AUTH_ME, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
     });
-  },
+    return response.data;
+}
 
-  // Get user profile
-  getProfile: async (userId: string): Promise<UserProfile> => {
-    return apiClient.get<UserProfile>(`/auth/profile/${userId}`);
-  },
+export async function verifyEmail(token: string): Promise<{ message: string }> {
+    const response = await apiClient.post(API_ENDPOINTS.AUTH_VERIFY_EMAIL, { token });
+    return response.data;
+}
 
-  // Update user profile
-  updateProfile: async (userId: string, data: UpdateProfileRequest): Promise<UserProfile> => {
-    return apiClient.put<UserProfile>(`/auth/profile/${userId}`, data);
-  },
+export async function resendVerification(email: string): Promise<{ message: string }> {
+    const response = await apiClient.post(API_ENDPOINTS.AUTH_RESEND_VERIFICATION, {
+        email,
+    });
+    return response.data;
+}
 
-  // Verify email
-  verifyEmail: async (token: string): Promise<VerifyEmailResponse> => {
-    return apiClient.post<VerifyEmailResponse>('/auth/verify-email', { token });
-  },
+export async function forgotPassword(email: string): Promise<{ message: string; token?: string }> {
+    const response = await apiClient.post(API_ENDPOINTS.AUTH_FORGOT_PASSWORD, { email });
+    return response.data;
+}
 
-  // Resend verification email
-  resendVerification: async (email: string): Promise<ResendVerificationResponse> => {
-    return apiClient.post<ResendVerificationResponse>('/auth/resend-verification', { email });
-  },
-};
+export async function resetPassword(
+    token: string,
+    newPassword: string
+): Promise<{ message: string }> {
+    const response = await apiClient.post(API_ENDPOINTS.AUTH_RESET_PASSWORD, {
+        token,
+        new_password: newPassword,
+    });
+    return response.data;
+}
 
+export async function updateProfile(data: {
+    name?: string;
+    email?: string;
+}): Promise<User> {
+    const response = await apiClient.put<User>(API_ENDPOINTS.AUTH_UPDATE_PROFILE, data);
+    return response.data;
+}
