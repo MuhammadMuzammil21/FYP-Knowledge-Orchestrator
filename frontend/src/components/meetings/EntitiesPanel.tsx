@@ -8,7 +8,8 @@ interface EntitiesPanelProps {
 }
 
 export function EntitiesPanel({ entities }: EntitiesPanelProps) {
-    const { speakers = [], topics = [], tasks = [], decisions = [] } = entities;
+    // Handle undefined entities gracefully
+    const { speakers = [], topics = [], tasks = [], decisions = [] } = entities || {};
 
     return (
         <div className="space-y-4">

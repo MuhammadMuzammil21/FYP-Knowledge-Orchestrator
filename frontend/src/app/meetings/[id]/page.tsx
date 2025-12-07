@@ -10,8 +10,9 @@ import { ConflictsPanel } from '@/components/meetings/ConflictsPanel';
 import { RAGSearch } from '@/components/meetings/RAGSearch';
 import { ProgressBar } from '@/components/meetings/ProgressBar';
 import { StatusBadge } from '@/components/meetings/StatusBadge';
-import { useMeeting, useTranscript, useEntities, useConflicts } from '@/hooks/useMeetingDetail';
+import { useMeeting, useTranscript, useEntities } from '@/hooks/useMeetingDetail';
 import { useMeetingStatus } from '@/hooks/useMeetingStatus';
+import { useProjectConflicts } from '@/hooks/useKnowledgeGraph';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
@@ -26,7 +27,8 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
     const { data: status } = useMeetingStatus(id, true);
     const { data: transcriptData, isLoading: transcriptLoading } = useTranscript(id);
     const { data: entitiesData, isLoading: entitiesLoading } = useEntities(id);
-    const { data: conflictsData, isLoading: conflictsLoading } = useConflicts(id);
+    // Conflicts are now at project level
+    const { data: conflictsData, isLoading: conflictsLoading } = useProjectConflicts(meeting?.projectId || '');
 
     if (meetingLoading) {
         return (
@@ -51,7 +53,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
         );
     }
 
-    const formattedDate = new Date(meeting.created_at).toLocaleDateString('en-US', {
+    const formattedDate = new Date(meeting.createdAt).toLocaleDateString('en-US', {
         month: 'long',
         day: 'numeric',
         year: 'numeric',
@@ -73,7 +75,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                 <div className="flex items-start justify-between">
                     <div>
                         <h1 className="mb-2 text-3xl font-bold">
-                            Meeting {meeting.meeting_id.slice(0, 8)}
+                            Meeting {meeting.id.slice(0, 8)}
                         </h1>
                         <p className="text-gray-600">{formattedDate}</p>
                     </div>
@@ -103,8 +105,8 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                         <Skeleton className="h-full" />
                     ) : transcriptData ? (
                         <TranscriptViewer
-                            transcript={transcriptData.transcript}
-                            isLlmRewritten={transcriptData.is_llm_rewritten}
+                            transcript={transcriptData.content}
+                            isLlmRewritten={transcriptData.isLlmRewritten}
                         />
                     ) : (
                         <Card className="flex h-full items-center justify-center">
@@ -126,7 +128,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                             <Skeleton className="h-32" />
                         </div>
                     ) : entitiesData ? (
-                        <EntitiesPanel entities={entitiesData.entities} />
+                        <EntitiesPanel entities={entitiesData} />
                     ) : (
                         <Card className="flex h-full items-center justify-center">
                             <p className="text-gray-500">
@@ -146,7 +148,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                             <Skeleton className="h-24" />
                         </div>
                     ) : conflictsData ? (
-                        <ConflictsPanel conflicts={conflictsData.conflicts} />
+                        <ConflictsPanel conflicts={conflictsData} />
                     ) : (
                         <Card className="flex h-full items-center justify-center">
                             <p className="text-gray-500">

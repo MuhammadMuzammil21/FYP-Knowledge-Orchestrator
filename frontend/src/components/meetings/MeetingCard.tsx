@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { StatusBadge } from './StatusBadge';
-import type { Meeting } from '@/types';
+import type { Meeting } from '@/types/domain.types';
 import { Calendar, Clock } from 'lucide-react';
 
 interface MeetingCardProps {
@@ -9,24 +9,24 @@ interface MeetingCardProps {
 }
 
 export function MeetingCard({ meeting }: MeetingCardProps) {
-    const formattedDate = new Date(meeting.created_at).toLocaleDateString('en-US', {
+    const formattedDate = new Date(meeting.createdAt).toLocaleDateString('en-US', {
         month: 'short',
         day: 'numeric',
         year: 'numeric',
     });
 
-    const formattedTime = new Date(meeting.created_at).toLocaleTimeString('en-US', {
+    const formattedTime = new Date(meeting.createdAt).toLocaleTimeString('en-US', {
         hour: '2-digit',
         minute: '2-digit',
     });
 
     return (
-        <Link href={`/meetings/${meeting.meeting_id}`}>
+        <Link href={`/meetings/${meeting.id}`}>
             <Card className="transition-shadow hover:shadow-md">
                 <CardHeader className="pb-3">
                     <div className="flex items-start justify-between">
                         <h3 className="font-semibold">
-                            {meeting.title || `Meeting ${meeting.meeting_id.slice(0, 8)}`}
+                            {meeting.title || `Meeting ${meeting.id.slice(0, 8)}`}
                         </h3>
                         <StatusBadge status={meeting.status} />
                     </div>

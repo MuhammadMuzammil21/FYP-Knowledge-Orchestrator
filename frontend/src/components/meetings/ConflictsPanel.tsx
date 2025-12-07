@@ -29,7 +29,8 @@ const severityConfig = {
 };
 
 export function ConflictsPanel({ conflicts }: ConflictsPanelProps) {
-    if (conflicts.length === 0) {
+    // Handle undefined or empty conflicts
+    if (!conflicts || conflicts.length === 0) {
         return (
             <Card>
                 <CardContent className="flex h-32 items-center justify-center text-gray-500">

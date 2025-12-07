@@ -23,7 +23,7 @@ export default function MeetingsPage() {
     };
 
     const hasPrevious = offset > 0;
-    const hasNext = data?.meetings && data.meetings.length === limit;
+    const hasNext = data && data.length === limit;
 
     if (error) {
         return (
@@ -48,11 +48,11 @@ export default function MeetingsPage() {
                         <Skeleton key={i} className="h-32" />
                     ))}
                 </div>
-            ) : data?.meetings && data.meetings.length > 0 ? (
+            ) : data && data.length > 0 ? (
                 <>
                     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {data.meetings.map((meeting) => (
-                            <MeetingCard key={meeting.meeting_id} meeting={meeting} />
+                        {data.map((meeting) => (
+                            <MeetingCard key={meeting.id} meeting={meeting} />
                         ))}
                     </div>
 
@@ -67,7 +67,7 @@ export default function MeetingsPage() {
                             Previous
                         </Button>
                         <span className="text-sm text-gray-600">
-                            Showing {offset + 1} - {offset + (data?.meetings?.length || 0)}
+                            Showing {offset + 1} - {offset + (data?.length || 0)}
                         </span>
                         <Button
                             variant="outline"

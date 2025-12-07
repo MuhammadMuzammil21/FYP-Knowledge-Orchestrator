@@ -1,5 +1,5 @@
 import { Progress } from '@/components/ui/progress';
-import type { MeetingStatusDetail } from '@/types';
+import type { MeetingStatusDetail } from '@/types/domain.types';
 import { STAGE_LABELS } from '@/lib/constants';
 
 interface ProgressBarProps {
