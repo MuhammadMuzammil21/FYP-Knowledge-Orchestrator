@@ -7,7 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { TranscriptViewer } from '@/components/meetings/TranscriptViewer';
 import { EntitiesPanel } from '@/components/meetings/EntitiesPanel';
 import { ConflictsPanel } from '@/components/meetings/ConflictsPanel';
-import { RAGSearch } from '@/components/meetings/RAGSearch';
+import { RAGChat } from '@/components/meetings/RAGChat';
 import { ProgressBar } from '@/components/meetings/ProgressBar';
 import { StatusBadge } from '@/components/meetings/StatusBadge';
 import { useMeeting, useTranscript, useEntities } from '@/hooks/useMeetingDetail';
@@ -96,7 +96,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                     <TabsTrigger value="transcript">Transcript</TabsTrigger>
                     <TabsTrigger value="entities">Entities</TabsTrigger>
                     <TabsTrigger value="conflicts">Conflicts</TabsTrigger>
-                    <TabsTrigger value="rag">RAG Search</TabsTrigger>
+                    <TabsTrigger value="rag">Chat</TabsTrigger>
                 </TabsList>
 
                 {/* Transcript Tab */}
@@ -160,14 +160,14 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                     )}
                 </TabsContent>
 
-                {/* RAG Search Tab */}
-                <TabsContent value="rag" className="h-full overflow-y-auto">
+                {/* RAG Chat Tab */}
+                <TabsContent value="rag" className="h-full">
                     {meeting.status === 'completed' ? (
-                        <RAGSearch meetingId={id} />
+                        <RAGChat meetingId={id} />
                     ) : (
                         <Card className="flex h-full items-center justify-center">
                             <p className="text-gray-500">
-                                RAG search will be available once processing is complete
+                                Chat will be available once processing is complete
                             </p>
                         </Card>
                     )}
