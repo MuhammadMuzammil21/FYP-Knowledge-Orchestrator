@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
 import { ragQuery } from '@/lib/api/meetings';
 import { getErrorMessage } from '@/lib/api/client';
 import { toast } from 'sonner';
 import { Send, Loader2 } from 'lucide-react';
+import { MessageResponse } from './MessageResponse';
 
 interface RAGSearchProps {
     meetingId: string;
@@ -67,36 +67,13 @@ export function RAGSearch({ meetingId }: RAGSearchProps) {
                 </Button>
             </div>
 
-            {/* Answer */}
+            {/* Response Display */}
             {answer && (
-                <Card className="bg-blue-50">
-                    <CardContent className="pt-6">
-                        <h3 className="mb-2 font-semibold text-blue-900">Answer</h3>
-                        <p className="text-gray-700">{answer}</p>
-                    </CardContent>
-                </Card>
-            )}
-
-            {/* Context Chunks */}
-            {context && context.length > 0 && (
-                <div className="space-y-2">
-                    <h3 className="font-semibold text-gray-700">Relevant Context</h3>
-                    {context.map((item, index) => (
-                        <Card key={index} className="bg-gray-50">
-                            <CardContent className="pt-4">
-                                <div className="mb-2 flex items-center justify-between">
-                                    <span className="text-sm font-medium text-gray-600">
-                                        Context {index + 1}
-                                    </span>
-                                    <span className="text-xs text-gray-500">
-                                        Relevance: {(item.score * 100).toFixed(1)}%
-                                    </span>
-                                </div>
-                                <p className="text-sm text-gray-700">{item.chunk}</p>
-                            </CardContent>
-                        </Card>
-                    ))}
-                </div>
+                <MessageResponse
+                    answer={answer}
+                    context={context}
+                    showThinking={false} // Set to true for debugging
+                />
             )}
 
             {/* Empty State */}
