@@ -1,11 +1,16 @@
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useMeetings } from '../useMeetings';
-import * as meetingsApi from '@/lib/api/meetings';
+import { meetingService } from '@/lib/services';
 
-// Mock meetings API
-jest.mock('@/lib/api/meetings');
-const mockedGetMeetings = meetingsApi.getMeetings as jest.MockedFunction<typeof meetingsApi.getMeetings>;
+// Mock meeting service
+jest.mock('@/lib/services', () => ({
+    meetingService: {
+        getMeetings: jest.fn(),
+    },
+}));
+
+const mockedGetMeetings = meetingService.getMeetings as jest.MockedFunction<typeof meetingService.getMeetings>;
 
 const createWrapper = () => {
     const queryClient = new QueryClient({
@@ -21,17 +26,19 @@ const createWrapper = () => {
 };
 
 describe('useMeetings', () => {
+    beforeEach(() => {
+        jest.clearAllMocks();
+    });
+
     it('should fetch meetings successfully', async () => {
-        const mockData = {
-            meetings: [
-                {
-                    meeting_id: '1',
-                    title: 'Test Meeting',
-                    status: 'completed' as const,
-                    created_at: '2025-01-01',
-                },
-            ],
-        };
+        const mockData = [
+            {
+                id: '1',
+                title: 'Test Meeting',
+                status: 'completed' as const,
+                createdAt: new Date('2025-01-01'),
+            },
+        ];
 
         mockedGetMeetings.mockResolvedValue(mockData);
 
@@ -46,7 +53,7 @@ describe('useMeetings', () => {
     });
 
     it('should pass pagination params to API', async () => {
-        const mockData = { meetings: [] };
+        const mockData: any[] = [];
         mockedGetMeetings.mockResolvedValue(mockData);
 
         const { result } = renderHook(

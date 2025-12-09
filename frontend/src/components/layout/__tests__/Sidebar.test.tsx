@@ -28,7 +28,7 @@ describe('Sidebar', () => {
     it('should render sidebar with branding', () => {
         render(<Sidebar />);
 
-        expect(screen.getByText('Meeting AI')).toBeInTheDocument();
+        expect(screen.getByText('HarBaat AI')).toBeInTheDocument();
     });
 
     it('should render new meeting button', () => {
@@ -48,13 +48,10 @@ describe('Sidebar', () => {
         expect(meetingsLink).toHaveAttribute('href', '/meetings');
     });
 
-    it('should render footer links', () => {
+    it('should render settings link', () => {
         render(<Sidebar />);
 
         expect(screen.getByRole('link', { name: /settings/i })).toBeInTheDocument();
-        expect(screen.getByRole('link', { name: /help/i })).toBeInTheDocument();
-        expect(screen.getByRole('link', { name: /what's new/i })).toBeInTheDocument();
-        expect(screen.getByRole('link', { name: /contact us/i })).toBeInTheDocument();
     });
 
     it('should display user name in user menu', () => {

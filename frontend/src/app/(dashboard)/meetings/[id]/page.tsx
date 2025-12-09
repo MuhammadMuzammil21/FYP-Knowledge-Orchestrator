@@ -10,10 +10,12 @@ import { ConflictsPanel } from '@/components/meetings/ConflictsPanel';
 import { RAGChat } from '@/components/meetings/RAGChat';
 import { ProgressBar } from '@/components/meetings/ProgressBar';
 import { StatusBadge } from '@/components/meetings/StatusBadge';
+import { SpeakersPanel } from '@/components/speakers/SpeakersPanel';
 import { useMeeting, useTranscript, useEntities } from '@/hooks/useMeetingDetail';
 import { useMeetingStatus } from '@/hooks/useMeetingStatus';
 import { useProjectConflicts } from '@/hooks/useKnowledgeGraph';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Network } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
 interface MeetingDetailPageProps {
@@ -79,7 +81,17 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                         </h1>
                         <p className="text-gray-600">{formattedDate}</p>
                     </div>
-                    <StatusBadge status={meeting.status} />
+                    <div className="flex items-center gap-2">
+                        {meeting.status === 'completed' && (
+                            <Link href={`/meetings/${id}/graph`}>
+                                <Button variant="outline">
+                                    <Network className="mr-2 h-4 w-4" />
+                                    View Graph
+                                </Button>
+                            </Link>
+                        )}
+                        <StatusBadge status={meeting.status} />
+                    </div>
                 </div>
             </div>
 
@@ -95,6 +107,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                 <TabsList className="mb-4">
                     <TabsTrigger value="transcript">Transcript</TabsTrigger>
                     <TabsTrigger value="entities">Entities</TabsTrigger>
+                    <TabsTrigger value="speakers">Speakers</TabsTrigger>
                     <TabsTrigger value="conflicts">Conflicts</TabsTrigger>
                     <TabsTrigger value="rag">Chat</TabsTrigger>
                 </TabsList>
@@ -135,6 +148,19 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                                 {meeting.status === 'completed'
                                     ? 'No entities extracted'
                                     : 'Entities will be available once processing is complete'}
+                            </p>
+                        </Card>
+                    )}
+                </TabsContent>
+
+                {/* Speakers Tab */}
+                <TabsContent value="speakers" className="h-full overflow-y-auto">
+                    {meeting.status === 'completed' ? (
+                        <SpeakersPanel meetingId={id} />
+                    ) : (
+                        <Card className="flex h-full items-center justify-center">
+                            <p className="text-gray-500">
+                                Speakers will be available once processing is complete
                             </p>
                         </Card>
                     )}

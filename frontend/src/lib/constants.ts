@@ -40,6 +40,30 @@ export const API_ENDPOINTS = {
     MEETING_CONFLICTS: (id: string) => `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.conflicts(id)}`,
     MEETING_SEARCH: (id: string) => `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.search(id)}`,
     MEETING_RAG_QUERY: (id: string) => `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.ragQuery(id)}`,
+    MEETING_SPEAKERS: (id: string) => `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.speakers(id)}`,
+    MEETING_SPEAKER_UPDATE: (meetingId: string, speakerId: number) => `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.speakerDetail(meetingId, speakerId)}`,
+    MEETING_GRAPH: (id: string) => `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.graph(id)}`,
+
+    // Projects
+    PROJECTS_LIST: ENDPOINT_CONFIG.projects.base,
+    PROJECT_DETAIL: (id: string) => `${ENDPOINT_CONFIG.projects.base}${ENDPOINT_CONFIG.projects.endpoints.detail(id)}`,
+    PROJECT_UPDATE: (id: string) => `${ENDPOINT_CONFIG.projects.base}${ENDPOINT_CONFIG.projects.endpoints.update(id)}`,
+    PROJECT_GRAPH: (id: string) => `${ENDPOINT_CONFIG.projects.base}${ENDPOINT_CONFIG.projects.endpoints.graph(id)}`,
+    PROJECT_CONFLICTS: (id: string) => `${ENDPOINT_CONFIG.projects.base}${ENDPOINT_CONFIG.projects.endpoints.conflicts(id)}`,
+    PROJECT_RESOLVE_CONFLICT: (projectId: string, conflictId: number) => `${ENDPOINT_CONFIG.projects.base}${ENDPOINT_CONFIG.projects.endpoints.resolveConflict(projectId, conflictId)}`,
+
+    // People
+    PERSON_TASKS: (name: string) => `${ENDPOINT_CONFIG.people.base}${ENDPOINT_CONFIG.people.endpoints.tasks(name)}`,
+
+    // Known Speakers
+    KNOWN_SPEAKERS_LIST: ENDPOINT_CONFIG.knownSpeakers.base,
+    KNOWN_SPEAKERS_CREATE: ENDPOINT_CONFIG.knownSpeakers.base,
+    KNOWN_SPEAKER_UPDATE: (id: number) => `${ENDPOINT_CONFIG.knownSpeakers.base}${ENDPOINT_CONFIG.knownSpeakers.endpoints.update(id)}`,
+    KNOWN_SPEAKER_DELETE: (id: number) => `${ENDPOINT_CONFIG.knownSpeakers.base}${ENDPOINT_CONFIG.knownSpeakers.endpoints.delete(id)}`,
+
+    // Users
+    USER_ME: `${ENDPOINT_CONFIG.users.base}${ENDPOINT_CONFIG.users.endpoints.me}`,
+    USER_UPDATE_PROFILE: `${ENDPOINT_CONFIG.users.base}${ENDPOINT_CONFIG.users.endpoints.updateMe}`,
 } as const;
 
 // Re-export file upload settings

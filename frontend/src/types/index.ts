@@ -181,3 +181,144 @@ export interface ValidationError {
     msg: string;
     type: string;
 }
+
+// Project Types
+export interface Project {
+    id: string;
+    name: string;
+    description: string | null;
+    created_at: string;
+    meeting_count: number;
+}
+
+export interface ProjectDetail extends Project {
+    updated_at: string;
+    meetings: Meeting[];
+}
+
+export interface ProjectListResponse {
+    projects: Project[];
+}
+
+export interface UpdateProjectRequest {
+    name?: string;
+    description?: string;
+}
+
+// Conflict Types (Project-level)
+export interface ConflictDetail {
+    id: number;
+    source_meeting_id: string;
+    target_meeting_id: string;
+    conflict_type: 'task_reassignment' | 'deadline_change' | 'decision_reversal' | 'general';
+    description: string;
+    severity: 'low' | 'medium' | 'high';
+    resolved: boolean;
+    created_at: string;
+    resolution_note?: string;
+}
+
+export interface ProjectConflictsResponse {
+    project_id: string;
+    total_conflicts: number;
+    conflicts: ConflictDetail[];
+}
+
+export interface ResolveConflictRequest {
+    resolved: boolean;
+    resolution_note?: string;
+}
+
+// Speaker Types
+export interface Speaker {
+    id: number;
+    original_label: string;
+    display_name: string;
+    known_speaker_id: number | null;
+    has_embedding: boolean;
+}
+
+export interface SpeakersResponse {
+    speakers: Speaker[];
+}
+
+export interface AddSpeakerRequest {
+    original_label: string;
+    display_name: string;
+}
+
+// Knowledge Graph Types
+export interface GraphNode {
+    id: number;
+    labels: string[];
+    properties: Record<string, any>;
+}
+
+export interface GraphEdge {
+    type: string;
+    start: number;
+    end: number;
+    properties: Record<string, any>;
+}
+
+export interface ProjectGraphResponse {
+    nodes: GraphNode[];
+    edges: GraphEdge[];
+}
+
+export interface MeetingGraphResponse {
+    nodes: GraphNode[];
+    edges: GraphEdge[];
+    participants: Array<{
+        name: string;
+        created_at: string;
+    }>;
+    tasks: Array<{
+        id: string;
+        description: string;
+        assignee: string;
+        due_date: string | null;
+        created_at: string;
+    }>;
+    decisions: Array<{
+        id: string;
+        description: string;
+        created_at: string;
+    }>;
+    topics: string[];
+}
+
+export interface PersonTask {
+    id: string;
+    description: string;
+    due_date: string | null;
+    status: string;
+    meeting_id: string;
+    meeting_title: string;
+}
+
+export interface PersonTasksResponse {
+    person_name: string;
+    tasks: PersonTask[];
+}
+
+// Known Speaker Types
+export interface KnownSpeaker {
+    id: number;
+    name: string;
+    meeting_count: number;
+    created_at: string;
+}
+
+export interface KnownSpeakersResponse {
+    known_speakers: KnownSpeaker[];
+}
+
+export interface CreateKnownSpeakerRequest {
+    name: string;
+    source_speaker_mapping_id: number;
+}
+
+export interface UpdateKnownSpeakerRequest {
+    name: string;
+}

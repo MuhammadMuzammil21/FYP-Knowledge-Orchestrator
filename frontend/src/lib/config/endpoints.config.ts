@@ -57,9 +57,12 @@ export const ENDPOINT_CONFIG = {
     projects: {
         base: '/api/projects',
         endpoints: {
-            // NEW: Project graph endpoint
+            list: '',
+            detail: (id: string) => `/${id}`,
+            update: (id: string) => `/${id}`,
             graph: (id: string) => `/${id}/graph`,
             conflicts: (id: string) => `/${id}/conflicts`,
+            resolveConflict: (projectId: string, conflictId: number) => `/${projectId}/conflicts/${conflictId}/resolve`,
         },
     },
 
@@ -71,6 +74,30 @@ export const ENDPOINT_CONFIG = {
         endpoints: {
             // NEW: Person tasks endpoint
             tasks: (name: string) => `/${name}/tasks`,
+        },
+    },
+
+    /**
+     * Known Speakers endpoints
+     */
+    knownSpeakers: {
+        base: '/api/known-speakers',
+        endpoints: {
+            list: '',
+            create: '',
+            update: (id: number) => `/${id}`,
+            delete: (id: number) => `/${id}`,
+        },
+    },
+
+    /**
+     * User endpoints
+     */
+    users: {
+        base: '/api/users',
+        endpoints: {
+            me: '/me',
+            updateMe: '/me',
         },
     },
 } as const;

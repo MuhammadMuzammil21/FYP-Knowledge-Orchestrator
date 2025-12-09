@@ -67,3 +67,10 @@ export async function updateProfile(data: {
     const response = await apiClient.put<User>(API_ENDPOINTS.AUTH_UPDATE_PROFILE, data);
     return response.data;
 }
+
+export async function updateUserProfile(data: {
+    name?: string;
+}): Promise<User> {
+    const response = await apiClient.put<User>(API_ENDPOINTS.USER_UPDATE_PROFILE, data);
+    return response.data;
+}

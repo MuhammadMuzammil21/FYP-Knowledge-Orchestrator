@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import DashboardPage from '../dashboard/page';
+import DashboardPage from '../(dashboard)/dashboard/page';
 import * as meetingsApi from '@/lib/api/meetings';
 
 // Mock meetings API
@@ -22,8 +22,8 @@ describe('DashboardPage', () => {
     it('should render dashboard with upload interface', () => {
         render(<DashboardPage />);
 
-        expect(screen.getByText('Start New Encounter')).toBeInTheDocument();
-        expect(screen.getByText('Upload a meeting recording to begin analysis')).toBeInTheDocument();
+        expect(screen.getByText('Upload Meeting Recording')).toBeInTheDocument();
+        expect(screen.getByText('Get AI-powered insights from your meetings')).toBeInTheDocument();
     });
 
     it('should render context input', () => {
@@ -31,29 +31,6 @@ describe('DashboardPage', () => {
 
         const contextInput = screen.getByPlaceholderText(/add context about this meeting/i);
         expect(contextInput).toBeInTheDocument();
-    });
-
-    it('should render encounter type buttons', () => {
-        render(<DashboardPage />);
-
-        expect(screen.getByRole('button', { name: /in-person/i })).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /virtual/i })).toBeInTheDocument();
-    });
-
-    it('should toggle encounter type', () => {
-        render(<DashboardPage />);
-
-        const inPersonButton = screen.getByRole('button', { name: /in-person/i });
-        const virtualButton = screen.getByRole('button', { name: /virtual/i });
-
-        // Initially in-person should be selected
-        expect(inPersonButton).toHaveClass('bg-primary'); // or whatever your default variant class is
-
-        // Click virtual
-        fireEvent.click(virtualButton);
-
-        // Virtual should now be selected
-        expect(virtualButton).toHaveClass('bg-primary');
     });
 
     it('should render file upload input', () => {
@@ -78,7 +55,7 @@ describe('DashboardPage', () => {
     it('should disable upload button when no file selected', () => {
         render(<DashboardPage />);
 
-        const uploadButton = screen.getByRole('button', { name: /start encounter/i });
+        const uploadButton = screen.getByRole('button', { name: /start analysis/i });
         expect(uploadButton).toBeDisabled();
     });
 
@@ -90,7 +67,7 @@ describe('DashboardPage', () => {
 
         fireEvent.change(fileInput, { target: { files: [file] } });
 
-        const uploadButton = screen.getByRole('button', { name: /start encounter/i });
+        const uploadButton = screen.getByRole('button', { name: /start analysis/i });
         expect(uploadButton).not.toBeDisabled();
     });
 
@@ -109,7 +86,7 @@ describe('DashboardPage', () => {
 
         const file = new File(['audio content'], 'meeting.mp3', { type: 'audio/mpeg' });
         const fileInput = screen.getByLabelText(/upload recording/i) as HTMLInputElement;
-        const uploadButton = screen.getByRole('button', { name: /start encounter/i });
+        const uploadButton = screen.getByRole('button', { name: /start analysis/i });
 
         fireEvent.change(fileInput, { target: { files: [file] } });
         fireEvent.click(uploadButton);
@@ -119,10 +96,43 @@ describe('DashboardPage', () => {
                 file,
                 'default-project',
                 expect.objectContaining({
-                    encounter_type: 'in-person',
+                    context: undefined,
                 })
             );
             expect(mockPush).toHaveBeenCalledWith('/meetings/meeting-123');
+        });
+    });
+
+    it('should upload meeting with context', async () => {
+        const mockResponse = {
+            meeting_id: 'meeting-123',
+            project_id: 'default-project',
+            status: 'queued' as const,
+            stage: 'asr_pending' as const,
+            message: 'Meeting uploaded successfully',
+        };
+
+        mockedUploadMeeting.mockResolvedValue(mockResponse);
+
+        render(<DashboardPage />);
+
+        const file = new File(['audio content'], 'meeting.mp3', { type: 'audio/mpeg' });
+        const fileInput = screen.getByLabelText(/upload recording/i) as HTMLInputElement;
+        const contextInput = screen.getByPlaceholderText(/add context about this meeting/i);
+        const uploadButton = screen.getByRole('button', { name: /start analysis/i });
+
+        fireEvent.change(contextInput, { target: { value: 'Team standup meeting' } });
+        fireEvent.change(fileInput, { target: { files: [file] } });
+        fireEvent.click(uploadButton);
+
+        await waitFor(() => {
+            expect(mockedUploadMeeting).toHaveBeenCalledWith(
+                file,
+                'default-project',
+                expect.objectContaining({
+                    context: 'Team standup meeting',
+                })
+            );
         });
     });
 
@@ -133,7 +143,7 @@ describe('DashboardPage', () => {
 
         const file = new File(['audio content'], 'meeting.mp3', { type: 'audio/mpeg' });
         const fileInput = screen.getByLabelText(/upload recording/i) as HTMLInputElement;
-        const uploadButton = screen.getByRole('button', { name: /start encounter/i });
+        const uploadButton = screen.getByRole('button', { name: /start analysis/i });
 
         fireEvent.change(fileInput, { target: { files: [file] } });
         fireEvent.click(uploadButton);

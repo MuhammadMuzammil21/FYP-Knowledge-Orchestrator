@@ -4,7 +4,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { meetingService } from '@/lib/services';
+import { getSpeakers, updateSpeaker, addSpeaker } from '@/lib/api/speakers';
 
 /**
  * Hook to fetch meeting speakers
@@ -12,7 +12,10 @@ import { meetingService } from '@/lib/services';
 export function useSpeakers(meetingId: string) {
     return useQuery({
         queryKey: ['speakers', meetingId],
-        queryFn: () => meetingService.getSpeakers(meetingId),
+        queryFn: async () => {
+            const response = await getSpeakers(meetingId);
+            return response.speakers; // Extract speakers array
+        },
         enabled: !!meetingId,
     });
 }
@@ -25,7 +28,7 @@ export function useUpdateSpeaker(meetingId: string) {
 
     return useMutation({
         mutationFn: ({ speakerId, displayName }: { speakerId: number; displayName: string }) =>
-            meetingService.updateSpeaker(meetingId, speakerId, displayName),
+            updateSpeaker(meetingId, speakerId, displayName),
         onSuccess: () => {
             // Invalidate speakers query to refetch
             queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
@@ -41,7 +44,7 @@ export function useAddSpeaker(meetingId: string) {
 
     return useMutation({
         mutationFn: ({ originalLabel, displayName }: { originalLabel: string; displayName: string }) =>
-            meetingService.addSpeaker(meetingId, originalLabel, displayName),
+            addSpeaker(meetingId, { original_label: originalLabel, display_name: displayName }),
         onSuccess: () => {
             // Invalidate speakers query to refetch
             queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });

@@ -10,7 +10,8 @@ import {
     Calendar,
     Settings,
     LogOut,
-    User
+    User,
+    Folder
 } from 'lucide-react';
 import {
     DropdownMenu,
@@ -61,6 +62,18 @@ export function Sidebar() {
                             }`}
                     >
                         All Meetings
+                    </Link>
+                    <Link
+                        href="/projects"
+                        className={`block rounded-lg px-3 py-2 text-sm transition-colors ${isActive('/projects') || pathname?.startsWith('/projects/')
+                            ? 'bg-blue-50 text-blue-700'
+                            : 'text-gray-700 hover:bg-gray-100'
+                            }`}
+                    >
+                        <div className="flex items-center">
+                            <Folder className="mr-2 h-4 w-4" />
+                            Projects
+                        </div>
                     </Link>
                 </div>
             </div>

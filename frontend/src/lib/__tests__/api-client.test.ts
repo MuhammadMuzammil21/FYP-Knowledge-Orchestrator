@@ -1,8 +1,21 @@
+// Mock axios BEFORE any imports
+jest.mock('axios', () => ({
+    __esModule: true,
+    default: {
+        create: jest.fn(() => ({
+            interceptors: {
+                request: { use: jest.fn(), eject: jest.fn() },
+                response: { use: jest.fn(), eject: jest.fn() },
+            },
+            defaults: { headers: { common: {} } },
+        })),
+        isAxiosError: jest.fn(),
+    },
+}));
+
 import axios from 'axios';
 import { getErrorMessage } from '../api/client';
 
-// Mock axios
-jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
 describe('API Client', () => {

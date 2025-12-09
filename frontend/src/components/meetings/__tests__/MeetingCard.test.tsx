@@ -1,12 +1,12 @@
 import { render, screen } from '@testing-library/react';
 import { MeetingCard } from '../MeetingCard';
-import type { Meeting } from '@/types';
+import type { Meeting } from '@/types/domain.types';
 
 const mockMeeting: Meeting = {
-    meeting_id: 'meeting-123',
+    id: 'meeting-123',
     title: 'Team Standup',
     status: 'completed',
-    created_at: '2025-01-15T10:30:00Z',
+    createdAt: new Date('2025-01-15T10:30:00Z'),
 };
 
 describe('MeetingCard', () => {
@@ -18,7 +18,7 @@ describe('MeetingCard', () => {
     it('should render default title when no title provided', () => {
         const meetingWithoutTitle = { ...mockMeeting, title: null };
         render(<MeetingCard meeting={meetingWithoutTitle} />);
-        expect(screen.getByText(/Meeting meeting-12/)).toBeInTheDocument();
+        expect(screen.getByText(/Meeting meeting-/)).toBeInTheDocument();
     });
 
     it('should render status badge', () => {
