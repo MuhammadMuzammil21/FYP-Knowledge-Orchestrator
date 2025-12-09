@@ -40,6 +40,7 @@ export const ENDPOINT_CONFIG = {
             transcript: (id: string) => `/${id}/transcript`,
             transcriptStream: (id: string) => `/${id}/transcript/stream`,
             entities: (id: string) => `/${id}/entities`,
+            conflicts: (id: string) => `/${id}/conflicts`,
             search: (id: string) => `/${id}/search`,
             ragQuery: (id: string) => `/${id}/rag/query`,
             // NEW: Speaker endpoints

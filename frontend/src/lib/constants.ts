@@ -37,6 +37,7 @@ export const API_ENDPOINTS = {
     MEETING_TRANSCRIPT: (id: string) => `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.transcript(id)}`,
     MEETING_TRANSCRIPT_STREAM: (id: string) => `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.transcriptStream(id)}`,
     MEETING_ENTITIES: (id: string) => `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.entities(id)}`,
+    MEETING_CONFLICTS: (id: string) => `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.conflicts(id)}`,
     MEETING_SEARCH: (id: string) => `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.search(id)}`,
     MEETING_RAG_QUERY: (id: string) => `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.ragQuery(id)}`,
 } as const;
