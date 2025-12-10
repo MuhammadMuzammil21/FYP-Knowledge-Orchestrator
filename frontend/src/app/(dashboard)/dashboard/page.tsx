@@ -13,6 +13,12 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from '@/components/ui/accordion';
 import { Mic, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { uploadMeeting } from '@/lib/api/meetings';
@@ -32,6 +38,8 @@ export default function DashboardPage() {
     // Metadata fields
     const [title, setTitle] = useState('');
     const [language, setLanguage] = useState('');
+    const [minSpeakers, setMinSpeakers] = useState<number | ''>('');
+    const [maxSpeakers, setMaxSpeakers] = useState<number | ''>('');
     const [numSpeakers, setNumSpeakers] = useState<number | ''>('');
     const [projects, setProjects] = useState<Project[]>([]);
     const [selectedProjectId, setSelectedProjectId] = useState<string>('');
@@ -88,6 +96,8 @@ export default function DashboardPage() {
             const metadata: MeetingUploadMetadata = {
                 title: title || undefined,
                 language: language && language !== 'auto' ? language : undefined,
+                min_speakers: minSpeakers ? Number(minSpeakers) : undefined,
+                max_speakers: maxSpeakers ? Number(maxSpeakers) : undefined,
                 num_speakers: numSpeakers ? Number(numSpeakers) : undefined,
                 context: context || undefined,
             };
@@ -233,22 +243,62 @@ export default function DashboardPage() {
                     </p>
                 </div>
 
-                <div className="mb-6 space-y-2">
-                    <Label htmlFor="numSpeakers">Number of Speakers (Optional)</Label>
-                    <Input
-                        id="numSpeakers"
-                        type="number"
-                        min="1"
-                        max="20"
-                        placeholder="e.g., 4"
-                        value={numSpeakers}
-                        onChange={(e) => setNumSpeakers(e.target.value ? parseInt(e.target.value) : '')}
-                        disabled={isUploading}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                        Helps improve speaker diarization accuracy
-                    </p>
-                </div>
+                <Accordion type="single" collapsible className="mb-6">
+                    <AccordionItem value="speaker-config" className="border rounded-lg px-4">
+                        <AccordionTrigger className="hover:no-underline">
+                            <div className="flex items-center gap-2">
+                                <Label className="cursor-pointer">Speaker Configuration</Label>
+                                <span className="text-xs text-muted-foreground">(Optional)</span>
+                            </div>
+                        </AccordionTrigger>
+                        <AccordionContent className="pt-4 pb-2">
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="minSpeakers" className="text-sm">Min Speakers</Label>
+                                    <Input
+                                        id="minSpeakers"
+                                        type="number"
+                                        min="1"
+                                        max="20"
+                                        placeholder="e.g., 2"
+                                        value={minSpeakers}
+                                        onChange={(e) => setMinSpeakers(e.target.value ? parseInt(e.target.value) : '')}
+                                        disabled={isUploading}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="maxSpeakers" className="text-sm">Max Speakers</Label>
+                                    <Input
+                                        id="maxSpeakers"
+                                        type="number"
+                                        min="1"
+                                        max="20"
+                                        placeholder="e.g., 6"
+                                        value={maxSpeakers}
+                                        onChange={(e) => setMaxSpeakers(e.target.value ? parseInt(e.target.value) : '')}
+                                        disabled={isUploading}
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="numSpeakers" className="text-sm">Exact Number</Label>
+                                    <Input
+                                        id="numSpeakers"
+                                        type="number"
+                                        min="1"
+                                        max="20"
+                                        placeholder="e.g., 4"
+                                        value={numSpeakers}
+                                        onChange={(e) => setNumSpeakers(e.target.value ? parseInt(e.target.value) : '')}
+                                        disabled={isUploading}
+                                    />
+                                </div>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-4">
+                                Specify speaker range or exact count to improve diarization accuracy
+                            </p>
+                        </AccordionContent>
+                    </AccordionItem>
+                </Accordion>
 
                 {/* Context Input */}
                 {/* <div className="mb-6 space-y-2">
