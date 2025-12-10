@@ -19,6 +19,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "HarBaat AI - Meeting Analysis System",
   description: "AI-powered meeting transcription and analysis",
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: 'any' }
+    ],
+  },
 };
 
 export default function RootLayout({

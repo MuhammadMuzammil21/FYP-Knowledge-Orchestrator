@@ -3,7 +3,7 @@
 import { use } from 'react';
 import Link from 'next/link';
 import { useMeetingGraph } from '@/hooks/useGraph';
-import { KnowledgeGraphViewer } from '@/components/graph/KnowledgeGraphViewer';
+import { MeetingGraphViewer } from '@/components/graph/MeetingGraphViewer';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ArrowLeft } from 'lucide-react';
 
@@ -47,7 +47,7 @@ export default function MeetingGraphPage({ params }: MeetingGraphPageProps) {
                 <Skeleton className="h-full flex-1" />
             ) : graphData ? (
                 <div className="flex-1">
-                    <KnowledgeGraphViewer nodes={graphData.nodes} edges={graphData.edges} />
+                    <MeetingGraphViewer data={graphData} />
                 </div>
             ) : (
                 <div className="flex h-full items-center justify-center rounded-lg border bg-muted">
