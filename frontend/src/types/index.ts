@@ -215,6 +215,11 @@ export interface UpdateProjectRequest {
     description?: string;
 }
 
+export interface CreateProjectRequest {
+    name: string;
+    description?: string;
+}
+
 // Conflict Types (Project-level)
 export interface ConflictDetail {
     id: number;

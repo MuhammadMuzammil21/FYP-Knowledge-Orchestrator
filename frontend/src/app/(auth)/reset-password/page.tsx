@@ -53,7 +53,7 @@ function ResetPasswordForm() {
 
     if (!token) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-background px-4">
+            <div className="flex min-h-screen items-center justify-center bg-background px-3 sm:px-4">
                 <Card className="w-full max-w-md">
                     <CardHeader>
                         <CardTitle className="text-2xl font-bold">Invalid Link</CardTitle>
@@ -72,7 +72,7 @@ function ResetPasswordForm() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <div className="flex min-h-screen items-center justify-center bg-background px-3 sm:px-4">
             <Card className="w-full max-w-md">
                 <CardHeader className="space-y-1">
                     <CardTitle className="text-2xl font-bold">Reset password</CardTitle>

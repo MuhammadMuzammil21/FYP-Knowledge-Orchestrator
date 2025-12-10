@@ -18,7 +18,10 @@ import { toast } from 'sonner';
 import { uploadMeeting } from '@/lib/api/meetings';
 import { getErrorMessage } from '@/lib/api/client';
 import { ALLOWED_FILE_EXTENSIONS, MAX_FILE_SIZE } from '@/lib/constants';
-import type { MeetingUploadMetadata } from '@/types';
+import type { MeetingUploadMetadata, Project } from '@/types';
+import { getProjects, createProject } from '@/lib/api/projects';
+import { useEffect } from 'react';
+import { Plus, X } from 'lucide-react';
 
 export default function DashboardPage() {
     const router = useRouter();
@@ -28,8 +31,30 @@ export default function DashboardPage() {
 
     // Metadata fields
     const [title, setTitle] = useState('');
-    const [language, setLanguage] = useState('en');
+    const [language, setLanguage] = useState('');
     const [numSpeakers, setNumSpeakers] = useState<number | ''>('');
+    const [projects, setProjects] = useState<Project[]>([]);
+    const [selectedProjectId, setSelectedProjectId] = useState<string>('');
+    const [isCreatingProject, setIsCreatingProject] = useState(false);
+    const [newProjectName, setNewProjectName] = useState('');
+
+    // Fetch projects on mount
+    useEffect(() => {
+        const fetchProjects = async () => {
+            try {
+                const data = await getProjects();
+                setProjects(data.projects);
+                // Default to first project if available
+                if (data.projects.length > 0) {
+                    setSelectedProjectId(data.projects[0].id);
+                }
+            } catch (error) {
+                console.error('Failed to fetch projects:', error);
+                // Don't block UI, just won't show projects
+            }
+        };
+        fetchProjects();
+    }, []);
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
@@ -62,12 +87,35 @@ export default function DashboardPage() {
         try {
             const metadata: MeetingUploadMetadata = {
                 title: title || undefined,
-                language: language || undefined,
+                language: language && language !== 'auto' ? language : undefined,
                 num_speakers: numSpeakers ? Number(numSpeakers) : undefined,
                 context: context || undefined,
             };
 
-            const response = await uploadMeeting(file, 'default-project', metadata);
+            let projectId = selectedProjectId;
+
+            // Create new project if needed
+            if (isCreatingProject && newProjectName.trim()) {
+                const newProject = await createProject({ name: newProjectName });
+                projectId = newProject.id;
+            } else if (!projectId && !isCreatingProject) {
+                // Should not happen if validations work, but fallback
+
+                // If no project selected and not creating one, handle error
+                if (projects.length === 0) {
+                    // Create a default project if none exist
+                    const defaultProject = await createProject({ name: 'My First Project' });
+                    projectId = defaultProject.id;
+                }
+            }
+
+            if (!projectId) {
+                toast.error('Please select or create a project');
+                setIsUploading(false);
+                return;
+            }
+
+            const response = await uploadMeeting(file, projectId, metadata);
 
             toast.success('Meeting uploaded successfully!');
             router.push(`/meetings/${response.meeting_id}`);
@@ -79,18 +127,18 @@ export default function DashboardPage() {
     };
 
     return (
-        <div className="flex h-full items-center justify-center p-8">
-            <Card className="w-full max-w-2xl p-8">
+        <div className="flex h-full items-center justify-center p-4 md:p-8">
+            <Card className="w-full max-w-full md:max-w-2xl p-4 md:p-8">
                 {/* Header */}
-                <div className="mb-8 text-center">
-                    <h1 className="mb-2 text-3xl font-bold">Upload Meeting Recording</h1>
+                <div className="mb-6 md:mb-8 text-center">
+                    <h1 className="mb-2 text-2xl md:text-3xl font-bold">Upload Meeting Recording</h1>
                     <p className="text-muted-foreground">Get AI-powered insights from your meetings</p>
                 </div>
 
                 {/* Microphone Icon */}
-                <div className="mb-8 flex justify-center">
-                    <div className="flex h-32 w-32 items-center justify-center rounded-full bg-primary/10">
-                        <Mic className="h-16 w-16 text-primary" />
+                <div className="mb-6 md:mb-8 flex justify-center">
+                    <div className="flex h-24 w-24 md:h-32 md:w-32 items-center justify-center rounded-full bg-primary/10">
+                        <Mic className="h-12 w-12 md:h-16 md:w-16 text-primary" />
                     </div>
                 </div>
 
@@ -106,13 +154,69 @@ export default function DashboardPage() {
                     />
                 </div>
 
+                {/* Project Selection */}
                 <div className="mb-6 space-y-2">
-                    <Label htmlFor="language">Language (Optional)</Label>
+                    <Label>Project</Label>
+                    {!isCreatingProject ? (
+                        <div className="flex gap-2">
+                            <Select
+                                value={selectedProjectId}
+                                onValueChange={(val) => {
+                                    if (val === 'new') {
+                                        setIsCreatingProject(true);
+                                    } else {
+                                        setSelectedProjectId(val);
+                                    }
+                                }}
+                                disabled={isUploading}
+                            >
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select a project" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {projects.map((p) => (
+                                        <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
+                                    ))}
+                                    <SelectItem value="new" className="font-semibold text-primary">
+                                        <div className="flex items-center">
+                                            <Plus className="mr-2 h-4 w-4" />
+                                            Create New Project
+                                        </div>
+                                    </SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    ) : (
+                        <div className="flex gap-2 items-center">
+                            <Input
+                                placeholder="Enter project name"
+                                value={newProjectName}
+                                onChange={(e) => setNewProjectName(e.target.value)}
+                                disabled={isUploading}
+                            />
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => {
+                                    setIsCreatingProject(false);
+                                    setNewProjectName('');
+                                }}
+                                disabled={isUploading}
+                            >
+                                <X className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    )}
+                </div>
+
+                <div className="mb-6 space-y-2">
+                    <Label htmlFor="language">Language</Label>
                     <Select value={language} onValueChange={setLanguage} disabled={isUploading}>
                         <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select language" />
+                            <SelectValue placeholder="Dominant Language (Auto-detect)" />
                         </SelectTrigger>
                         <SelectContent>
+                            <SelectItem value="auto">Dominant Language (Auto-detect)</SelectItem>
                             <SelectItem value="en">English</SelectItem>
                             <SelectItem value="es">Spanish</SelectItem>
                             <SelectItem value="fr">French</SelectItem>
@@ -124,6 +228,9 @@ export default function DashboardPage() {
                             <SelectItem value="ur">Urdu</SelectItem>
                         </SelectContent>
                     </Select>
+                    <p className="text-xs text-muted-foreground">
+                        Leave empty to auto-detect the dominant language.
+                    </p>
                 </div>
 
                 <div className="mb-6 space-y-2">

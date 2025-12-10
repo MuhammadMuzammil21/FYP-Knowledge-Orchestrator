@@ -59,7 +59,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
     const formattedDate = formatDateTime(meeting.createdAt);
 
     return (
-        <div className="h-full overflow-y-auto p-8">
+        <div className="h-full overflow-y-auto p-4 md:p-8">
             {/* Header */}
             <div className="mb-6">
                 <Link
@@ -69,17 +69,17 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                     <ArrowLeft className="mr-1 h-4 w-4" />
                     Back to meetings
                 </Link>
-                <div className="flex items-start justify-between">
+                <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                     <div>
-                        <h1 className="mb-2 text-3xl font-bold">
+                        <h1 className="mb-2 text-2xl md:text-3xl font-bold">
                             Meeting {meeting.id.slice(0, 8)}
                         </h1>
                         <p className="text-muted-foreground">{formattedDate}</p>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                         {meeting.status === 'completed' && (
                             <Link href={`/meetings/${id}/graph`}>
-                                <Button variant="outline">
+                                <Button variant="outline" className="w-full sm:w-auto">
                                     <Network className="mr-2 h-4 w-4" />
                                     View Graph
                                 </Button>
@@ -99,7 +99,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
 
             {/* Tabs */}
             <Tabs defaultValue="transcript" className="h-[calc(100%-200px)]">
-                <TabsList className="mb-4">
+                <TabsList className="mb-4 w-full overflow-x-auto flex-nowrap justify-start">
                     <TabsTrigger value="transcript">Transcript</TabsTrigger>
                     <TabsTrigger value="entities">Entities</TabsTrigger>
                     <TabsTrigger value="speakers">Speakers</TabsTrigger>

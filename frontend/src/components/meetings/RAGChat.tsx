@@ -101,7 +101,7 @@ export function RAGChat({ meetingId }: RAGChatProps) {
     return (
         <div className="flex flex-col h-full">
             {/* Header */}
-            <div className="flex items-center justify-between mb-4 pb-3 border-b border-border">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 pb-3 border-b border-border gap-3">
                 <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
                     💬 Ask Questions About This Meeting
                 </h3>
@@ -119,7 +119,7 @@ export function RAGChat({ meetingId }: RAGChatProps) {
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto mb-4 px-2 min-h-[400px] max-h-[600px]">
+            <div className="flex-1 overflow-y-auto mb-4 px-2 min-h-[300px] md:min-h-[400px] max-h-[500px] md:max-h-[600px]">
                 {messages.length === 0 && !isLoading && (
                     <div className="flex h-full items-center justify-center text-muted-foreground text-center">
                         <div className="space-y-3">
@@ -171,7 +171,7 @@ export function RAGChat({ meetingId }: RAGChatProps) {
                     className="gap-2"
                 >
                     <Send className="h-4 w-4" />
-                    Send
+                    <span className="hidden sm:inline">Send</span>
                 </Button>
             </div>
         </div>

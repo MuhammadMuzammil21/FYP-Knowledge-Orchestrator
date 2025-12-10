@@ -37,20 +37,20 @@ export default function MeetingsPage() {
     }
 
     return (
-        <div className="h-full p-8">
+        <div className="h-full p-4 md:p-8">
             <div className="mb-6 flex items-center justify-between">
-                <h1 className="text-3xl font-bold">All Meetings</h1>
+                <h1 className="text-2xl md:text-3xl font-bold">All Meetings</h1>
             </div>
 
             {isLoading ? (
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     {[...Array(6)].map((_, i) => (
                         <Skeleton key={i} className="h-32" />
                     ))}
                 </div>
             ) : data && data.length > 0 ? (
                 <>
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                         {data.map((meeting) => (
                             <MeetingCard key={meeting.id} meeting={meeting} />
                         ))}

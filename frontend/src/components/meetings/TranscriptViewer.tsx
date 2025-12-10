@@ -59,7 +59,7 @@ export function TranscriptViewer({ transcript, isLlmRewritten }: TranscriptViewe
             </div>
 
             {/* Transcript Content */}
-            <div className="flex-1 overflow-y-auto rounded-lg border border-border bg-card p-4">
+            <div className="flex-1 overflow-y-auto rounded-lg border border-border bg-card p-3 md:p-4">
                 {filteredSegments.length > 0 ? (
                     <div className="space-y-4">
                         {filteredSegments.map((segment, index) => {

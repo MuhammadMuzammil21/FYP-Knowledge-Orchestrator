@@ -5,8 +5,20 @@ import type {
     ProjectDetail,
     ProjectListResponse,
     UpdateProjectRequest,
+    CreateProjectRequest,
     ProjectGraphResponse,
 } from '@/types';
+
+/**
+ * Create a new project
+ */
+export async function createProject(data: CreateProjectRequest): Promise<Project> {
+    const response = await apiClient.post<Project>(
+        API_ENDPOINTS.PROJECTS_LIST,
+        data
+    );
+    return response.data;
+}
 
 /**
  * Get all projects for the current user

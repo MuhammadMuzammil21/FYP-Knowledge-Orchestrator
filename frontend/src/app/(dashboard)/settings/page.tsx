@@ -72,29 +72,29 @@ export default function SettingsPage() {
     }
 
     return (
-        <div className="h-full overflow-y-auto p-8">
+        <div className="h-full overflow-y-auto p-4 md:p-8">
             <div className="mx-auto max-w-4xl">
                 {/* Header */}
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold">Settings</h1>
+                <div className="mb-6 md:mb-8">
+                    <h1 className="text-2xl md:text-3xl font-bold">Settings</h1>
                     <p className="text-gray-600">Manage your account preferences</p>
                 </div>
 
                 <Tabs defaultValue="account" className="space-y-6">
-                    <TabsList>
-                        <TabsTrigger value="account">
+                    <TabsList className="w-full justify-start overflow-x-auto h-auto p-1 bg-muted/50 scrollbar-hide">
+                        <TabsTrigger value="account" className="flex-1 min-w-[100px]">
                             <User className="mr-2 h-4 w-4" />
                             Account
                         </TabsTrigger>
-                        <TabsTrigger value="security">
+                        <TabsTrigger value="security" className="flex-1 min-w-[100px]">
                             <Lock className="mr-2 h-4 w-4" />
                             Security
                         </TabsTrigger>
-                        <TabsTrigger value="notifications">
+                        <TabsTrigger value="notifications" className="flex-1 min-w-[120px]">
                             <Bell className="mr-2 h-4 w-4" />
                             Notifications
                         </TabsTrigger>
-                        <TabsTrigger value="appearance">
+                        <TabsTrigger value="appearance" className="flex-1 min-w-[110px]">
                             <Palette className="mr-2 h-4 w-4" />
                             Appearance
                         </TabsTrigger>

@@ -55,19 +55,19 @@ export default function ProjectPage({ params }: ProjectPageProps) {
     }
 
     return (
-        <div className="h-full p-8">
+        <div className="h-full p-4 md:p-8">
             <ProjectHeader project={project} />
 
             {/* Quick Actions */}
-            <div className="mt-6 flex gap-3">
+            <div className="mt-6 flex flex-col sm:flex-row gap-3">
                 <Link href={`/projects/${id}/conflicts`}>
-                    <Button variant="outline">
+                    <Button variant="outline" className="w-full sm:w-auto">
                         <AlertTriangle className="mr-2 h-4 w-4" />
                         View Conflicts
                     </Button>
                 </Link>
                 <Link href={`/projects/${id}/graph`}>
-                    <Button variant="outline">
+                    <Button variant="outline" className="w-full sm:w-auto">
                         <Network className="mr-2 h-4 w-4" />
                         Knowledge Graph
                     </Button>
@@ -75,7 +75,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
             </div>
 
             {/* Project Stats */}
-            <div className="mt-6 grid gap-4 md:grid-cols-3">
+            <div className="mt-6 grid gap-4 grid-cols-1 md:grid-cols-3">
                 <div className="rounded-lg border bg-card p-4">
                     <div className="text-sm text-muted-foreground">Total Meetings</div>
                     <div className="mt-1 text-3xl font-bold">{project.meeting_count}</div>
@@ -96,9 +96,9 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 
             {/* Meetings List */}
             <div className="mt-8">
-                <h2 className="mb-4 text-2xl font-bold">Meetings in this Project</h2>
+                <h2 className="mb-4 text-xl md:text-2xl font-bold">Meetings in this Project</h2>
                 {project.meetings && project.meetings.length > 0 ? (
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                         {project.meetings.map((meeting) => {
                             // Transform API Meeting to domain Meeting
                             const domainMeeting = {

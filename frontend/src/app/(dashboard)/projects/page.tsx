@@ -20,22 +20,22 @@ export default function ProjectsPage() {
     }
 
     return (
-        <div className="h-full p-8">
+        <div className="h-full p-4 md:p-8">
             <div className="mb-6">
-                <h1 className="text-3xl font-bold">Projects</h1>
+                <h1 className="text-2xl md:text-3xl font-bold">Projects</h1>
                 <p className="mt-2 text-gray-600">
                     Organize your meetings into projects for better insights
                 </p>
             </div>
 
             {isLoading ? (
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     {[...Array(6)].map((_, i) => (
                         <Skeleton key={i} className="h-40" />
                     ))}
                 </div>
             ) : projects && projects.length > 0 ? (
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                     {projects.map((project) => (
                         <ProjectCard key={project.id} project={project} />
                     ))}

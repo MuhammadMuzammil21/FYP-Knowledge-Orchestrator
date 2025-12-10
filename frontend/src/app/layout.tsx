@@ -4,6 +4,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { ThemeProvider } from "@/providers/theme-provider";
+import { MobileMenuProvider } from "@/contexts/MobileMenuContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,7 +38,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ErrorBoundary>
-            <Providers>{children}</Providers>
+            <MobileMenuProvider>
+              <Providers>{children}</Providers>
+            </MobileMenuProvider>
           </ErrorBoundary>
         </ThemeProvider>
       </body>

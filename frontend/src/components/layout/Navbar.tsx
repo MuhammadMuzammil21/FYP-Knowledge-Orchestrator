@@ -2,11 +2,13 @@
 
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, Home } from 'lucide-react';
+import { ArrowLeft, Home, Menu } from 'lucide-react';
+import { useMobileMenu } from '@/contexts/MobileMenuContext';
 
 export function Navbar() {
     const pathname = usePathname();
     const router = useRouter();
+    const { toggle } = useMobileMenu();
 
     // Don't show navbar on auth pages
     const isAuthPage = pathname?.startsWith('/login') ||
@@ -29,8 +31,19 @@ export function Navbar() {
     };
 
     return (
-        <div className="flex h-16 items-center justify-between border-b border-border bg-card px-6">
-            <div className="flex items-center gap-4">
+        <div className="flex h-16 items-center justify-between border-b border-border bg-card px-3 md:px-6">
+            <div className="flex items-center gap-2 md:gap-4">
+                {/* Mobile Hamburger Menu */}
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={toggle}
+                    className="md:hidden"
+                    aria-label="Toggle menu"
+                >
+                    <Menu className="h-5 w-5" />
+                </Button>
+
                 {!isDashboard && (
                     <Button
                         variant="ghost"
@@ -39,10 +52,10 @@ export function Navbar() {
                         className="gap-2"
                     >
                         <ArrowLeft className="h-4 w-4" />
-                        Back
+                        <span className="hidden sm:inline">Back</span>
                     </Button>
                 )}
-                <h1 className="text-xl font-semibold">{getPageTitle()}</h1>
+                <h1 className="text-lg md:text-xl font-semibold">{getPageTitle()}</h1>
             </div>
 
             <Button
@@ -52,7 +65,7 @@ export function Navbar() {
                 className="gap-2"
             >
                 <Home className="h-4 w-4" />
-                Dashboard
+                <span className="hidden sm:inline">Dashboard</span>
             </Button>
         </div>
     );
