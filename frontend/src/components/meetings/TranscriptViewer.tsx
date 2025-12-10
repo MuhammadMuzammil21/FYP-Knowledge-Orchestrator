@@ -28,7 +28,7 @@ export function TranscriptViewer({ transcript, isLlmRewritten }: TranscriptViewe
         const parts = text.split(new RegExp(`(${query})`, 'gi'));
         return parts.map((part, index) =>
             part.toLowerCase() === query.toLowerCase() ? (
-                <mark key={index} className="bg-yellow-200">
+                <mark key={index} className="bg-primary/20 text-foreground">
                     {part}
                 </mark>
             ) : (
@@ -42,7 +42,7 @@ export function TranscriptViewer({ transcript, isLlmRewritten }: TranscriptViewe
             {/* Search Bar */}
             <div className="mb-4 flex items-center gap-2">
                 <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                     <Input
                         type="text"
                         placeholder="Search in transcript..."
@@ -52,14 +52,14 @@ export function TranscriptViewer({ transcript, isLlmRewritten }: TranscriptViewe
                     />
                 </div>
                 {isLlmRewritten && (
-                    <span className="rounded-full bg-blue-100 px-3 py-1 text-xs text-blue-700">
+                    <span className="rounded-full bg-primary/10 px-3 py-1 text-xs text-primary">
                         AI Enhanced
                     </span>
                 )}
             </div>
 
             {/* Transcript Content */}
-            <div className="flex-1 overflow-y-auto rounded-lg border bg-white p-4">
+            <div className="flex-1 overflow-y-auto rounded-lg border border-border bg-card p-4">
                 {filteredSegments.length > 0 ? (
                     <div className="space-y-4">
                         {filteredSegments.map((segment, index) => {
@@ -70,15 +70,15 @@ export function TranscriptViewer({ transcript, isLlmRewritten }: TranscriptViewe
                                 <div key={index} className="group">
                                     {speaker && text ? (
                                         <>
-                                            <div className="mb-1 font-semibold text-blue-600">
+                                            <div className="mb-1 font-semibold text-primary">
                                                 {speaker}
                                             </div>
-                                            <div className="text-gray-700">
+                                            <div className="text-foreground">
                                                 {highlightText(text, searchQuery)}
                                             </div>
                                         </>
                                     ) : (
-                                        <div className="text-gray-700">
+                                        <div className="text-foreground">
                                             {highlightText(segment, searchQuery)}
                                         </div>
                                     )}
@@ -87,7 +87,7 @@ export function TranscriptViewer({ transcript, isLlmRewritten }: TranscriptViewe
                         })}
                     </div>
                 ) : (
-                    <div className="flex h-full items-center justify-center text-gray-500">
+                    <div className="flex h-full items-center justify-center text-muted-foreground">
                         {searchQuery ? 'No results found' : 'No transcript available'}
                     </div>
                 )}
@@ -95,7 +95,7 @@ export function TranscriptViewer({ transcript, isLlmRewritten }: TranscriptViewe
 
             {/* Results Count */}
             {searchQuery && (
-                <div className="mt-2 text-sm text-gray-600">
+                <div className="mt-2 text-sm text-muted-foreground">
                     Found {filteredSegments.length} result{filteredSegments.length !== 1 ? 's' : ''}
                 </div>
             )}

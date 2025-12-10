@@ -3,22 +3,15 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { StatusBadge } from './StatusBadge';
 import type { Meeting } from '@/types/domain.types';
 import { Calendar, Clock } from 'lucide-react';
+import { formatDate, formatTime } from '@/lib/utils/date';
 
 interface MeetingCardProps {
     meeting: Meeting;
 }
 
 export function MeetingCard({ meeting }: MeetingCardProps) {
-    const formattedDate = new Date(meeting.createdAt).toLocaleDateString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-    });
-
-    const formattedTime = new Date(meeting.createdAt).toLocaleTimeString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-    });
+    const formattedDate = formatDate(meeting.createdAt);
+    const formattedTime = formatTime(meeting.createdAt);
 
     return (
         <Link href={`/meetings/${meeting.id}`}>
@@ -32,7 +25,7 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
                     </div>
                 </CardHeader>
                 <CardContent>
-                    <div className="flex items-center gap-4 text-sm text-gray-600">
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
                         <div className="flex items-center gap-1">
                             <Calendar className="h-4 w-4" />
                             {formattedDate}

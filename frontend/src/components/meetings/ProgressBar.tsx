@@ -12,12 +12,12 @@ export function ProgressBar({ status }: ProgressBarProps) {
     return (
         <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
-                <span className="font-medium text-gray-700">{stageLabel}</span>
-                <span className="text-gray-600">{status.progress}%</span>
+                <span className="font-medium text-foreground">{stageLabel}</span>
+                <span className="text-muted-foreground">{status.progress}%</span>
             </div>
             <Progress value={status.progress} className="h-2" />
             {status.status === 'processing' && (
-                <p className="text-xs text-gray-500">Processing in progress...</p>
+                <p className="text-xs text-muted-foreground">Processing in progress...</p>
             )}
         </div>
     );

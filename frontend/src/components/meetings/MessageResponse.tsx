@@ -33,15 +33,15 @@ export function MessageResponse({ answer, context, showThinking = false }: Messa
     return (
         <div className="space-y-4">
             {/* Answer Section */}
-            <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200">
+            <Card className="bg-card border-border">
                 <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-blue-900">
+                    <CardTitle className="flex items-center gap-2 text-foreground">
                         <MessageSquare className="h-5 w-5" />
                         Answer
                     </CardTitle>
                 </CardHeader>
                 <CardContent>
-                    <div className="prose prose-sm max-w-none text-gray-800">
+                    <div className="prose prose-sm max-w-none text-foreground">
                         <ReactMarkdown remarkPlugins={[remarkGfm]}>
                             {cleanAnswer}
                         </ReactMarkdown>
@@ -51,14 +51,14 @@ export function MessageResponse({ answer, context, showThinking = false }: Messa
 
             {/* Debug: Show Thinking Process */}
             {showThinking && thinking && (
-                <Card className="bg-yellow-50 border-yellow-200">
+                <Card className="bg-muted border-border">
                     <CardHeader className="pb-3">
-                        <CardTitle className="flex items-center gap-2 text-sm text-yellow-900">
+                        <CardTitle className="flex items-center gap-2 text-sm text-foreground">
                             🧠 Thinking Process (Debug)
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <pre className="text-xs text-gray-700 whitespace-pre-wrap font-mono">
+                        <pre className="text-xs text-foreground whitespace-pre-wrap font-mono">
                             {thinking}
                         </pre>
                     </CardContent>
@@ -68,23 +68,23 @@ export function MessageResponse({ answer, context, showThinking = false }: Messa
             {/* Context Section */}
             {context && context.length > 0 && (
                 <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
                         <BookOpen className="h-4 w-4" />
                         Supporting Context ({context.length})
                     </div>
 
                     {context.map((item, index) => (
-                        <Card key={index} className="bg-gray-50 border-gray-200 hover:border-gray-300 transition-colors">
+                        <Card key={index} className="bg-muted border-border hover:border-border transition-colors">
                             <CardContent className="pt-4">
                                 <div className="mb-2 flex items-center justify-between">
-                                    <span className="text-sm font-medium text-gray-600">
+                                    <span className="text-sm font-medium text-muted-foreground">
                                         Context {index + 1}
                                     </span>
                                     <Badge variant="outline" className="text-xs">
                                         Relevance: {(item.score * 100).toFixed(1)}%
                                     </Badge>
                                 </div>
-                                <p className="text-sm text-gray-700 leading-relaxed">
+                                <p className="text-sm text-foreground leading-relaxed">
                                     {item.chunk}
                                 </p>
                             </CardContent>

@@ -93,7 +93,7 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
             <div>
                 <h1 className="text-3xl font-bold">{project.name}</h1>
                 {project.description && (
-                    <p className="mt-2 text-gray-600">{project.description}</p>
+                    <p className="mt-2 text-muted-foreground">{project.description}</p>
                 )}
             </div>
             <Button onClick={() => setIsEditing(true)} variant="outline" size="sm">

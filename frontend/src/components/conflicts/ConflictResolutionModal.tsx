@@ -62,7 +62,7 @@ export function ConflictResolutionModal({
 
                 <div className="space-y-4 py-4">
                     {/* Conflict Details */}
-                    <div className="rounded-lg border bg-gray-50 p-4">
+                    <div className="rounded-lg border bg-muted p-4">
                         <div className="mb-2 flex items-center gap-2">
                             <span
                                 className={`rounded px-2 py-1 text-xs font-semibold uppercase ${conflict.severity === 'high'
@@ -74,7 +74,7 @@ export function ConflictResolutionModal({
                             >
                                 {conflict.severity}
                             </span>
-                            <span className="text-sm text-gray-600">{conflict.conflict_type}</span>
+                            <span className="text-sm text-muted-foreground">{conflict.conflict_type}</span>
                         </div>
                         <p className="text-sm">{conflict.description}</p>
                     </div>
@@ -90,7 +90,7 @@ export function ConflictResolutionModal({
                             rows={4}
                             disabled={resolveConflict.isPending}
                         />
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-muted-foreground">
                             Add context about how this conflict was addressed
                         </p>
                     </div>

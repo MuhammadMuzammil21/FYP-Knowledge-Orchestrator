@@ -31,7 +31,7 @@ export class ErrorBoundary extends Component<Props, State> {
     render() {
         if (this.state.hasError) {
             return (
-                <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
+                <div className="flex min-h-screen items-center justify-center bg-muted p-4">
                     <Card className="w-full max-w-md">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2 text-red-600">
@@ -40,11 +40,11 @@ export class ErrorBoundary extends Component<Props, State> {
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="mb-4 text-gray-700">
+                            <p className="mb-4 text-foreground">
                                 An unexpected error occurred. Please try refreshing the page.
                             </p>
                             {this.state.error && (
-                                <pre className="mb-4 overflow-auto rounded bg-gray-100 p-2 text-xs">
+                                <pre className="mb-4 overflow-auto rounded bg-muted p-2 text-xs">
                                     {this.state.error.message}
                                 </pre>
                             )}

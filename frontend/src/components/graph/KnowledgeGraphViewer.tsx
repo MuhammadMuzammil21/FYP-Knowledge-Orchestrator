@@ -32,14 +32,55 @@ const NODE_COLORS = {
     default: '#6b7280', // gray
 };
 
+/**
+ * Extract display name from node properties based on node type
+ * Tries common property keys and falls back to node type label
+ */
+function getNodeDisplayName(node: GraphNode): string {
+    const props = node.properties || {};
+
+    // Priority order for property keys
+    const propertyKeys = [
+        'name',           // Person, Topic
+        'title',          // General
+        'task',           // Task, Action Item
+        'description',    // General fallback
+        'statement',      // Decision
+        'question',       // Question
+        'content',        // General content
+    ];
+
+    // Try each property key
+    for (const key of propertyKeys) {
+        if (props[key] && typeof props[key] === 'string' && props[key].trim()) {
+            return props[key].trim();
+        }
+    }
+
+    // Fallback: use first non-empty string property
+    const firstStringProp = Object.values(props).find(
+        val => typeof val === 'string' && val.trim()
+    );
+    if (firstStringProp) {
+        return String(firstStringProp).trim();
+    }
+
+    // Last resort: use the node type label
+    return node.labels?.[0] || `Node ${node.id}`;
+}
+
 export function KnowledgeGraphViewer({ nodes: graphNodes, edges: graphEdges }: KnowledgeGraphViewerProps) {
     // Transform graph nodes to React Flow nodes
     const initialNodes: Node[] = useMemo(
         () =>
-            graphNodes.map((node, index) => {
-                // Get the first label as the display label
-                const label = node.labels && node.labels.length > 0 ? node.labels[0] : `Node ${node.id}`;
-                const nodeType = node.labels && node.labels.length > 0 ? node.labels[0].toLowerCase() : 'default';
+            (graphNodes || []).map((node, index) => {
+                // Get display name from properties
+                const displayName = getNodeDisplayName(node);
+
+                // Get node type for styling
+                const nodeType = node.labels && node.labels.length > 0
+                    ? node.labels[0].toLowerCase()
+                    : 'default';
 
                 return {
                     id: String(node.id),
@@ -51,7 +92,14 @@ export function KnowledgeGraphViewer({ nodes: graphNodes, edges: graphEdges }: K
                     data: {
                         label: (
                             <div className="flex flex-col items-center gap-1 p-2">
-                                <div className="font-semibold text-sm">{label}</div>
+                                {/* Main display name */}
+                                <div
+                                    className="font-semibold text-sm text-foreground text-center max-w-[140px] truncate"
+                                    title={displayName}
+                                >
+                                    {displayName}
+                                </div>
+                                {/* Node type badge */}
                                 <Badge
                                     variant="outline"
                                     className="text-xs"
@@ -66,11 +114,12 @@ export function KnowledgeGraphViewer({ nodes: graphNodes, edges: graphEdges }: K
                         ),
                     },
                     style: {
-                        background: 'white',
+                        background: 'hsl(var(--card))',
                         border: `2px solid ${NODE_COLORS[nodeType as keyof typeof NODE_COLORS] || NODE_COLORS.default}`,
                         borderRadius: '8px',
                         padding: '4px',
                         minWidth: '150px',
+                        color: 'hsl(var(--foreground))',
                     },
                 };
             }),
@@ -80,7 +129,7 @@ export function KnowledgeGraphViewer({ nodes: graphNodes, edges: graphEdges }: K
     // Transform graph edges to React Flow edges
     const initialEdges: Edge[] = useMemo(
         () =>
-            graphEdges.map((edge, index) => ({
+            (graphEdges || []).map((edge, index) => ({
                 id: `edge-${index}`,
                 source: String(edge.start),
                 target: String(edge.end),
@@ -114,10 +163,10 @@ export function KnowledgeGraphViewer({ nodes: graphNodes, edges: graphEdges }: K
         setNodes(layoutedNodes);
     }, [nodes, setNodes]);
 
-    if (graphNodes.length === 0) {
+    if (!graphNodes || graphNodes.length === 0) {
         return (
-            <div className="flex h-full items-center justify-center rounded-lg border bg-gray-50">
-                <p className="text-gray-500">No graph data available</p>
+            <div className="flex h-full items-center justify-center rounded-lg border bg-muted">
+                <p className="text-muted-foreground">No graph data available</p>
             </div>
         );
     }
@@ -136,16 +185,16 @@ export function KnowledgeGraphViewer({ nodes: graphNodes, edges: graphEdges }: K
                 <Controls />
                 <MiniMap
                     nodeColor={(node) => {
-                        const graphNode = graphNodes.find((n) => String(n.id) === node.id);
+                        const graphNode = (graphNodes || []).find((n) => String(n.id) === node.id);
                         const nodeType = graphNode?.labels && graphNode.labels.length > 0 ? graphNode.labels[0].toLowerCase() : 'default';
                         return NODE_COLORS[nodeType as keyof typeof NODE_COLORS] || NODE_COLORS.default;
                     }}
-                    maskColor="rgb(240, 240, 240, 0.6)"
+                    maskColor="rgba(0, 0, 0, 0.1)"
                 />
                 <Panel position="top-right">
-                    <div className="rounded-lg border bg-white p-3 shadow-sm">
-                        <div className="mb-2 text-sm font-semibold">Legend</div>
-                        <div className="space-y-1 text-xs">
+                    <div className="rounded-lg border border-border bg-card p-3 shadow-sm">
+                        <div className="mb-2 text-sm font-semibold text-foreground">Legend</div>
+                        <div className="space-y-1 text-xs text-foreground">
                             {Object.entries(NODE_COLORS)
                                 .filter(([key]) => key !== 'default')
                                 .map(([type, color]) => (
@@ -163,7 +212,7 @@ export function KnowledgeGraphViewer({ nodes: graphNodes, edges: graphEdges }: K
                 <Panel position="top-left">
                     <button
                         onClick={onLayout}
-                        className="rounded-lg border bg-white px-3 py-2 text-sm shadow-sm hover:bg-gray-50"
+                        className="rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground shadow-sm hover:bg-muted"
                     >
                         Auto Layout
                     </button>

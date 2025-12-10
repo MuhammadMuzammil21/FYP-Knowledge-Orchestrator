@@ -1,4 +1,5 @@
 import { Card } from '@/components/ui/card';
+import { formatShortTime } from '@/lib/utils/date';
 
 interface UserMessageProps {
     content: string;
@@ -14,10 +15,10 @@ export function UserMessage({ content, timestamp }: UserMessageProps) {
         <div className="flex justify-end mb-4">
             <div className="max-w-[80%]">
                 <div className="flex items-center gap-2 mb-1 justify-end">
-                    <span className="text-xs text-gray-500">
-                        {timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    <span className="text-xs text-muted-foreground">
+                        {formatShortTime(timestamp)}
                     </span>
-                    <span className="text-sm font-medium text-gray-700">You</span>
+                    <span className="text-sm font-medium text-foreground">You</span>
                 </div>
                 <Card className="bg-blue-600 text-white rounded-2xl rounded-tr-sm border-blue-600">
                     <div className="px-4 py-3">

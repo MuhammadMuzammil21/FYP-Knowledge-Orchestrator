@@ -69,7 +69,7 @@ export function SpeakersPanel({ meetingId }: SpeakersPanelProps) {
         return (
             <Card className="p-6">
                 <h3 className="mb-4 text-lg font-semibold">Speakers</h3>
-                <p className="text-center text-gray-500">No speakers identified in this meeting</p>
+                <p className="text-center text-muted-foreground">No speakers identified in this meeting</p>
             </Card>
         );
     }
@@ -86,8 +86,8 @@ export function SpeakersPanel({ meetingId }: SpeakersPanelProps) {
                         className="flex items-center justify-between rounded-lg border p-4"
                     >
                         <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
-                                <User className="h-5 w-5 text-blue-600" />
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                                <User className="h-5 w-5 text-primary" />
                             </div>
                             <div>
                                 {editingId === speaker.id ? (
@@ -122,10 +122,10 @@ export function SpeakersPanel({ meetingId }: SpeakersPanelProps) {
                                 ) : (
                                     <>
                                         <p className="font-medium">{speaker.display_name}</p>
-                                        <p className="text-xs text-gray-500">
+                                        <p className="text-xs text-muted-foreground">
                                             {speaker.original_label}
                                             {speaker.known_speaker_id && (
-                                                <span className="ml-2 inline-flex items-center gap-1 text-blue-600">
+                                                <span className="ml-2 inline-flex items-center gap-1 text-primary">
                                                     <LinkIcon className="h-3 w-3" />
                                                     Linked
                                                 </span>

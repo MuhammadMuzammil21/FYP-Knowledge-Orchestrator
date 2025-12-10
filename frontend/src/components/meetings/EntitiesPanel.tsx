@@ -69,10 +69,10 @@ export function EntitiesPanel({ entities }: EntitiesPanelProps) {
                             {tasks.map((task, index) => (
                                 <div
                                     key={index}
-                                    className="rounded-lg border p-3 hover:bg-gray-50"
+                                    className="rounded-lg border p-3 hover:bg-muted"
                                 >
                                     <div className="mb-1 font-medium">{task.task}</div>
-                                    <div className="flex items-center gap-4 text-sm text-gray-600">
+                                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
                                         {task.assignee && (
                                             <span>
                                                 <strong>Assignee:</strong> {task.assignee}
@@ -105,10 +105,10 @@ export function EntitiesPanel({ entities }: EntitiesPanelProps) {
                             {decisions.map((decision, index) => (
                                 <div
                                     key={index}
-                                    className="rounded-lg border p-3 hover:bg-gray-50"
+                                    className="rounded-lg border p-3 hover:bg-muted"
                                 >
                                     <div className="mb-1 font-medium">{decision.statement}</div>
-                                    <div className="text-sm text-gray-600">
+                                    <div className="text-sm text-muted-foreground">
                                         {decision.decidedBy && (
                                             <span>
                                                 <strong>Decided by:</strong> {decision.decidedBy}
@@ -128,7 +128,7 @@ export function EntitiesPanel({ entities }: EntitiesPanelProps) {
                 tasks.length === 0 &&
                 decisions.length === 0 && (
                     <Card>
-                        <CardContent className="flex h-32 items-center justify-center text-gray-500">
+                        <CardContent className="flex h-32 items-center justify-center text-muted-foreground">
                             No entities extracted yet
                         </CardContent>
                     </Card>

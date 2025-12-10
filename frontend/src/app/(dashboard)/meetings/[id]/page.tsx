@@ -17,6 +17,7 @@ import { useProjectConflicts } from '@/hooks/useKnowledgeGraph';
 import { ArrowLeft, Network } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { formatDateTime } from '@/lib/utils/date';
 
 interface MeetingDetailPageProps {
     params: Promise<{ id: string }>;
@@ -46,8 +47,8 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
         return (
             <div className="flex h-full items-center justify-center">
                 <div className="text-center">
-                    <h2 className="mb-2 text-2xl font-bold text-gray-600">Meeting Not Found</h2>
-                    <Link href="/meetings" className="text-blue-600 hover:underline">
+                    <h2 className="mb-2 text-2xl font-bold text-muted-foreground">Meeting Not Found</h2>
+                    <Link href="/meetings" className="text-primary hover:underline">
                         Back to meetings
                     </Link>
                 </div>
@@ -55,13 +56,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
         );
     }
 
-    const formattedDate = new Date(meeting.createdAt).toLocaleDateString('en-US', {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
+    const formattedDate = formatDateTime(meeting.createdAt);
 
     return (
         <div className="h-full overflow-y-auto p-8">
@@ -69,7 +64,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
             <div className="mb-6">
                 <Link
                     href="/meetings"
-                    className="mb-4 inline-flex items-center text-sm text-blue-600 hover:underline"
+                    className="mb-4 inline-flex items-center text-sm text-primary hover:underline"
                 >
                     <ArrowLeft className="mr-1 h-4 w-4" />
                     Back to meetings
@@ -79,7 +74,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                         <h1 className="mb-2 text-3xl font-bold">
                             Meeting {meeting.id.slice(0, 8)}
                         </h1>
-                        <p className="text-gray-600">{formattedDate}</p>
+                        <p className="text-muted-foreground">{formattedDate}</p>
                     </div>
                     <div className="flex items-center gap-2">
                         {meeting.status === 'completed' && (

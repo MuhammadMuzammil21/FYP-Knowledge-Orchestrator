@@ -50,7 +50,7 @@ export default function ProjectGraphPage({ params }: ProjectGraphPageProps) {
                     <KnowledgeGraphViewer nodes={graphData.nodes} edges={graphData.edges} />
                 </div>
             ) : (
-                <div className="flex h-full items-center justify-center rounded-lg border bg-gray-50">
+                <div className="flex h-full items-center justify-center rounded-lg border bg-muted">
                     <p className="text-gray-500">No graph data available for this project</p>
                 </div>
             )}

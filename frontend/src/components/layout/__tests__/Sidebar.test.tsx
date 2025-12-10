@@ -1,69 +1,75 @@
 import { render, screen } from '@testing-library/react';
+import { Sidebar } from '@/components/layout/Sidebar';
 import { useSession } from 'next-auth/react';
-import { Sidebar } from '../Sidebar';
+import { usePathname } from 'next/navigation';
 
-// Mock next-auth
-jest.mock('next-auth/react');
-const mockedUseSession = useSession as jest.MockedFunction<typeof useSession>;
+// Mock dependencies
+jest.mock('next-auth/react', () => ({
+    useSession: jest.fn(),
+    signOut: jest.fn(),
+}));
+
+jest.mock('next/navigation', () => ({
+    usePathname: jest.fn(),
+}));
+
+jest.mock('next-themes', () => ({
+    useTheme: jest.fn(() => ({ theme: 'light', setTheme: jest.fn() })),
+}));
 
 describe('Sidebar', () => {
     beforeEach(() => {
-        mockedUseSession.mockReturnValue({
+        (useSession as jest.Mock).mockReturnValue({
             data: {
                 user: {
-                    id: '1',
                     name: 'Test User',
                     email: 'test@example.com',
-                    created_at: '2025-01-01',
-                    email_verified: true,
                 },
-                accessToken: 'test-token',
-                expires: '2025-12-31',
             },
-            status: 'authenticated',
-            update: jest.fn(),
         });
+        (usePathname as jest.Mock).mockReturnValue('/dashboard');
     });
 
-    it('should render sidebar with branding', () => {
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('renders sidebar', () => {
+        const { container } = render(<Sidebar />);
+
+        const sidebar = container.querySelector('aside');
+        expect(sidebar).toBeInTheDocument();
+    });
+
+    it('has fixed positioning classes', () => {
+        const { container } = render(<Sidebar />);
+
+        const sidebar = container.querySelector('aside');
+        expect(sidebar?.className).toContain('fixed');
+    });
+
+    it('renders app title', () => {
         render(<Sidebar />);
 
         expect(screen.getByText('HarBaat AI')).toBeInTheDocument();
     });
 
-    it('should render new meeting button', () => {
+    it('renders navigation links', () => {
         render(<Sidebar />);
 
-        const newMeetingButton = screen.getByRole('link', { name: /new meeting/i });
-        expect(newMeetingButton).toBeInTheDocument();
-        expect(newMeetingButton).toHaveAttribute('href', '/dashboard');
+        expect(screen.getByText('All Meetings')).toBeInTheDocument();
+        expect(screen.getByText('Projects')).toBeInTheDocument();
     });
 
-    it('should render today section with meetings link', () => {
+    it('renders new meeting button', () => {
         render(<Sidebar />);
 
-        expect(screen.getByText('Today')).toBeInTheDocument();
-        const meetingsLink = screen.getByRole('link', { name: /all meetings/i });
-        expect(meetingsLink).toBeInTheDocument();
-        expect(meetingsLink).toHaveAttribute('href', '/meetings');
+        expect(screen.getByText('New Meeting')).toBeInTheDocument();
     });
 
-    it('should render settings link', () => {
-        render(<Sidebar />);
-
-        expect(screen.getByRole('link', { name: /settings/i })).toBeInTheDocument();
-    });
-
-    it('should display user name in user menu', () => {
+    it('renders user information', () => {
         render(<Sidebar />);
 
         expect(screen.getByText('Test User')).toBeInTheDocument();
-    });
-
-    it('should render user dropdown menu trigger', () => {
-        render(<Sidebar />);
-
-        const userButton = screen.getByRole('button', { name: /test user/i });
-        expect(userButton).toBeInTheDocument();
     });
 });

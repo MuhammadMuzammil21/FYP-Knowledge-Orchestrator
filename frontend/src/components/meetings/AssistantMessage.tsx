@@ -1,4 +1,5 @@
 import { MessageResponse } from './MessageResponse';
+import { formatShortTime } from '@/lib/utils/date';
 
 interface AssistantMessageProps {
     content: string;
@@ -15,9 +16,9 @@ export function AssistantMessage({ content, timestamp, context }: AssistantMessa
         <div className="flex justify-start mb-4">
             <div className="max-w-[85%]">
                 <div className="flex items-center gap-2 mb-2">
-                    <span className="text-sm font-medium text-gray-700">🤖 AI Assistant</span>
-                    <span className="text-xs text-gray-500">
-                        {timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    <span className="text-sm font-medium text-foreground">🤖 AI Assistant</span>
+                    <span className="text-xs text-muted-foreground">
+                        {formatShortTime(timestamp)}
                     </span>
                 </div>
                 <MessageResponse

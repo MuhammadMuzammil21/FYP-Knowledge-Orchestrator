@@ -8,6 +8,7 @@ import { MeetingCard } from '@/components/meetings/MeetingCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, Network } from 'lucide-react';
+import { formatLongDate } from '@/lib/utils/date';
 
 interface ProjectPageProps {
     params: Promise<{ id: string }>;
@@ -75,28 +76,20 @@ export default function ProjectPage({ params }: ProjectPageProps) {
 
             {/* Project Stats */}
             <div className="mt-6 grid gap-4 md:grid-cols-3">
-                <div className="rounded-lg border bg-white p-4">
-                    <div className="text-sm text-gray-600">Total Meetings</div>
+                <div className="rounded-lg border bg-card p-4">
+                    <div className="text-sm text-muted-foreground">Total Meetings</div>
                     <div className="mt-1 text-3xl font-bold">{project.meeting_count}</div>
                 </div>
-                <div className="rounded-lg border bg-white p-4">
-                    <div className="text-sm text-gray-600">Created</div>
+                <div className="rounded-lg border bg-card p-4">
+                    <div className="text-sm text-muted-foreground">Created</div>
                     <div className="mt-1 text-lg font-semibold">
-                        {new Date(project.created_at).toLocaleDateString('en-US', {
-                            month: 'long',
-                            day: 'numeric',
-                            year: 'numeric',
-                        })}
+                        {formatLongDate(project.created_at)}
                     </div>
                 </div>
-                <div className="rounded-lg border bg-white p-4">
-                    <div className="text-sm text-gray-600">Last Updated</div>
+                <div className="rounded-lg border bg-card p-4">
+                    <div className="text-sm text-muted-foreground">Last Updated</div>
                     <div className="mt-1 text-lg font-semibold">
-                        {new Date(project.updated_at).toLocaleDateString('en-US', {
-                            month: 'long',
-                            day: 'numeric',
-                            year: 'numeric',
-                        })}
+                        {formatLongDate(project.updated_at)}
                     </div>
                 </div>
             </div>
@@ -118,8 +111,8 @@ export default function ProjectPage({ params }: ProjectPageProps) {
                         })}
                     </div>
                 ) : (
-                    <div className="flex h-48 items-center justify-center rounded-lg border bg-gray-50">
-                        <p className="text-gray-500">No meetings in this project yet</p>
+                    <div className="flex h-48 items-center justify-center rounded-lg border bg-muted">
+                        <p className="text-muted-foreground">No meetings in this project yet</p>
                     </div>
                 )}
             </div>

@@ -7,6 +7,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, CheckCircle2, Circle, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
+import { formatDate } from '@/lib/utils/date';
 
 interface PersonTasksPageProps {
     params: Promise<{ name: string }>;
@@ -75,7 +76,7 @@ export default function PersonTasksPage({ params }: PersonTasksPageProps) {
                                                             <Calendar className="h-4 w-4" />
                                                             <span>
                                                                 Due:{' '}
-                                                                {new Date(task.due_date).toLocaleDateString()}
+                                                                {formatDate(task.due_date)}
                                                             </span>
                                                         </div>
                                                     )}

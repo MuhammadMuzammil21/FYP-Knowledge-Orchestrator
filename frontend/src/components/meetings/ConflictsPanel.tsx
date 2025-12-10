@@ -33,7 +33,7 @@ export function ConflictsPanel({ conflicts }: ConflictsPanelProps) {
     if (!conflicts || conflicts.length === 0) {
         return (
             <Card>
-                <CardContent className="flex h-32 items-center justify-center text-gray-500">
+                <CardContent className="flex h-32 items-center justify-center text-muted-foreground">
                     No conflicts detected
                 </CardContent>
             </Card>
@@ -42,7 +42,7 @@ export function ConflictsPanel({ conflicts }: ConflictsPanelProps) {
 
     return (
         <div className="space-y-4">
-            <div className="text-sm text-gray-600">
+            <div className="text-sm text-muted-foreground">
                 Found {conflicts.length} conflict{conflicts.length !== 1 ? 's' : ''}
             </div>
 
@@ -66,9 +66,9 @@ export function ConflictsPanel({ conflicts }: ConflictsPanelProps) {
                             </CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <p className="mb-3 text-gray-700">{conflict.description}</p>
+                            <p className="mb-3 text-foreground">{conflict.description}</p>
                             {conflict.related_meeting_id && (
-                                <div className="text-sm text-gray-600">
+                                <div className="text-sm text-muted-foreground">
                                     <strong>Related Meeting:</strong> {conflict.related_meeting_id}
                                 </div>
                             )}

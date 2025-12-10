@@ -12,6 +12,7 @@ import { toast } from 'sonner';
 import { updateProfile } from '@/lib/api/auth';
 import { getErrorMessage } from '@/lib/api/client';
 import { User, Mail, Calendar, Shield } from 'lucide-react';
+import { formatLongDate } from '@/lib/utils/date';
 
 export default function ProfilePage() {
     const { data: session, update } = useSession();
@@ -40,11 +41,7 @@ export default function ProfilePage() {
     }
 
     const createdDate = session.user.created_at
-        ? new Date(session.user.created_at).toLocaleDateString('en-US', {
-            month: 'long',
-            day: 'numeric',
-            year: 'numeric',
-        })
+        ? formatLongDate(session.user.created_at)
         : 'N/A';
 
     return (

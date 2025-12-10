@@ -68,15 +68,16 @@ export default function DashboardPage() {
                 {/* Header */}
                 <div className="mb-8 text-center">
                     <h1 className="mb-2 text-3xl font-bold">Upload Meeting Recording</h1>
-                    <p className="text-gray-600">Get AI-powered insights from your meetings</p>
+                    <p className="text-muted-foreground">Get AI-powered insights from your meetings</p>
                 </div>
 
                 {/* Microphone Icon */}
                 <div className="mb-8 flex justify-center">
-                    <div className="flex h-32 w-32 items-center justify-center rounded-full bg-blue-100">
-                        <Mic className="h-16 w-16 text-blue-600" />
+                    <div className="flex h-32 w-32 items-center justify-center rounded-full bg-primary/10">
+                        <Mic className="h-16 w-16 text-primary" />
                     </div>
                 </div>
+
 
                 {/* Context Input */}
                 <div className="mb-6 space-y-2">
@@ -90,10 +91,11 @@ export default function DashboardPage() {
                     />
                 </div>
 
+
                 {/* How It Works Disclaimer */}
-                <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4">
-                    <h3 className="mb-2 font-semibold text-blue-900">How It Works</h3>
-                    <ul className="space-y-1 text-sm text-blue-800">
+                <div className="mb-6 rounded-lg border border-border bg-muted p-4">
+                    <h3 className="mb-2 font-semibold text-foreground">How It Works</h3>
+                    <ul className="space-y-1 text-sm text-muted-foreground">
                         <li>• Upload your meeting audio file (MP3, WAV, M4A, or OGG)</li>
                         <li>• Our AI transcribes and analyzes the conversation</li>
                         <li>• Extract key insights: speakers, topics, tasks, and decisions</li>
@@ -116,11 +118,11 @@ export default function DashboardPage() {
                         />
                     </div>
                     {file && (
-                        <p className="text-sm text-gray-600">
+                        <p className="text-sm text-muted-foreground">
                             Selected: {file.name} ({(file.size / 1024 / 1024).toFixed(2)} MB)
                         </p>
                     )}
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-muted-foreground">
                         Supported formats: MP3, WAV, M4A, OGG (Max 100MB)
                     </p>
                 </div>

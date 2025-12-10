@@ -78,7 +78,7 @@ export function RAGSearch({ meetingId }: RAGSearchProps) {
 
             {/* Empty State */}
             {!answer && !isLoading && (
-                <div className="flex h-32 items-center justify-center rounded-lg border-2 border-dashed text-gray-500">
+                <div className="flex h-32 items-center justify-center rounded-lg border-2 border-dashed text-muted-foreground">
                     Ask a question to search the meeting using AI
                 </div>
             )}
