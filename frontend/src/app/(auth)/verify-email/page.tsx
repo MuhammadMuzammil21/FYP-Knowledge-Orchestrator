@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession, signOut } from 'next-auth/react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -65,11 +65,11 @@ function VerifyEmailContent() {
 
     if (isVerified) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+            <div className="flex min-h-screen items-center justify-center bg-background px-4">
                 <Card className="w-full max-w-md">
                     <CardHeader className="text-center">
-                        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-                            <CheckCircle2 className="h-8 w-8 text-green-600" />
+                        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-500/10">
+                            <CheckCircle2 className="h-8 w-8 text-green-600 dark:text-green-500" />
                         </div>
                         <CardTitle className="text-2xl font-bold">Email Verified!</CardTitle>
                         <CardDescription>
@@ -82,11 +82,11 @@ function VerifyEmailContent() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+        <div className="flex min-h-screen items-center justify-center bg-background px-4">
             <Card className="w-full max-w-md">
                 <CardHeader className="text-center">
-                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
-                        <Mail className="h-8 w-8 text-blue-600" />
+                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+                        <Mail className="h-8 w-8 text-primary" />
                     </div>
                     <CardTitle className="text-2xl font-bold">Verify your email</CardTitle>
                     <CardDescription>
@@ -98,14 +98,36 @@ function VerifyEmailContent() {
                 <CardContent className="space-y-4">
                     {!token && (
                         <>
-                            <p className="text-center text-sm text-gray-600">
+                            <p className="text-center text-sm text-muted-foreground">
                                 We've sent a verification link to{' '}
-                                <span className="font-semibold">{session?.user?.email}</span>
+                                <span className="font-semibold text-foreground">{session?.user?.email}</span>
                             </p>
-                            <p className="text-center text-sm text-gray-600">
+                            <p className="text-center text-sm text-muted-foreground">
                                 Click the link in the email to verify your account.
                             </p>
-                            <div className="pt-4">
+                            <div className="space-y-2 pt-4">
+                                <Button
+                                    onClick={async () => {
+                                        try {
+                                            await update();
+                                            // Check if email is now verified
+                                            const response = await fetch('/api/auth/session');
+                                            const updatedSession = await response.json();
+                                            if (updatedSession?.user?.email_verified) {
+                                                toast.success('Email verified! Redirecting...');
+                                                setTimeout(() => router.push('/dashboard'), 1000);
+                                            } else {
+                                                toast.info('Email not verified yet');
+                                            }
+                                        } catch (error) {
+                                            toast.error('Failed to check status');
+                                        }
+                                    }}
+                                    variant="default"
+                                    className="w-full"
+                                >
+                                    Check Verification Status
+                                </Button>
                                 <Button
                                     onClick={handleResend}
                                     disabled={isResending}
@@ -120,7 +142,18 @@ function VerifyEmailContent() {
                     {isVerifying && (
                         <div className="text-center">
                             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
-                            <p className="mt-2 text-sm text-gray-600">Verifying...</p>
+                            <p className="mt-2 text-sm text-muted-foreground">Verifying...</p>
+                        </div>
+                    )}
+                    {!token && (
+                        <div className="mt-4 text-center text-sm text-muted-foreground">
+                            Already verified?{' '}
+                            <button
+                                onClick={() => signOut({ callbackUrl: '/login' })}
+                                className="text-primary hover:underline"
+                            >
+                                Sign out and sign in again
+                            </button>
                         </div>
                     )}
                 </CardContent>
@@ -132,8 +165,8 @@ function VerifyEmailContent() {
 export default function VerifyEmailPage() {
     return (
         <Suspense fallback={
-            <div className="flex min-h-screen items-center justify-center bg-gray-50">
-                <div className="text-gray-600">Loading...</div>
+            <div className="flex min-h-screen items-center justify-center bg-background">
+                <div className="text-muted-foreground">Loading...</div>
             </div>
         }>
             <VerifyEmailContent />

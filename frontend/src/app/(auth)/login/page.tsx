@@ -45,7 +45,7 @@ function LoginForm() {
     };
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+        <div className="flex min-h-screen items-center justify-center bg-background px-4">
             <Card className="w-full max-w-md">
                 <CardHeader className="space-y-1">
                     <CardTitle className="text-2xl font-bold">Sign in</CardTitle>
@@ -72,7 +72,7 @@ function LoginForm() {
                                 <Label htmlFor="password">Password</Label>
                                 <Link
                                     href="/forgot-password"
-                                    className="text-sm text-blue-600 hover:underline"
+                                    className="text-sm text-primary hover:underline"
                                 >
                                     Forgot password?
                                 </Link>
@@ -90,9 +90,9 @@ function LoginForm() {
                             {isLoading ? 'Signing in...' : 'Sign in'}
                         </Button>
                     </form>
-                    <div className="mt-4 text-center text-sm">
+                    <div className="mt-4 text-center text-sm text-muted-foreground">
                         Don't have an account?{' '}
-                        <Link href="/signup" className="text-blue-600 hover:underline">
+                        <Link href="/signup" className="text-primary hover:underline">
                             Sign up
                         </Link>
                     </div>
@@ -105,8 +105,8 @@ function LoginForm() {
 export default function LoginPage() {
     return (
         <Suspense fallback={
-            <div className="flex min-h-screen items-center justify-center bg-gray-50">
-                <div className="text-gray-600">Loading...</div>
+            <div className="flex min-h-screen items-center justify-center bg-background">
+                <div className="text-muted-foreground">Loading...</div>
             </div>
         }>
             <LoginForm />

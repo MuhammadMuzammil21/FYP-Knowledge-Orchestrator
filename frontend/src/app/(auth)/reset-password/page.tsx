@@ -53,7 +53,7 @@ function ResetPasswordForm() {
 
     if (!token) {
         return (
-            <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+            <div className="flex min-h-screen items-center justify-center bg-background px-4">
                 <Card className="w-full max-w-md">
                     <CardHeader>
                         <CardTitle className="text-2xl font-bold">Invalid Link</CardTitle>
@@ -72,7 +72,7 @@ function ResetPasswordForm() {
     }
 
     return (
-        <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+        <div className="flex min-h-screen items-center justify-center bg-background px-4">
             <Card className="w-full max-w-md">
                 <CardHeader className="space-y-1">
                     <CardTitle className="text-2xl font-bold">Reset password</CardTitle>
@@ -93,7 +93,7 @@ function ResetPasswordForm() {
                                 disabled={isLoading}
                                 minLength={8}
                             />
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-muted-foreground">
                                 Must be at least 8 characters
                             </p>
                         </div>
@@ -121,8 +121,8 @@ function ResetPasswordForm() {
 export default function ResetPasswordPage() {
     return (
         <Suspense fallback={
-            <div className="flex min-h-screen items-center justify-center bg-gray-50">
-                <div className="text-gray-600">Loading...</div>
+            <div className="flex min-h-screen items-center justify-center bg-background">
+                <div className="text-muted-foreground">Loading...</div>
             </div>
         }>
             <ResetPasswordForm />

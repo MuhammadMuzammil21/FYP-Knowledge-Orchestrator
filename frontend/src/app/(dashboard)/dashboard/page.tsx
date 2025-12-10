@@ -6,17 +6,30 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
 import { Mic, Upload } from 'lucide-react';
 import { toast } from 'sonner';
 import { uploadMeeting } from '@/lib/api/meetings';
 import { getErrorMessage } from '@/lib/api/client';
 import { ALLOWED_FILE_EXTENSIONS, MAX_FILE_SIZE } from '@/lib/constants';
+import type { MeetingUploadMetadata } from '@/types';
 
 export default function DashboardPage() {
     const router = useRouter();
     const [file, setFile] = useState<File | null>(null);
     const [context, setContext] = useState('');
     const [isUploading, setIsUploading] = useState(false);
+
+    // Metadata fields
+    const [title, setTitle] = useState('');
+    const [language, setLanguage] = useState('en');
+    const [numSpeakers, setNumSpeakers] = useState<number | ''>('');
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
@@ -47,7 +60,10 @@ export default function DashboardPage() {
         setIsUploading(true);
 
         try {
-            const metadata = {
+            const metadata: MeetingUploadMetadata = {
+                title: title || undefined,
+                language: language || undefined,
+                num_speakers: numSpeakers ? Number(numSpeakers) : undefined,
                 context: context || undefined,
             };
 
@@ -78,9 +94,57 @@ export default function DashboardPage() {
                     </div>
                 </div>
 
+                {/* Metadata Fields */}
+                <div className="mb-6 space-y-2">
+                    <Label htmlFor="title">Meeting Title (Optional)</Label>
+                    <Input
+                        id="title"
+                        placeholder="e.g., Remote Control Initial Meeting"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        disabled={isUploading}
+                    />
+                </div>
+
+                <div className="mb-6 space-y-2">
+                    <Label htmlFor="language">Language (Optional)</Label>
+                    <Select value={language} onValueChange={setLanguage} disabled={isUploading}>
+                        <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select language" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="en">English</SelectItem>
+                            <SelectItem value="es">Spanish</SelectItem>
+                            <SelectItem value="fr">French</SelectItem>
+                            <SelectItem value="de">German</SelectItem>
+                            <SelectItem value="zh">Chinese</SelectItem>
+                            <SelectItem value="ja">Japanese</SelectItem>
+                            <SelectItem value="ar">Arabic</SelectItem>
+                            <SelectItem value="hi">Hindi</SelectItem>
+                            <SelectItem value="ur">Urdu</SelectItem>
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                <div className="mb-6 space-y-2">
+                    <Label htmlFor="numSpeakers">Number of Speakers (Optional)</Label>
+                    <Input
+                        id="numSpeakers"
+                        type="number"
+                        min="1"
+                        max="20"
+                        placeholder="e.g., 4"
+                        value={numSpeakers}
+                        onChange={(e) => setNumSpeakers(e.target.value ? parseInt(e.target.value) : '')}
+                        disabled={isUploading}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                        Helps improve speaker diarization accuracy
+                    </p>
+                </div>
 
                 {/* Context Input */}
-                <div className="mb-6 space-y-2">
+                {/* <div className="mb-6 space-y-2">
                     <Label htmlFor="context">Context (Optional)</Label>
                     <Input
                         id="context"
@@ -89,7 +153,7 @@ export default function DashboardPage() {
                         onChange={(e) => setContext(e.target.value)}
                         disabled={isUploading}
                     />
-                </div>
+                </div> */}
 
 
                 {/* How It Works Disclaimer */}

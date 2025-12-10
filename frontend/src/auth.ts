@@ -54,11 +54,34 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }),
     ],
     callbacks: {
-        async jwt({ token, user }) {
+        async jwt({ token, user, trigger }) {
+            // On initial sign in, store user data and token
             if (user) {
                 token.accessToken = (user as any).accessToken;
                 token.user = user as any;
             }
+
+            // When session.update() is called, re-fetch user data from backend
+            if (trigger === 'update' && token.accessToken) {
+                try {
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/auth/me`, {
+                        headers: {
+                            'Authorization': `Bearer ${token.accessToken}`,
+                        },
+                    });
+
+                    if (response.ok) {
+                        const updatedUser = await response.json();
+                        token.user = {
+                            ...(token.user || {}),
+                            ...updatedUser,
+                        } as any;
+                    }
+                } catch (error) {
+                    console.error('Failed to refresh user data:', error);
+                }
+            }
+
             return token;
         },
         async session({ session, token }) {

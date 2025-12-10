@@ -24,6 +24,16 @@ export interface SignupCredentials {
     password: string;
 }
 
+// Meeting Upload Metadata
+export interface MeetingUploadMetadata {
+    title?: string;
+    language?: string;
+    max_speakers?: number;
+    num_speakers?: number;
+    min_speakers?: number;
+    context?: string;
+}
+
 // Meeting Types
 export interface Meeting {
     meeting_id: string;

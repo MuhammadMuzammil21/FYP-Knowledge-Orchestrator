@@ -5,6 +5,7 @@ import type {
     MeetingDetail,
     MeetingStatusDetail,
     MeetingUploadResponse,
+    MeetingUploadMetadata,
     MeetingListResponse,
     TranscriptResponse,
     EntityResponse,
@@ -17,7 +18,7 @@ import type {
 export async function uploadMeeting(
     file: File,
     projectId: string,
-    metadata?: Record<string, any>
+    metadata?: MeetingUploadMetadata
 ): Promise<MeetingUploadResponse> {
     const formData = new FormData();
     formData.append('file', file);
