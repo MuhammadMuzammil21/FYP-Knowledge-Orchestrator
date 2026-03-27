@@ -7,8 +7,10 @@ export default auth((req) => {
     const session = req.auth;
 
     // Public routes that don't require authentication
-    const publicRoutes = ['/login', '/signup', '/forgot-password', '/reset-password'];
-    const isPublicRoute = publicRoutes.some((route) => pathname.startsWith(route));
+    const publicRoutes = ['/', '/login', '/signup', '/forgot-password', '/reset-password'];
+    const isPublicRoute = publicRoutes.some((route) =>
+        route === '/' ? pathname === '/' : pathname.startsWith(route)
+    );
 
     // If not authenticated and trying to access protected route
     if (!session && !isPublicRoute) {
@@ -27,8 +29,8 @@ export default auth((req) => {
         return NextResponse.redirect(new URL('/verify-email', req.url));
     }
 
-    // If authenticated and trying to access auth pages, redirect to dashboard
-    if (session && isPublicRoute) {
+    // If authenticated and trying to access auth pages (not landing), redirect to dashboard
+    if (session && isPublicRoute && pathname !== '/') {
         return NextResponse.redirect(new URL('/dashboard', req.url));
     }
 

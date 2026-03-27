@@ -1,60 +1,93 @@
-'use client';
+'use client'
 
-import { useProjects } from '@/hooks/useProjects';
-import { ProjectCard } from '@/components/projects/ProjectCard';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Folder } from 'lucide-react';
+import { useProjects } from '@/hooks/useProjects'
+import { ProjectCard } from '@/components/projects/ProjectCard'
+import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@/components/ui/button'
+import { Folder, Plus } from 'lucide-react'
+import Link from 'next/link'
 
 export default function ProjectsPage() {
-    const { data: projects, isLoading, error } = useProjects();
+  const { data: projects, isLoading, error } = useProjects()
 
-    if (error) {
-        return (
-            <div className="flex h-full items-center justify-center p-8">
-                <div className="text-center">
-                    <h2 className="mb-2 text-2xl font-bold text-red-600">Error Loading Projects</h2>
-                    <p className="text-gray-600">Please try again later</p>
-                </div>
-            </div>
-        );
-    }
-
+  if (error) {
     return (
-        <div className="h-full p-4 md:p-8">
-            <div className="mb-6">
-                <h1 className="text-2xl md:text-3xl font-bold">Projects</h1>
-                <p className="mt-2 text-gray-600">
-                    Organize your meetings into projects for better insights
-                </p>
-            </div>
-
-            {isLoading ? (
-                <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                    {[...Array(6)].map((_, i) => (
-                        <Skeleton key={i} className="h-40" />
-                    ))}
-                </div>
-            ) : projects && projects.length > 0 ? (
-                <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-                    {projects.map((project) => (
-                        <ProjectCard key={project.id} project={project} />
-                    ))}
-                </div>
-            ) : (
-                <div className="flex h-96 items-center justify-center">
-                    <div className="text-center">
-                        <div className="mb-4 flex justify-center">
-                            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gray-100">
-                                <Folder className="h-10 w-10 text-gray-400" />
-                            </div>
-                        </div>
-                        <h2 className="mb-2 text-2xl font-bold text-gray-600">No Projects Yet</h2>
-                        <p className="text-gray-500">
-                            Projects are automatically created when you upload meetings
-                        </p>
-                    </div>
-                </div>
-            )}
+      <div className="flex h-full items-center justify-center p-8">
+        <div className="text-center">
+          <div className="h-12 w-12 rounded-xl bg-red-400/10 flex items-center justify-center mx-auto mb-4">
+            <span className="text-red-500 text-lg">!</span>
+          </div>
+          <h2 className="font-semibold text-foreground mb-1">Failed to load projects</h2>
+          <p className="text-sm text-muted-foreground">Please try refreshing the page.</p>
         </div>
-    );
+      </div>
+    )
+  }
+
+  return (
+    <div className="p-4 md:p-6 max-w-6xl mx-auto w-full">
+      {/* Page header */}
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h1 className="text-xl font-bold tracking-tight">Projects</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            Organize meetings into projects for cross-meeting insights
+          </p>
+        </div>
+        <Link href="/dashboard">
+          <Button size="sm" className="gap-2">
+            <Plus className="h-4 w-4" />
+            New meeting
+          </Button>
+        </Link>
+      </div>
+
+      {/* Content */}
+      {isLoading ? (
+        /* Skeleton grid — matches card structure */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className="rounded-xl border border-border bg-card p-5">
+              <div className="flex items-start justify-between mb-4">
+                <Skeleton className="h-9 w-9 rounded-lg" />
+              </div>
+              <Skeleton className="h-4 w-36 mb-2" />
+              <Skeleton className="h-3 w-48 mb-1" />
+              <Skeleton className="h-3 w-32" />
+              <div className="mt-4 pt-4 border-t border-border/60 flex items-center justify-between">
+                <Skeleton className="h-3 w-20" />
+                <Skeleton className="h-3 w-16" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : projects && projects.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {projects.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </div>
+      ) : (
+        /* Empty state */
+        <div className="rounded-xl border border-border bg-card">
+          <div className="flex flex-col items-center justify-center py-20 text-center px-6">
+            <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-5">
+              <Folder className="h-6 w-6 text-primary" />
+            </div>
+            <h3 className="font-semibold text-base mb-2">No projects yet</h3>
+            <p className="text-sm text-muted-foreground max-w-xs leading-relaxed">
+              Projects are created automatically when you upload your first meeting. You can also
+              rename and organise them afterward.
+            </p>
+            <Link href="/dashboard" className="mt-6">
+              <Button className="gap-2" size="sm">
+                <Plus className="h-4 w-4" />
+                Upload first meeting
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )}
+    </div>
+  )
 }

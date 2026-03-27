@@ -1,19 +1,19 @@
-'use client';
+'use client'
 
-import { Navbar } from '@/components/layout/Navbar';
-import { usePathname } from 'next/navigation';
+import { Navbar } from '@/components/layout/Navbar'
+import { usePathname } from 'next/navigation'
 
 export function NavbarWrapper() {
-    const pathname = usePathname();
+  const pathname = usePathname()
 
-    // Don't show navbar on auth pages
-    const isAuthPage = pathname?.startsWith('/login') ||
-        pathname?.startsWith('/signup') ||
-        pathname?.startsWith('/verify-email') ||
-        pathname?.startsWith('/forgot-password') ||
-        pathname?.startsWith('/reset-password');
+  // Don't show navbar on auth pages or landing page
+  const hideNavbar =
+    pathname === '/' ||
+    ['/login', '/signup', '/verify-email', '/forgot-password', '/reset-password'].some((route) =>
+      pathname?.startsWith(route)
+    )
 
-    if (isAuthPage) return null;
+  if (hideNavbar) return null
 
-    return <Navbar />;
+  return <Navbar />
 }

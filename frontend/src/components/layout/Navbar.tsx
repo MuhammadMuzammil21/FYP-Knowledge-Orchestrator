@@ -1,72 +1,124 @@
-'use client';
+'use client'
 
-import { usePathname, useRouter } from 'next/navigation';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, Home, Menu } from 'lucide-react';
-import { useMobileMenu } from '@/contexts/MobileMenuContext';
+import { usePathname } from 'next/navigation'
+import { Button } from '@/components/ui/button'
+import { ChevronRight, Search, Bell, HelpCircle, Menu } from 'lucide-react'
+import { useMobileMenu } from '@/contexts/MobileMenuContext'
+import Link from 'next/link'
 
 export function Navbar() {
-    const pathname = usePathname();
-    const router = useRouter();
-    const { toggle } = useMobileMenu();
+  const pathname = usePathname()
+  const { toggle } = useMobileMenu()
 
-    // Don't show navbar on auth pages
-    const isAuthPage = pathname?.startsWith('/login') ||
-        pathname?.startsWith('/signup') ||
-        pathname?.startsWith('/verify-email') ||
-        pathname?.startsWith('/forgot-password') ||
-        pathname?.startsWith('/reset-password');
+  // Don't show navbar on auth pages
+  const isAuthPage = ['/login', '/signup', '/verify-email', '/forgot-password', '/reset-password'].some(
+    (route) => pathname?.startsWith(route)
+  )
+  if (isAuthPage) return null
 
-    if (isAuthPage) return null;
+  // Breadcrumb builder
+  const getBreadcrumbs = (): { label: string; href?: string }[] => {
+    if (pathname === '/dashboard') return [{ label: 'Dashboard' }]
+    if (pathname === '/meetings') return [{ label: 'Meetings' }]
+    if (pathname === '/projects') return [{ label: 'Projects' }]
+    if (pathname === '/settings') return [{ label: 'Settings' }]
+    if (pathname === '/profile') return [{ label: 'Profile' }]
+    if (pathname?.startsWith('/meetings/') && pathname.endsWith('/graph'))
+      return [
+        { label: 'Meetings', href: '/meetings' },
+        { label: 'Meeting', href: pathname.replace('/graph', '') },
+        { label: 'Graph' },
+      ]
+    if (pathname?.startsWith('/meetings/'))
+      return [{ label: 'Meetings', href: '/meetings' }, { label: 'Meeting detail' }]
+    if (pathname?.startsWith('/projects/') && pathname.endsWith('/graph'))
+      return [
+        { label: 'Projects', href: '/projects' },
+        { label: 'Project', href: pathname.replace('/graph', '') },
+        { label: 'Graph' },
+      ]
+    if (pathname?.startsWith('/projects/') && pathname.endsWith('/conflicts'))
+      return [
+        { label: 'Projects', href: '/projects' },
+        { label: 'Project', href: pathname.replace('/conflicts', '') },
+        { label: 'Conflicts' },
+      ]
+    if (pathname?.startsWith('/projects/'))
+      return [{ label: 'Projects', href: '/projects' }, { label: 'Project' }]
+    if (pathname?.startsWith('/settings/known-speakers'))
+      return [{ label: 'Settings', href: '/settings' }, { label: 'Known speakers' }]
+    return [{ label: 'HarBaat AI' }]
+  }
 
-    const isDashboard = pathname === '/dashboard';
+  const breadcrumbs = getBreadcrumbs()
 
-    const getPageTitle = () => {
-        if (pathname === '/dashboard') return 'Dashboard';
-        if (pathname === '/meetings') return 'All Meetings';
-        if (pathname === '/profile') return 'Profile';
-        if (pathname === '/settings') return 'Settings';
-        if (pathname?.startsWith('/meetings/')) return 'Meeting Details';
-        return 'HarBaat AI';
-    };
+  return (
+    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-background/95 backdrop-blur-sm px-4 md:px-6 shrink-0">
+      {/* Left zone */}
+      <div className="flex items-center gap-3">
+        {/* Mobile hamburger */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggle}
+          className="md:hidden h-8 w-8 text-muted-foreground"
+          aria-label="Toggle menu"
+        >
+          <Menu className="h-4 w-4" />
+        </Button>
 
-    return (
-        <div className="flex h-16 items-center justify-between border-b border-border bg-card px-3 md:px-6">
-            <div className="flex items-center gap-2 md:gap-4">
-                {/* Mobile Hamburger Menu */}
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={toggle}
-                    className="md:hidden"
-                    aria-label="Toggle menu"
+        {/* Breadcrumbs */}
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5">
+          {breadcrumbs.map((crumb, i) => (
+            <div key={i} className="flex items-center gap-1.5">
+              {i > 0 && (
+                <ChevronRight className="h-3.5 w-3.5 text-muted-foreground/50 flex-shrink-0" />
+              )}
+              {crumb.href ? (
+                <Link
+                  href={crumb.href}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                    <Menu className="h-5 w-5" />
-                </Button>
-
-                {!isDashboard && (
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => router.back()}
-                        className="gap-2"
-                    >
-                        <ArrowLeft className="h-4 w-4" />
-                        <span className="hidden sm:inline">Back</span>
-                    </Button>
-                )}
-                <h1 className="text-lg md:text-xl font-semibold">{getPageTitle()}</h1>
+                  {crumb.label}
+                </Link>
+              ) : (
+                <span className="text-sm font-medium text-foreground">{crumb.label}</span>
+              )}
             </div>
+          ))}
+        </nav>
+      </div>
 
-            <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => router.push('/dashboard')}
-                className="gap-2"
-            >
-                <Home className="h-4 w-4" />
-                <span className="hidden sm:inline">Dashboard</span>
-            </Button>
-        </div>
-    );
+      {/* Right zone — icon actions */}
+      <div className="flex items-center gap-1">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-muted-foreground hover:text-foreground"
+          aria-label="Search"
+          title="Search (⌘K)"
+        >
+          <Search className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-muted-foreground hover:text-foreground"
+          aria-label="Notifications"
+          title="Notifications"
+        >
+          <Bell className="h-4 w-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-8 w-8 text-muted-foreground hover:text-foreground"
+          aria-label="Help"
+          title="Help & documentation"
+        >
+          <HelpCircle className="h-4 w-4" />
+        </Button>
+      </div>
+    </header>
+  )
 }
