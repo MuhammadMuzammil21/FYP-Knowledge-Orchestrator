@@ -34,4 +34,4 @@ jest.mock('next-auth/react', () => ({
 }));
 
 // Mock environment variables
-process.env.NEXT_PUBLIC_API_URL = 'https://asim.daaimali.site';
+process.env.NEXT_PUBLIC_API_URL = 'https://asim-ai.duckdns.org';

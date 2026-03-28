@@ -22,7 +22,7 @@ export default auth((req) => {
     // If authenticated but email not verified, redirect to verification page
     if (
         session &&
-        !session.user.email_verified &&
+        !session.user?.email_verified &&
         pathname !== '/verify-email' &&
         !isPublicRoute
     ) {

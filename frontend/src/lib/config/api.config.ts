@@ -4,7 +4,7 @@
  */
 
 export const API_CONFIG = {
-    baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://asim.daaimali.site',
+    baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://asim-ai.duckdns.org',
     version: 'v1',
     timeout: 30000,
     retryAttempts: 3,
