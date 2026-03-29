@@ -35,16 +35,20 @@ function NavItem({
   icon: Icon,
   label,
   badge,
+  exact,
   onClick,
 }: {
   href: string
   icon: React.ElementType
   label: string
   badge?: string | number
+  exact?: boolean
   onClick?: () => void
 }) {
   const pathname = usePathname()
-  const isActive = pathname === href || (href !== '/dashboard' && pathname?.startsWith(href))
+  const isActive = exact
+    ? pathname === href
+    : pathname === href || (href !== '/dashboard' && pathname?.startsWith(href + '/'))
 
   return (
     <Link href={href} onClick={onClick}>
@@ -144,7 +148,7 @@ export function Sidebar() {
           <p className="px-2 pt-3 pb-1 text-[10px] font-semibold tracking-widest text-muted-foreground uppercase select-none">
             Account
           </p>
-          <NavItem href="/settings" icon={Settings} label="Settings" onClick={close} />
+          <NavItem href="/settings" icon={Settings} label="Settings" exact onClick={close} />
           <NavItem href="/settings/known-speakers" icon={Users} label="Known speakers" onClick={close} />
         </div>
 

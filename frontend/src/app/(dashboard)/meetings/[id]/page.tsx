@@ -99,12 +99,12 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
 
             {/* Tabs */}
             <Tabs defaultValue="transcript" className="h-[calc(100%-200px)]">
-                <TabsList className="mb-4 w-full overflow-x-auto flex-nowrap justify-start">
-                    <TabsTrigger value="transcript">Transcript</TabsTrigger>
-                    <TabsTrigger value="entities">Entities</TabsTrigger>
-                    <TabsTrigger value="speakers">Speakers</TabsTrigger>
-                    <TabsTrigger value="conflicts">Conflicts</TabsTrigger>
-                    <TabsTrigger value="rag">Chat</TabsTrigger>
+                <TabsList className="mb-4" style={{ display: 'flex', width: '100%', height: 'auto', padding: '4px' }}>
+                    <TabsTrigger value="transcript" style={{ flex: 1 }}>Transcript</TabsTrigger>
+                    <TabsTrigger value="entities" style={{ flex: 1 }}>Entities</TabsTrigger>
+                    <TabsTrigger value="speakers" style={{ flex: 1 }}>Speakers</TabsTrigger>
+                    <TabsTrigger value="conflicts" style={{ flex: 1 }}>Conflicts</TabsTrigger>
+                    <TabsTrigger value="rag" style={{ flex: 1 }}>Chat</TabsTrigger>
                 </TabsList>
 
                 {/* Transcript Tab */}
