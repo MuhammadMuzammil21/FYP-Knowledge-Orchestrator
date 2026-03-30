@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { FcGoogle } from 'react-icons/fc';
 import { AuthBranding } from '@/components/auth/AuthBranding';
 
 function LoginForm() {
@@ -93,6 +94,28 @@ function LoginForm() {
                                 {isLoading ? 'Signing in...' : 'Sign in'}
                             </Button>
                         </form>
+
+                        <div className="relative mt-6">
+                            <div className="absolute inset-0 flex items-center">
+                                <span className="w-full border-t" />
+                            </div>
+                            <div className="relative flex justify-center text-xs uppercase">
+                                <span className="bg-card px-2 text-muted-foreground">
+                                    Or continue with
+                                </span>
+                            </div>
+                        </div>
+
+                        <Button
+                            variant="outline"
+                            type="button"
+                            className="mt-6 w-full"
+                            onClick={() => signIn('google', { callbackUrl })}
+                            disabled={isLoading}
+                        >
+                            <FcGoogle className="mr-2 h-4 w-4" />
+                            Google
+                        </Button>
                         <div className="mt-4 text-center text-sm text-muted-foreground">
                             Don't have an account?{' '}
                             <Link href="/signup" className="text-primary hover:underline">

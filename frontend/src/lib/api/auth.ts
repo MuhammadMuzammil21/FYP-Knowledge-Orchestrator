@@ -15,6 +15,14 @@ export async function login(credentials: LoginCredentials): Promise<TokenRespons
     return response.data;
 }
 
+export async function googleLogin(credential: string): Promise<TokenResponse> {
+    const response = await apiClient.post<TokenResponse>(
+        API_ENDPOINTS.AUTH_GOOGLE_LOGIN,
+        { credential }
+    );
+    return response.data;
+}
+
 export async function signup(credentials: SignupCredentials): Promise<TokenResponse> {
     const response = await apiClient.post<TokenResponse>(
         API_ENDPOINTS.AUTH_SIGNUP,

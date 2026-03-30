@@ -24,6 +24,7 @@ export const ENDPOINT_CONFIG = {
             forgotPassword: '/forgot-password',
             resetPassword: '/reset-password',
             updateProfile: '/profile',
+            google: '/google',
         },
     },
 

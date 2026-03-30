@@ -28,6 +28,7 @@ export const API_ENDPOINTS = {
     AUTH_FORGOT_PASSWORD: `${ENDPOINT_CONFIG.auth.base}${ENDPOINT_CONFIG.auth.endpoints.forgotPassword}`,
     AUTH_RESET_PASSWORD: `${ENDPOINT_CONFIG.auth.base}${ENDPOINT_CONFIG.auth.endpoints.resetPassword}`,
     AUTH_UPDATE_PROFILE: `${ENDPOINT_CONFIG.auth.base}${ENDPOINT_CONFIG.auth.endpoints.updateProfile}`,
+    AUTH_GOOGLE_LOGIN: `${ENDPOINT_CONFIG.auth.base}${ENDPOINT_CONFIG.auth.endpoints.google}`,
 
     // Meetings
     MEETINGS_UPLOAD: `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.upload}`,

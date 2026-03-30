@@ -1,6 +1,7 @@
 import NextAuth, { DefaultSession } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import { login as apiLogin } from '@/lib/api/auth';
+import Google from 'next-auth/providers/google';
+import { login as apiLogin, googleLogin } from '@/lib/api/auth';
 import type { User } from '@/types';
 
 declare module 'next-auth' {
@@ -21,6 +22,17 @@ declare module 'next-auth' {
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
     providers: [
+        Google({
+            clientId: process.env.AUTH_GOOGLE_ID,
+            clientSecret: process.env.AUTH_GOOGLE_SECRET,
+            authorization: {
+                params: {
+                    prompt: 'consent',
+                    access_type: 'offline',
+                    response_type: 'code',
+                },
+            },
+        }),
         Credentials({
             name: 'Credentials',
             credentials: {
@@ -54,11 +66,26 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }),
     ],
     callbacks: {
-        async jwt({ token, user, trigger }) {
-            // On initial sign in, store user data and token
-            if (user) {
-                token.accessToken = (user as any).accessToken;
-                token.user = user as any;
+        async jwt({ token, user, account, trigger }) {
+            // On initial sign in (Google or Credentials)
+            if (account && user) {
+                if (account.provider === 'google') {
+                    try {
+                        // Exchange Google ID Token for our backend JWT
+                        const response = await googleLogin(account.id_token as string);
+                        
+                        if (response.access_token && response.user) {
+                            token.accessToken = response.access_token;
+                            token.user = response.user;
+                        }
+                    } catch (error) {
+                        console.error('Google backend exchange error:', error);
+                        // Optional: trigger error or redirect
+                    }
+                } else if (account.provider === 'credentials') {
+                    token.accessToken = (user as any).accessToken;
+                    token.user = user as any;
+                }
             }
 
             // When session.update() is called, re-fetch user data from backend
