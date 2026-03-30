@@ -8,19 +8,19 @@ export function HeroSection() {
     <section className="min-h-[88vh] flex flex-col items-center justify-center text-center px-4 pt-16 pb-24 relative overflow-hidden">
       {/* Background radial glow */}
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-        <div className="h-[600px] w-[600px] rounded-full bg-primary/5 blur-3xl" />
+        <div className="h-[600px] w-[600px] rounded-full bg-primary/5 blur-3xl animate-hero-glow" />
       </div>
 
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center">
         {/* Announcement badge */}
-        <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-muted/60 px-4 py-1.5 text-sm text-muted-foreground backdrop-blur-sm">
+        <div className="animate-hero-badge inline-flex items-center gap-2 rounded-full border border-border/60 bg-muted/60 px-4 py-1.5 text-sm text-muted-foreground backdrop-blur-sm">
           <span className="h-1.5 w-1.5 rounded-full bg-primary" />
           Now in early access — join 500+ teams
         </div>
 
         {/* Headline */}
-        <h1 className="mt-6 text-5xl font-bold tracking-tight leading-[1.08] sm:text-6xl md:text-7xl max-w-3xl">
+        <h1 className="animate-hero-headline mt-6 text-5xl font-bold tracking-tight leading-[1.08] sm:text-6xl md:text-7xl max-w-3xl">
           Your meetings,{' '}
           <span className="bg-gradient-to-r from-[oklch(0.88_0.05_150)] via-[oklch(0.65_0.12_195)] to-[oklch(0.88_0.05_150)] bg-clip-text text-transparent">
             finally understood.
@@ -28,12 +28,12 @@ export function HeroSection() {
         </h1>
 
         {/* Subheadline */}
-        <p className="mt-5 max-w-xl text-lg text-muted-foreground sm:text-xl leading-relaxed">
+        <p className="animate-hero-sub mt-5 max-w-xl text-lg text-muted-foreground sm:text-xl leading-relaxed">
           Upload any recording. Get transcripts, decisions, action items, and AI-powered answers — automatically, in minutes.
         </p>
 
         {/* CTA buttons */}
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
+        <div className="animate-hero-cta mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
           <Link href="/signup">
             <Button size="lg" className="w-full sm:w-auto gap-2">
               Start for free <ArrowRight className="h-4 w-4" />

@@ -10,6 +10,7 @@ import { PricingSection } from '@/components/landing/PricingSection'
 import { FAQSection } from '@/components/landing/FAQSection'
 import { CTASection } from '@/components/landing/CTASection'
 import { LandingFooter } from '@/components/landing/LandingFooter'
+import { ScrollReveal } from '@/components/landing/ScrollReveal'
 
 export default function HomePage() {
   return (
@@ -18,16 +19,30 @@ export default function HomePage() {
       <main>
         <HeroSection />
         {/* <TrustBar /> */}
-        <FeaturesSection />
-        <HowItWorksSection />
-        <DemoSection />
+        <ScrollReveal variant="fade-up">
+          <FeaturesSection />
+        </ScrollReveal>
+        <ScrollReveal variant="fade-up">
+          <HowItWorksSection />
+        </ScrollReveal>
+        <ScrollReveal variant="fade">
+          <DemoSection />
+        </ScrollReveal>
         {/* <StatsSection /> */}
         {/* <TestimonialsSection /> */}
-        <PricingSection />
-        <FAQSection />
-        <CTASection />
+        <ScrollReveal variant="fade-up">
+          <PricingSection />
+        </ScrollReveal>
+        <ScrollReveal variant="fade-up">
+          <FAQSection />
+        </ScrollReveal>
+        <ScrollReveal variant="scale">
+          <CTASection />
+        </ScrollReveal>
       </main>
-      <LandingFooter />
+      <ScrollReveal variant="fade">
+        <LandingFooter />
+      </ScrollReveal>
     </div>
   )
 }
