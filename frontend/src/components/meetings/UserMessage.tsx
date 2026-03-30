@@ -20,7 +20,7 @@ export function UserMessage({ content, timestamp }: UserMessageProps) {
                     </span>
                     <span className="text-sm font-medium text-foreground">You</span>
                 </div>
-                <Card className="bg-blue-600 text-white rounded-2xl rounded-tr-sm border-blue-600">
+                <Card className="bg-primary text-primary-foreground rounded-2xl rounded-tr-sm border-primary">
                     <div className="px-4 py-3">
                         <p className="text-sm leading-relaxed">{content}</p>
                     </div>

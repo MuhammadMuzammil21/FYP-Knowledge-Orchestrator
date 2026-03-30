@@ -17,12 +17,12 @@ export default function HomePage() {
       <LandingNavbar />
       <main>
         <HeroSection />
-        <TrustBar />
+        {/* <TrustBar /> */}
         <FeaturesSection />
         <HowItWorksSection />
         <DemoSection />
-        <StatsSection />
-        <TestimonialsSection />
+        {/* <StatsSection /> */}
+        {/* <TestimonialsSection /> */}
         <PricingSection />
         <FAQSection />
         <CTASection />

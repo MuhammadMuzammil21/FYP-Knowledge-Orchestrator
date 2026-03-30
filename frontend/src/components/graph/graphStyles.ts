@@ -2,13 +2,20 @@
 
 // Entity type → visual encoding
 export const NODE_TYPE_CONFIG = {
-  Person:     { color: '#5b8ef7', darkColor: '#7aaaf9', shape: 'ellipse'          as const },
-  Task:       { color: '#2ea87a', darkColor: '#3dc98e', shape: 'roundrectangle'   as const },
-  Decision:   { color: '#e09c2a', darkColor: '#f0b040', shape: 'diamond'          as const },
-  Topic:      { color: '#9b72e8', darkColor: '#b08ef0', shape: 'hexagon'          as const },
-  Question:   { color: '#e05c5c', darkColor: '#f07070', shape: 'ellipse'          as const },
-  ActionItem: { color: '#3aaccc', darkColor: '#50c4e4', shape: 'roundrectangle'   as const },
-  default:    { color: '#888780', darkColor: '#aaa89e', shape: 'ellipse'          as const },
+  // High-weight — solid Silver Sage
+  Person:     { color: '#c8d5c8', darkColor: '#c8d5c8', shape: 'ellipse'        as const },
+  // Medium-weight — 65 % Silver Sage
+  Task:       { color: '#9ab89a', darkColor: '#9ab89a', shape: 'roundrectangle' as const },
+  // Accent — Soft Gold for high-priority entities
+  Decision:   { color: '#c9a96e', darkColor: '#d4b87a', shape: 'diamond'        as const },
+  // Low-weight — muted sage
+  Topic:      { color: '#7a9e8a', darkColor: '#7a9e8a', shape: 'hexagon'        as const },
+  // Ghost — faint silver
+  Question:   { color: '#a0b8a0', darkColor: '#a0b8a0', shape: 'ellipse'        as const },
+  // Cool muted silver
+  ActionItem: { color: '#8aab9e', darkColor: '#8aab9e', shape: 'roundrectangle' as const },
+  // Fallback
+  default:    { color: '#6b8a78', darkColor: '#7a9a86', shape: 'ellipse'        as const },
 } as const;
 
 // Edge relationship → visual encoding
@@ -24,7 +31,7 @@ export const EDGE_TYPE_CONFIG = {
 export function buildStylesheet(darkMode: boolean): any[] {
   const fg        = darkMode ? '#e0dfd8' : '#1a1a18';
   const fgMuted   = darkMode ? '#888780' : '#888780';
-  const edgeLine  = darkMode ? '#4a4a46' : '#c8c7c0';
+  const edgeLine  = darkMode ? 'oklch(0.88 0.05 150 / 0.12)' : 'oklch(0.25 0.03 155 / 0.15)';
   const bgPrimary = darkMode ? '#1a1a18' : '#ffffff';
 
   const typeStyles: any[] = Object.entries(NODE_TYPE_CONFIG).map(([type, cfg]) => ({
@@ -86,7 +93,7 @@ export function buildStylesheet(darkMode: boolean): any[] {
     {
       selector: 'node.search-match',
       style: {
-        'border-color': '#e09c2a',
+        'border-color': '#c9a96e',
         'border-width': 3,
         'border-opacity': 1,
         'opacity': 1,
@@ -102,7 +109,7 @@ export function buildStylesheet(darkMode: boolean): any[] {
         'target-arrow-shape': 'triangle',
         'arrow-scale': 0.7,
         'curve-style': 'bezier',
-        'opacity': 0.7,
+        'opacity': 0.55,
       } as any,
     },
     // Edge dimmed

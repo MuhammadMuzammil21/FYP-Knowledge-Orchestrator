@@ -118,7 +118,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                         />
                     ) : (
                         <Card className="flex h-full items-center justify-center">
-                            <p className="text-gray-500">
+                            <p className="text-muted-foreground/70">
                                 {meeting.status === 'completed'
                                     ? 'No transcript available'
                                     : 'Transcript will be available once processing is complete'}
@@ -139,7 +139,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                         <EntitiesPanel entities={entitiesData} />
                     ) : (
                         <Card className="flex h-full items-center justify-center">
-                            <p className="text-gray-500">
+                            <p className="text-muted-foreground/70">
                                 {meeting.status === 'completed'
                                     ? 'No entities extracted'
                                     : 'Entities will be available once processing is complete'}
@@ -154,7 +154,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                         <SpeakersPanel meetingId={id} />
                     ) : (
                         <Card className="flex h-full items-center justify-center">
-                            <p className="text-gray-500">
+                            <p className="text-muted-foreground/70">
                                 Speakers will be available once processing is complete
                             </p>
                         </Card>
@@ -172,7 +172,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                         <ConflictsPanel conflicts={conflictsData} />
                     ) : (
                         <Card className="flex h-full items-center justify-center">
-                            <p className="text-gray-500">
+                            <p className="text-muted-foreground/70">
                                 {meeting.status === 'completed'
                                     ? 'No conflicts detected'
                                     : 'Conflicts will be checked once processing is complete'}
@@ -187,7 +187,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                         <RAGChat meetingId={id} />
                     ) : (
                         <Card className="flex h-full items-center justify-center">
-                            <p className="text-gray-500">
+                            <p className="text-muted-foreground/70">
                                 Chat will be available once processing is complete
                             </p>
                         </Card>

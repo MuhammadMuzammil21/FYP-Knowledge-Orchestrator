@@ -22,8 +22,8 @@ export default function ProjectPage({ params }: ProjectPageProps) {
         return (
             <div className="flex h-full items-center justify-center p-8">
                 <div className="text-center">
-                    <h2 className="mb-2 text-2xl font-bold text-red-600">Error Loading Project</h2>
-                    <p className="text-gray-600">Please try again later</p>
+                    <h2 className="mb-2 text-2xl font-bold text-destructive">Error Loading Project</h2>
+                    <p className="text-muted-foreground">Please try again later</p>
                 </div>
             </div>
         );
@@ -47,8 +47,8 @@ export default function ProjectPage({ params }: ProjectPageProps) {
         return (
             <div className="flex h-full items-center justify-center p-8">
                 <div className="text-center">
-                    <h2 className="mb-2 text-2xl font-bold text-gray-600">Project Not Found</h2>
-                    <p className="text-gray-500">The project you're looking for doesn't exist</p>
+                    <h2 className="mb-2 text-2xl font-bold text-muted-foreground">Project Not Found</h2>
+                    <p className="text-muted-foreground/70">The project you're looking for doesn't exist</p>
                 </div>
             </div>
         );

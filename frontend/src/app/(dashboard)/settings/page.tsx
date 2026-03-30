@@ -77,7 +77,7 @@ export default function SettingsPage() {
                 {/* Header */}
                 <div className="mb-6 md:mb-8">
                     <h1 className="text-2xl md:text-3xl font-bold">Settings</h1>
-                    <p className="text-gray-600">Manage your account preferences</p>
+                    <p className="text-muted-foreground">Manage your account preferences</p>
                 </div>
 
                 <Tabs defaultValue="account" className="space-y-6">
@@ -130,7 +130,7 @@ export default function SettingsPage() {
                                             value={session.user.email}
                                             disabled
                                         />
-                                        <p className="text-xs text-gray-500">
+                                        <p className="text-xs text-muted-foreground/70">
                                             Email cannot be changed
                                         </p>
                                     </div>
@@ -211,7 +211,7 @@ export default function SettingsPage() {
                                     <div className="flex items-center justify-between">
                                         <div>
                                             <p className="font-medium">Email Notifications</p>
-                                            <p className="text-sm text-gray-600">
+                                            <p className="text-sm text-muted-foreground">
                                                 Receive email updates about your meetings
                                             </p>
                                         </div>
@@ -225,7 +225,7 @@ export default function SettingsPage() {
                                     <div className="flex items-center justify-between">
                                         <div>
                                             <p className="font-medium">Meeting Reminders</p>
-                                            <p className="text-sm text-gray-600">
+                                            <p className="text-sm text-muted-foreground">
                                                 Get notified when meetings are processed
                                             </p>
                                         </div>
@@ -252,7 +252,7 @@ export default function SettingsPage() {
                                     <div className="flex items-center justify-between">
                                         <div>
                                             <p className="font-medium">Theme</p>
-                                            <p className="text-sm text-gray-600">
+                                            <p className="text-sm text-muted-foreground">
                                                 Choose your preferred color theme
                                             </p>
                                         </div>
@@ -266,7 +266,7 @@ export default function SettingsPage() {
                                     <div className="flex items-center justify-between">
                                         <div>
                                             <p className="font-medium">Language</p>
-                                            <p className="text-sm text-gray-600">
+                                            <p className="text-sm text-muted-foreground">
                                                 Select your preferred language
                                             </p>
                                         </div>

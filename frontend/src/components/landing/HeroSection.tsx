@@ -22,7 +22,7 @@ export function HeroSection() {
         {/* Headline */}
         <h1 className="mt-6 text-5xl font-bold tracking-tight leading-[1.08] sm:text-6xl md:text-7xl max-w-3xl">
           Your meetings,{' '}
-          <span className="bg-gradient-to-r from-primary to-primary/50 bg-clip-text text-transparent">
+          <span className="bg-gradient-to-r from-[oklch(0.88_0.05_150)] via-[oklch(0.65_0.12_195)] to-[oklch(0.88_0.05_150)] bg-clip-text text-transparent">
             finally understood.
           </span>
         </h1>
@@ -76,7 +76,7 @@ export function HeroSection() {
                 <h3 className="font-semibold text-sm">Q4 product review</h3>
                 <p className="text-xs text-muted-foreground mt-0.5">December 10, 2025 · 2 speakers detected</p>
               </div>
-              <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border-transparent">
+              <Badge className="bg-accent/15 text-accent-foreground dark:bg-accent/20 dark:text-accent border-transparent">
                 Completed
               </Badge>
             </div>

@@ -66,10 +66,10 @@ export function ConflictResolutionModal({
                         <div className="mb-2 flex items-center gap-2">
                             <span
                                 className={`rounded px-2 py-1 text-xs font-semibold uppercase ${conflict.severity === 'high'
-                                    ? 'bg-red-100 text-red-800'
+                                    ? 'bg-destructive/10 text-destructive'
                                     : conflict.severity === 'medium'
-                                        ? 'bg-yellow-100 text-yellow-800'
-                                        : 'bg-blue-100 text-blue-800'
+                                        ? 'bg-accent/15 text-accent-foreground'
+                                        : 'bg-primary/10 text-primary'
                                     }`}
                             >
                                 {conflict.severity}

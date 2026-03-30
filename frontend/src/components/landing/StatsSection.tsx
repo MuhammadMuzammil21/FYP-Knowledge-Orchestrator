@@ -7,7 +7,7 @@ const stats = [
 
 export function StatsSection() {
   return (
-    <section className="bg-primary text-primary-foreground py-16">
+    <section className="bg-[oklch(0.18_0.012_158)] text-[oklch(0.95_0.01_150)] border-y border-[oklch(0.25_0.01_160/0.18)] py-16">
       <div className="max-w-4xl mx-auto px-4 grid grid-cols-2 md:grid-cols-4 gap-8">
         {stats.map((stat) => (
           <div key={stat.label} className="text-center">

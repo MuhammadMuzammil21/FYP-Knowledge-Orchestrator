@@ -16,28 +16,28 @@ const statusConfig: Record<
   }
 > = {
   queued: {
-    dot: 'bg-amber-400',
-    container: 'bg-amber-400/10 border border-amber-400/20',
+    dot: 'bg-accent',
+    container: 'bg-accent/10 border border-accent/20',
     label: 'Queued',
-    text: 'text-amber-600 dark:text-amber-400',
+    text: 'text-accent-foreground dark:text-accent',
   },
   processing: {
-    dot: 'bg-blue-400 animate-pulse',
-    container: 'bg-blue-400/10 border border-blue-400/20',
+    dot: 'bg-primary animate-pulse',
+    container: 'bg-primary/10 border border-primary/20',
     label: 'Processing',
-    text: 'text-blue-600 dark:text-blue-400',
+    text: 'text-primary dark:text-primary',
   },
   completed: {
-    dot: 'bg-green-400',
-    container: 'bg-green-400/10 border border-green-400/20',
+    dot: 'bg-accent',
+    container: 'bg-accent/10 border border-accent/20',
     label: 'Completed',
-    text: 'text-green-600 dark:text-green-400',
+    text: 'text-accent-foreground dark:text-accent',
   },
   error: {
-    dot: 'bg-red-400',
-    container: 'bg-red-400/10 border border-red-400/20',
+    dot: 'bg-destructive',
+    container: 'bg-destructive/10 border border-destructive/20',
     label: 'Error',
-    text: 'text-red-600 dark:text-red-400',
+    text: 'text-destructive dark:text-destructive',
   },
 }
 

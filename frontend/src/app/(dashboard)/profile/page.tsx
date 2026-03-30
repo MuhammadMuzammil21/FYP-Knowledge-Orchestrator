@@ -50,7 +50,7 @@ export default function ProfilePage() {
                 {/* Header */}
                 <div className="mb-8">
                     <h1 className="text-3xl font-bold">Profile</h1>
-                    <p className="text-gray-600">Manage your account information</p>
+                    <p className="text-muted-foreground">Manage your account information</p>
                 </div>
 
                 <div className="space-y-6">
@@ -67,7 +67,7 @@ export default function ProfilePage() {
                                 <div className="space-y-2">
                                     <Label htmlFor="name">Full Name</Label>
                                     <div className="relative">
-                                        <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                                        <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                         <Input
                                             id="name"
                                             type="text"
@@ -82,7 +82,7 @@ export default function ProfilePage() {
                                 <div className="space-y-2">
                                     <Label htmlFor="email">Email</Label>
                                     <div className="relative">
-                                        <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                                        <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                                         <Input
                                             id="email"
                                             type="email"
@@ -91,7 +91,7 @@ export default function ProfilePage() {
                                             disabled
                                         />
                                     </div>
-                                    <p className="text-xs text-gray-500">
+                                    <p className="text-xs text-muted-foreground/70">
                                         Email cannot be changed
                                     </p>
                                 </div>
@@ -114,10 +114,10 @@ export default function ProfilePage() {
                         <CardContent className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <Calendar className="h-5 w-5 text-gray-400" />
+                                    <Calendar className="h-5 w-5 text-muted-foreground" />
                                     <div>
                                         <p className="text-sm font-medium">Member Since</p>
-                                        <p className="text-sm text-gray-600">{createdDate}</p>
+                                        <p className="text-sm text-muted-foreground">{createdDate}</p>
                                     </div>
                                 </div>
                             </div>
@@ -126,14 +126,14 @@ export default function ProfilePage() {
 
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <Shield className="h-5 w-5 text-gray-400" />
+                                    <Shield className="h-5 w-5 text-muted-foreground" />
                                     <div>
                                         <p className="text-sm font-medium">Email Verification</p>
-                                        <p className="text-sm text-gray-600">
+                                        <p className="text-sm text-muted-foreground">
                                             {session.user.email_verified ? (
-                                                <span className="text-green-600">Verified ✓</span>
+                                                <span className="text-accent">Verified ✓</span>
                                             ) : (
-                                                <span className="text-orange-600">Not Verified</span>
+                                                <span className="text-destructive/80">Not Verified</span>
                                             )}
                                         </p>
                                     </div>
@@ -144,10 +144,10 @@ export default function ProfilePage() {
 
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                    <User className="h-5 w-5 text-gray-400" />
+                                    <User className="h-5 w-5 text-muted-foreground" />
                                     <div>
                                         <p className="text-sm font-medium">User ID</p>
-                                        <p className="text-sm text-gray-600 font-mono">
+                                        <p className="text-sm text-muted-foreground font-mono">
                                             {session.user.id}
                                         </p>
                                     </div>

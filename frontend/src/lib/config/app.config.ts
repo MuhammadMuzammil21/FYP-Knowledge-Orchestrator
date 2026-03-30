@@ -41,10 +41,10 @@ export const APP_CONFIG = {
      */
     ui: {
         meetingStatusColors: {
-            queued: 'bg-yellow-100 text-yellow-800',
-            processing: 'bg-blue-100 text-blue-800',
-            completed: 'bg-green-100 text-green-800',
-            error: 'bg-red-100 text-red-800',
+            queued: 'bg-accent/10 text-accent-foreground',
+            processing: 'bg-primary/10 text-primary',
+            completed: 'bg-accent/15 text-accent-foreground',
+            error: 'bg-destructive/10 text-destructive',
         },
         stageLabels: {
             asr_pending: 'Waiting for transcription',

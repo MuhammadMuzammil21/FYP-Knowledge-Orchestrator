@@ -61,23 +61,23 @@ const tabContent: Record<Tab, TabContent> = {
         <div>
           <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Tasks</h4>
           <div className="space-y-2">
-            <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 border-transparent text-xs">Finalize landing page copy</Badge>
-            <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 border-transparent text-xs ml-2">Complete API documentation by Friday</Badge>
-            <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 border-transparent text-xs ml-2">Schedule load testing</Badge>
+            <Badge className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary border-transparent text-xs">Finalize landing page copy</Badge>
+            <Badge className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary border-transparent text-xs ml-2">Complete API documentation by Friday</Badge>
+            <Badge className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary border-transparent text-xs ml-2">Schedule load testing</Badge>
           </div>
         </div>
         <div>
           <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Decisions</h4>
           <div className="space-y-2">
-            <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border-transparent text-xs">Prioritize API docs this week</Badge>
-            <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border-transparent text-xs ml-2">Load test before public launch</Badge>
+            <Badge className="bg-accent/15 text-accent-foreground dark:bg-accent/20 dark:text-accent border-transparent text-xs">Prioritize API docs this week</Badge>
+            <Badge className="bg-accent/15 text-accent-foreground dark:bg-accent/20 dark:text-accent border-transparent text-xs ml-2">Load test before public launch</Badge>
           </div>
         </div>
         <div>
           <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Topics</h4>
           <div className="space-y-2">
-            <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border-transparent text-xs">Q4 product launch</Badge>
-            <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border-transparent text-xs ml-2">Developer preview</Badge>
+            <Badge className="bg-accent/10 text-accent-foreground dark:bg-accent/15 dark:text-accent border-transparent text-xs">Q4 product launch</Badge>
+            <Badge className="bg-accent/10 text-accent-foreground dark:bg-accent/15 dark:text-accent border-transparent text-xs ml-2">Developer preview</Badge>
           </div>
         </div>
       </div>
@@ -136,9 +136,9 @@ const tabContent: Record<Tab, TabContent> = {
           <line x1="60" y1="100" x2="40" y2="160" className="stroke-primary/30" strokeWidth="1.5" />
           {/* Nodes */}
           <circle cx="150" cy="40" r="12" className="fill-primary/20 stroke-primary" strokeWidth="1.5" />
-          <circle cx="60" cy="100" r="10" className="fill-blue-500/20 stroke-blue-500 dark:fill-blue-400/20 dark:stroke-blue-400" strokeWidth="1.5" />
-          <circle cx="240" cy="80" r="10" className="fill-amber-500/20 stroke-amber-500 dark:fill-amber-400/20 dark:stroke-amber-400" strokeWidth="1.5" />
-          <circle cx="120" cy="160" r="8" className="fill-green-500/20 stroke-green-500 dark:fill-green-400/20 dark:stroke-green-400" strokeWidth="1.5" />
+          <circle cx="60" cy="100" r="10" className="fill-primary/20 stroke-primary" strokeWidth="1.5" />
+          <circle cx="240" cy="80" r="10" className="fill-accent/20 stroke-accent" strokeWidth="1.5" />
+          <circle cx="120" cy="160" r="8" className="fill-primary/15 stroke-primary" strokeWidth="1.5" />
           <circle cx="260" cy="150" r="7" className="fill-primary/15 stroke-primary" strokeWidth="1.5" />
           <circle cx="40" cy="160" r="7" className="fill-primary/15 stroke-primary" strokeWidth="1.5" />
           {/* Labels */}

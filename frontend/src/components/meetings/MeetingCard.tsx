@@ -22,10 +22,10 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
         <div
           className={cn(
             'h-2 w-2 rounded-full flex-shrink-0',
-            meeting.status === 'completed' && 'bg-green-400',
-            meeting.status === 'processing' && 'bg-blue-400 animate-pulse',
-            meeting.status === 'queued' && 'bg-amber-400',
-            meeting.status === 'error' && 'bg-red-400'
+            meeting.status === 'completed' && 'bg-accent',
+            meeting.status === 'processing' && 'bg-primary animate-pulse',
+            meeting.status === 'queued' && 'bg-accent',
+            meeting.status === 'error' && 'bg-destructive'
           )}
         />
 

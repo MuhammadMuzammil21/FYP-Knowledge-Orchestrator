@@ -19,8 +19,8 @@ export default function ProjectGraphPage({ params }: ProjectGraphPageProps) {
         return (
             <div className="flex h-full items-center justify-center p-8">
                 <div className="text-center">
-                    <h2 className="mb-2 text-2xl font-bold text-red-600">Error Loading Graph</h2>
-                    <p className="text-gray-600">Please try again later</p>
+                    <h2 className="mb-2 text-2xl font-bold text-destructive">Error Loading Graph</h2>
+                    <p className="text-muted-foreground">Please try again later</p>
                 </div>
             </div>
         );
@@ -30,7 +30,7 @@ export default function ProjectGraphPage({ params }: ProjectGraphPageProps) {
         <div className="flex h-full flex-col p-8">
             <Link
                 href={`/projects/${id}`}
-                className="mb-4 inline-flex items-center text-sm text-blue-600 hover:underline"
+                className="mb-4 inline-flex items-center text-sm text-primary hover:underline"
             >
                 <ArrowLeft className="mr-1 h-4 w-4" />
                 Back to project
@@ -38,7 +38,7 @@ export default function ProjectGraphPage({ params }: ProjectGraphPageProps) {
 
             <div className="mb-6">
                 <h1 className="text-3xl font-bold">Project Knowledge Graph</h1>
-                <p className="mt-2 text-gray-600">
+                <p className="mt-2 text-muted-foreground">
                     Combined knowledge graph from all meetings in this project
                 </p>
             </div>
@@ -51,7 +51,7 @@ export default function ProjectGraphPage({ params }: ProjectGraphPageProps) {
                 </div>
             ) : (
                 <div className="flex h-full items-center justify-center rounded-lg border bg-muted">
-                    <p className="text-gray-500">No graph data available for this project</p>
+                    <p className="text-muted-foreground/70">No graph data available for this project</p>
                 </div>
             )}
         </div>

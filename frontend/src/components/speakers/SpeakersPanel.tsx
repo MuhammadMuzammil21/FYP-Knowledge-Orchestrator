@@ -47,7 +47,7 @@ export function SpeakersPanel({ meetingId }: SpeakersPanelProps) {
     if (error) {
         return (
             <Card className="p-6">
-                <p className="text-center text-red-600">Error loading speakers</p>
+                <p className="text-center text-destructive">Error loading speakers</p>
             </Card>
         );
     }

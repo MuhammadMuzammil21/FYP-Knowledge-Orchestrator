@@ -42,9 +42,9 @@ const features = [
     colSpan: 'lg:col-span-1',
     illustration: (
       <div className="mt-4 flex flex-wrap gap-2">
-        <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400 border-transparent text-xs">Task: Update roadmap</Badge>
-        <Badge className="bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border-transparent text-xs">Decision: Launch Q1</Badge>
-        <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border-transparent text-xs">Topic: Revenue growth</Badge>
+        <Badge className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary border-transparent text-xs">Task: Update roadmap</Badge>
+        <Badge className="bg-accent/15 text-accent-foreground dark:bg-accent/20 dark:text-accent border-transparent text-xs">Decision: Launch Q1</Badge>
+        <Badge className="bg-accent/10 text-accent-foreground dark:bg-accent/15 dark:text-accent border-transparent text-xs">Topic: Revenue growth</Badge>
       </div>
     ),
   },
@@ -54,7 +54,7 @@ const features = [
     description: 'HarBaat flags when a decision made in one meeting contradicts something said in a previous one.',
     colSpan: 'lg:col-span-1',
     illustration: (
-      <div className="mt-4 rounded-lg bg-red-500/10 border border-red-500/20 p-3 text-xs text-red-600 dark:text-red-400">
+      <div className="mt-4 rounded-lg bg-destructive/10 border border-destructive/20 p-3 text-xs text-destructive">
         ⚠ Deadline changed: was Dec 15, now Jan 5
       </div>
     ),

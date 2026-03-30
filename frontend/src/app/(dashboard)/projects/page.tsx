@@ -14,8 +14,8 @@ export default function ProjectsPage() {
     return (
       <div className="flex h-full items-center justify-center p-8">
         <div className="text-center">
-          <div className="h-12 w-12 rounded-xl bg-red-400/10 flex items-center justify-center mx-auto mb-4">
-            <span className="text-red-500 text-lg">!</span>
+          <div className="h-12 w-12 rounded-xl bg-destructive/10 flex items-center justify-center mx-auto mb-4">
+            <span className="text-destructive text-lg">!</span>
           </div>
           <h2 className="font-semibold text-foreground mb-1">Failed to load projects</h2>
           <p className="text-sm text-muted-foreground">Please try refreshing the page.</p>

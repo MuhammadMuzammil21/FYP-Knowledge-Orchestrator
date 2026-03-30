@@ -10,21 +10,21 @@ interface ConflictsPanelProps {
 const severityConfig = {
     high: {
         icon: AlertTriangle,
-        color: 'text-red-600',
-        bgColor: 'bg-red-50',
-        borderColor: 'border-red-200',
+        color: 'text-destructive',
+        bgColor: 'bg-destructive/10',
+        borderColor: 'border-destructive/20',
     },
     medium: {
         icon: AlertCircle,
-        color: 'text-orange-600',
-        bgColor: 'bg-orange-50',
-        borderColor: 'border-orange-200',
+        color: 'text-accent-foreground',
+        bgColor: 'bg-accent/5',
+        borderColor: 'border-accent/20',
     },
     low: {
         icon: Info,
-        color: 'text-blue-600',
-        bgColor: 'bg-blue-50',
-        borderColor: 'border-blue-200',
+        color: 'text-primary',
+        bgColor: 'bg-primary/10',
+        borderColor: 'border-primary/20',
     },
 };
 

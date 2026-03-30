@@ -12,15 +12,15 @@ export function TypingIndicator() {
                 <div className="bg-muted rounded-2xl rounded-tl-sm px-5 py-4 border border-border">
                     <div className="flex gap-1.5">
                         <div
-                            className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                            className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"
                             style={{ animationDelay: '0ms', animationDuration: '1s' }}
                         />
                         <div
-                            className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                            className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"
                             style={{ animationDelay: '150ms', animationDuration: '1s' }}
                         />
                         <div
-                            className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
+                            className="w-2 h-2 bg-muted-foreground rounded-full animate-bounce"
                             style={{ animationDelay: '300ms', animationDuration: '1s' }}
                         />
                     </div>

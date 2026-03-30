@@ -33,8 +33,8 @@ export default function ProjectConflictsPage({ params }: ProjectConflictsPagePro
         return (
             <div className="flex h-full items-center justify-center p-8">
                 <div className="text-center">
-                    <h2 className="mb-2 text-2xl font-bold text-red-600">Error Loading Conflicts</h2>
-                    <p className="text-gray-600">Please try again later</p>
+                    <h2 className="mb-2 text-2xl font-bold text-destructive">Error Loading Conflicts</h2>
+                    <p className="text-muted-foreground">Please try again later</p>
                 </div>
             </div>
         );
@@ -47,7 +47,7 @@ export default function ProjectConflictsPage({ params }: ProjectConflictsPagePro
         <div className="h-full overflow-y-auto p-8">
             <Link
                 href={`/projects/${id}`}
-                className="mb-4 inline-flex items-center text-sm text-blue-600 hover:underline"
+                className="mb-4 inline-flex items-center text-sm text-primary hover:underline"
             >
                 <ArrowLeft className="mr-1 h-4 w-4" />
                 Back to project
@@ -55,7 +55,7 @@ export default function ProjectConflictsPage({ params }: ProjectConflictsPagePro
 
             <div className="mb-6">
                 <h1 className="text-3xl font-bold">Project Conflicts</h1>
-                {project && <p className="mt-2 text-gray-600">{project.name}</p>}
+                {project && <p className="mt-2 text-muted-foreground">{project.name}</p>}
             </div>
 
             {isLoading ? (
@@ -69,18 +69,18 @@ export default function ProjectConflictsPage({ params }: ProjectConflictsPagePro
                     {/* Summary */}
                     <div className="grid gap-4 md:grid-cols-3">
                         <Card className="p-4">
-                            <div className="text-sm text-gray-600">Total Conflicts</div>
+                            <div className="text-sm text-muted-foreground">Total Conflicts</div>
                             <div className="mt-1 text-3xl font-bold">{conflictsData.total_conflicts}</div>
                         </Card>
                         <Card className="p-4">
-                            <div className="text-sm text-gray-600">Unresolved</div>
-                            <div className="mt-1 text-3xl font-bold text-red-600">
+                            <div className="text-sm text-muted-foreground">Unresolved</div>
+                            <div className="mt-1 text-3xl font-bold text-destructive">
                                 {unresolvedConflicts.length}
                             </div>
                         </Card>
                         <Card className="p-4">
-                            <div className="text-sm text-gray-600">Resolved</div>
-                            <div className="mt-1 text-3xl font-bold text-green-600">
+                            <div className="text-sm text-muted-foreground">Resolved</div>
+                            <div className="mt-1 text-3xl font-bold text-accent">
                                 {resolvedConflicts.length}
                             </div>
                         </Card>
@@ -90,7 +90,7 @@ export default function ProjectConflictsPage({ params }: ProjectConflictsPagePro
                     {unresolvedConflicts.length > 0 && (
                         <div>
                             <h2 className="mb-4 text-xl font-semibold flex items-center gap-2">
-                                <AlertTriangle className="h-5 w-5 text-red-600" />
+                                <AlertTriangle className="h-5 w-5 text-destructive" />
                                 Unresolved Conflicts ({unresolvedConflicts.length})
                             </h2>
                             <div className="space-y-3">
@@ -108,23 +108,23 @@ export default function ProjectConflictsPage({ params }: ProjectConflictsPagePro
                                                     >
                                                         {conflict.severity.toUpperCase()}
                                                     </Badge>
-                                                    <span className="text-sm text-gray-600">
+                                                    <span className="text-sm text-muted-foreground">
                                                         {conflict.conflict_type.replace(/_/g, ' ')}
                                                     </span>
                                                 </div>
                                                 <p className="mb-3">{conflict.description}</p>
-                                                <div className="text-sm text-gray-600">
+                                                <div className="text-sm text-muted-foreground">
                                                     <span>Between meetings: </span>
                                                     <Link
                                                         href={`/meetings/${conflict.source_meeting_id}`}
-                                                        className="text-blue-600 hover:underline"
+                                                        className="text-primary hover:underline"
                                                     >
                                                         {conflict.source_meeting_id.slice(0, 8)}
                                                     </Link>
                                                     <span> → </span>
                                                     <Link
                                                         href={`/meetings/${conflict.target_meeting_id}`}
-                                                        className="text-blue-600 hover:underline"
+                                                        className="text-primary hover:underline"
                                                     >
                                                         {conflict.target_meeting_id.slice(0, 8)}
                                                     </Link>
@@ -144,30 +144,30 @@ export default function ProjectConflictsPage({ params }: ProjectConflictsPagePro
                     {resolvedConflicts.length > 0 && (
                         <div>
                             <h2 className="mb-4 text-xl font-semibold flex items-center gap-2">
-                                <CheckCircle className="h-5 w-5 text-green-600" />
+                                <CheckCircle className="h-5 w-5 text-accent" />
                                 Resolved Conflicts ({resolvedConflicts.length})
                             </h2>
                             <div className="space-y-3">
                                 {resolvedConflicts.map((conflict) => (
                                     <Card key={conflict.id} className="p-6 opacity-75">
                                         <div className="flex items-start gap-3">
-                                            <CheckCircle className="mt-1 h-5 w-5 text-green-600" />
+                                            <CheckCircle className="mt-1 h-5 w-5 text-accent" />
                                             <div className="flex-1">
                                                 <div className="mb-2 flex items-center gap-2">
                                                     <Badge variant="outline">
                                                         {conflict.severity.toUpperCase()}
                                                     </Badge>
-                                                    <span className="text-sm text-gray-600">
+                                                    <span className="text-sm text-muted-foreground">
                                                         {conflict.conflict_type.replace(/_/g, ' ')}
                                                     </span>
                                                 </div>
                                                 <p className="mb-2 line-through">{conflict.description}</p>
                                                 {conflict.resolution_note && (
-                                                    <div className="mt-2 rounded bg-green-50 p-3">
-                                                        <p className="text-sm font-medium text-green-900">
+                                                    <div className="mt-2 rounded bg-accent/10 p-3">
+                                                        <p className="text-sm font-medium text-accent-foreground">
                                                             Resolution Note:
                                                         </p>
-                                                        <p className="text-sm text-green-800">
+                                                        <p className="text-sm text-foreground">
                                                             {conflict.resolution_note}
                                                         </p>
                                                     </div>
@@ -183,8 +183,8 @@ export default function ProjectConflictsPage({ params }: ProjectConflictsPagePro
             ) : (
                 <div className="flex h-96 items-center justify-center">
                     <div className="text-center">
-                        <h2 className="mb-2 text-2xl font-bold text-gray-600">No Conflicts</h2>
-                        <p className="text-gray-500">
+                        <h2 className="mb-2 text-2xl font-bold text-muted-foreground">No Conflicts</h2>
+                        <p className="text-muted-foreground/70">
                             No conflicts detected in this project
                         </p>
                     </div>

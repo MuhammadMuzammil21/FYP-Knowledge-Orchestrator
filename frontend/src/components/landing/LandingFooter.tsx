@@ -2,29 +2,11 @@ import Link from 'next/link'
 import { MessageSquare } from 'lucide-react'
 
 const footerLinks = {
-  Product: [
+  Navigate: [
     { label: 'Features', href: '#features' },
     { label: 'How it works', href: '#how-it-works' },
     { label: 'Pricing', href: '#pricing' },
-    { label: 'Changelog', href: '#' },
-    { label: 'Roadmap', href: '#' },
-  ],
-  Company: [
-    { label: 'About', href: '#' },
-    { label: 'Blog', href: '#' },
-    { label: 'Careers', href: '#' },
-    { label: 'Press', href: '#' },
-  ],
-  Support: [
-    { label: 'Documentation', href: '#' },
-    { label: 'Contact', href: '#' },
-    { label: 'Security', href: '#' },
-    { label: 'Status', href: '#' },
-  ],
-  Legal: [
-    { label: 'Privacy policy', href: '#' },
-    { label: 'Terms of service', href: '#' },
-    { label: 'Cookie policy', href: '#' },
+    { label: 'FAQ', href: '#faq' },
   ],
 }
 
@@ -33,11 +15,11 @@ export function LandingFooter() {
     <footer className="border-t border-border bg-background">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
         {/* Top grid */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mb-12">
           {/* Brand col */}
-          <div className="col-span-2">
+          <div>
             <Link href="/" className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/60 shadow-sm">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-[oklch(0.88_0.05_150)] to-[oklch(0.65_0.12_195)] shadow-sm">
                 <MessageSquare className="h-4 w-4 text-primary-foreground" strokeWidth={2.5} />
               </div>
               <span className="text-lg font-semibold tracking-tight">HarBaat AI</span>
@@ -47,18 +29,7 @@ export function LandingFooter() {
             </p>
             <div className="flex gap-3 mt-4">
               <a
-                href="https://twitter.com"
-                aria-label="Twitter"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                </svg>
-              </a>
-              <a
-                href="https://github.com"
+                href="https://github.com/MuhammadMuzammil21/FYP-Knowledge-Orchestrator"
                 aria-label="GitHub"
                 className="text-muted-foreground hover:text-foreground transition-colors"
                 target="_blank"

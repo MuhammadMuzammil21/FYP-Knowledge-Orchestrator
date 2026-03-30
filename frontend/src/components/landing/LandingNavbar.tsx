@@ -39,7 +39,7 @@ export function LandingNavbar() {
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Left — Logo */}
         <Link href="/" className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-primary/60 shadow-sm">
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-[oklch(0.88_0.05_150)] to-[oklch(0.65_0.12_195)] shadow-sm">
             <MessageSquare className="h-4 w-4 text-primary-foreground" strokeWidth={2.5} />
           </div>
           <span className="text-lg font-semibold tracking-tight">HarBaat AI</span>
