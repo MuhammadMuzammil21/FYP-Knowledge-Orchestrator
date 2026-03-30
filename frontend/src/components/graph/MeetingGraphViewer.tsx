@@ -1,3 +1,5 @@
+'use client';
+
 import { useMemo } from 'react';
 import { KnowledgeGraphViewer } from './KnowledgeGraphViewer';
 import type { MeetingGraphResponse, GraphNode, GraphEdge } from '@/types';
