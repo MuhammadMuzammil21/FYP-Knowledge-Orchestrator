@@ -20,6 +20,16 @@ apiClient.interceptors.request.use(
             if (session?.accessToken) {
                 config.headers.Authorization = `Bearer ${session.accessToken}`;
             }
+            
+            // Client-side: attach workspace ID for multi-tenancy
+            const workspaceId = localStorage.getItem('harbaat_active_workspace');
+            if (workspaceId && workspaceId !== 'personal' && workspaceId !== '"personal"') {
+                // Handle case where localStorage might store it with quotes
+                const cleanId = workspaceId.replace(/(^"|"$)/g, '');
+                if (cleanId && cleanId !== 'personal') {
+                    config.headers['X-Workspace-ID'] = cleanId;
+                }
+            }
         }
         return config;
     },

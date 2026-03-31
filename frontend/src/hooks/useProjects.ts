@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getProjects, getProject, updateProject, getProjectGraph } from '@/lib/api/projects';
+import { getProjects, getProject, updateProject, getProjectGraph, deleteProject } from '@/lib/api/projects';
 import type { Project, ProjectDetail, UpdateProjectRequest, ProjectGraphResponse } from '@/types';
 import { toast } from 'sonner';
 import { getErrorMessage } from '@/lib/api/client';
@@ -64,5 +64,23 @@ export function useProjectGraph(projectId: string) {
         queryFn: () => getProjectGraph(projectId),
         enabled: !!projectId,
         staleTime: 10 * 60 * 1000, // 10 minutes (graphs are expensive to compute)
+    });
+}
+
+/**
+ * Hook to delete a project (owner/admin only)
+ */
+export function useDeleteProject() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (projectId: string) => deleteProject(projectId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['projects'] });
+            toast.success('Project deleted successfully');
+        },
+        onError: (error) => {
+            toast.error(getErrorMessage(error));
+        },
     });
 }

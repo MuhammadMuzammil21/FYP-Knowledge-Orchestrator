@@ -7,6 +7,8 @@ import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { useMobileMenu } from '@/contexts/MobileMenuContext'
+import { WorkspaceSwitcher } from '@/components/layout/WorkspaceSwitcher'
+import { useWorkspace } from '@/contexts/WorkspaceContext'
 import {
   Plus,
   Settings,
@@ -81,6 +83,7 @@ function NavItem({
 export function Sidebar() {
   const { data: session } = useSession()
   const { isOpen, close } = useMobileMenu()
+  const { can } = useWorkspace()
 
   return (
     <>
@@ -125,23 +128,26 @@ export function Sidebar() {
         </div>
 
         {/* New Meeting CTA */}
-        <div className="p-3 shrink-0">
-          <Link href="/dashboard" onClick={close}>
-            <Button className="w-full justify-start gap-2 h-9 shadow-sm shadow-[oklch(0.88_0.05_150/0.25)]" size="sm">
-              <Plus className="h-4 w-4" />
-              New meeting
-            </Button>
-          </Link>
-        </div>
+        {can('upload_meeting') && (
+          <div className="p-3 shrink-0">
+            <Link href="/dashboard" onClick={close}>
+              <Button className="w-full justify-start gap-2 h-9 shadow-sm shadow-[oklch(0.88_0.05_150/0.25)]" size="sm">
+                <Plus className="h-4 w-4" />
+                New meeting
+              </Button>
+            </Link>
+          </div>
+        )}
 
         {/* Navigation */}
         <div className="flex-1 overflow-y-auto px-3 py-2 space-y-1">
-          <p className="px-2 pt-3 pb-1 text-[10px] font-semibold tracking-widest text-muted-foreground uppercase select-none">
-            Workspace
-          </p>
+          <div className="px-1 pt-3 pb-2">
+            <WorkspaceSwitcher />
+          </div>
           <NavItem href="/dashboard" icon={LayoutDashboard} label="Dashboard" onClick={close} />
           <NavItem href="/meetings" icon={Calendar} label="All meetings" onClick={close} />
           <NavItem href="/projects" icon={FolderOpen} label="Projects" onClick={close} />
+          <NavItem href="/teams" icon={Users} label="Teams" onClick={close} />
 
           <Separator className="my-3" />
 

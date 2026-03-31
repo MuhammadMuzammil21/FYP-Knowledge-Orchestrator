@@ -65,6 +65,18 @@ export const API_ENDPOINTS = {
     // Users
     USER_ME: `${ENDPOINT_CONFIG.users.base}${ENDPOINT_CONFIG.users.endpoints.me}`,
     USER_UPDATE_PROFILE: `${ENDPOINT_CONFIG.users.base}${ENDPOINT_CONFIG.users.endpoints.updateMe}`,
+
+    // Teams
+    TEAMS_LIST: ENDPOINT_CONFIG.teams.base,
+    TEAM_DETAIL: (slug: string) => `${ENDPOINT_CONFIG.teams.base}${ENDPOINT_CONFIG.teams.endpoints.detail(slug)}`,
+    TEAM_UPDATE: (slug: string) => `${ENDPOINT_CONFIG.teams.base}${ENDPOINT_CONFIG.teams.endpoints.update(slug)}`,
+    TEAM_DELETE: (slug: string) => `${ENDPOINT_CONFIG.teams.base}${ENDPOINT_CONFIG.teams.endpoints.delete(slug)}`,
+    TEAM_MEMBERS: (slug: string) => `${ENDPOINT_CONFIG.teams.base}${ENDPOINT_CONFIG.teams.endpoints.members(slug)}`,
+    TEAM_MEMBER_UPDATE: (slug: string, userId: string) => `${ENDPOINT_CONFIG.teams.base}${ENDPOINT_CONFIG.teams.endpoints.memberUpdate(slug, userId)}`,
+    TEAM_MEMBER_REMOVE: (slug: string, userId: string) => `${ENDPOINT_CONFIG.teams.base}${ENDPOINT_CONFIG.teams.endpoints.memberRemove(slug, userId)}`,
+    TEAM_INVITES: (slug: string) => `${ENDPOINT_CONFIG.teams.base}${ENDPOINT_CONFIG.teams.endpoints.invites(slug)}`,
+    TEAM_REVOKE_INVITE: (slug: string, inviteId: string) => `${ENDPOINT_CONFIG.teams.base}${ENDPOINT_CONFIG.teams.endpoints.revokeInvite(slug, inviteId)}`,
+    TEAM_ACCEPT_INVITE: `${ENDPOINT_CONFIG.teams.base}${ENDPOINT_CONFIG.teams.endpoints.acceptInvite()}`,
 } as const;
 
 // Re-export file upload settings

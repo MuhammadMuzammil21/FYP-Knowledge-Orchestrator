@@ -39,9 +39,11 @@ import { ALLOWED_FILE_EXTENSIONS, MAX_FILE_SIZE } from '@/lib/constants'
 import type { MeetingUploadMetadata, Project } from '@/types'
 import { getProjects, createProject } from '@/lib/api/projects'
 import { cn } from '@/lib/utils'
+import { useWorkspace } from '@/contexts/WorkspaceContext'
 
 export default function DashboardPage() {
   const router = useRouter()
+  const { can } = useWorkspace()
   const [file, setFile] = useState<File | null>(null)
   const [context, setContext] = useState('')
   const [isUploading, setIsUploading] = useState(false)
@@ -540,24 +542,33 @@ export default function DashboardPage() {
               <p className="text-xs text-muted-foreground hidden sm:block">
                 Processing usually takes under 5 minutes
               </p>
-              <Button
-                onClick={handleUpload}
-                disabled={!file || isUploading}
-                className="gap-2 min-w-[148px] ml-auto"
-                size="default"
-              >
-                {isUploading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Uploading...
-                  </>
-                ) : (
-                  <>
+              {!can('upload_meeting') ? (
+                <div title="Viewers cannot upload meetings" className="ml-auto">
+                  <Button disabled className="gap-2 min-w-[148px]" size="default">
                     <Zap className="h-4 w-4" />
                     Start analysis
-                  </>
-                )}
-              </Button>
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  onClick={handleUpload}
+                  disabled={!file || isUploading}
+                  className="gap-2 min-w-[148px] ml-auto"
+                  size="default"
+                >
+                  {isUploading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <Zap className="h-4 w-4" />
+                      Start analysis
+                    </>
+                  )}
+                </Button>
+              )}
             </div>
           </div>
         </div>

@@ -45,6 +45,9 @@ export function Navbar() {
       ]
     if (pathname?.startsWith('/projects/'))
       return [{ label: 'Projects', href: '/projects' }, { label: 'Project' }]
+    if (pathname === '/teams') return [{ label: 'Teams' }];
+    if (pathname === '/teams/create') return [{ label: 'Teams', href: '/teams' }, { label: 'Create team' }];
+    if (pathname?.startsWith('/teams/')) return [{ label: 'Teams', href: '/teams' }, { label: 'Team' }];
     if (pathname?.startsWith('/settings/known-speakers'))
       return [{ label: 'Settings', href: '/settings' }, { label: 'Known speakers' }]
     return [{ label: 'HarBaat AI' }]

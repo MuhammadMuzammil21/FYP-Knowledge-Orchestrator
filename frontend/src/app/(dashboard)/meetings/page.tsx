@@ -8,10 +8,12 @@ import { useMeetings } from '@/hooks/useMeetings'
 import { ChevronLeft, ChevronRight, Mic, Plus, SlidersHorizontal } from 'lucide-react'
 import { PAGINATION_DEFAULTS } from '@/lib/constants'
 import Link from 'next/link'
+import { useWorkspace } from '@/contexts/WorkspaceContext'
 
 export default function MeetingsPage() {
   const [offset, setOffset] = useState(0)
   const limit = PAGINATION_DEFAULTS.LIMIT
+  const { can } = useWorkspace()
 
   const { data, isLoading, error } = useMeetings({ limit, offset })
 
@@ -57,12 +59,14 @@ export default function MeetingsPage() {
             <SlidersHorizontal className="h-3.5 w-3.5" />
             Filter
           </Button>
-          <Link href="/dashboard">
-            <Button size="sm" className="gap-2">
-              <Plus className="h-4 w-4" />
-              New meeting
-            </Button>
-          </Link>
+          {can('upload_meeting') && (
+            <Link href="/dashboard">
+              <Button size="sm" className="gap-2">
+                <Plus className="h-4 w-4" />
+                New meeting
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
 

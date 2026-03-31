@@ -54,6 +54,13 @@ export async function updateProject(
     return response.data;
 }
 
+export async function deleteProject(projectId: string): Promise<{ message: string }> {
+    const response = await apiClient.delete<{ message: string }>(
+        API_ENDPOINTS.PROJECT_DETAIL(projectId)
+    );
+    return response.data;
+}
+
 /**
  * Get knowledge graph for entire project (all meetings combined)
  */

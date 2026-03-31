@@ -1,11 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Pencil, Check, X } from 'lucide-react';
-import { useUpdateProject } from '@/hooks/useProjects';
+import { Pencil, Check, X, Trash2, Loader2 } from 'lucide-react';
+import { useUpdateProject, useDeleteProject } from '@/hooks/useProjects';
+import { useWorkspace } from '@/contexts/WorkspaceContext';
 import type { ProjectDetail } from '@/types';
 
 interface ProjectHeaderProps {
@@ -16,8 +18,11 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
     const [isEditing, setIsEditing] = useState(false);
     const [name, setName] = useState(project.name);
     const [description, setDescription] = useState(project.description || '');
+    const router = useRouter();
+    const { can } = useWorkspace();
 
     const updateProject = useUpdateProject();
+    const deleteProject = useDeleteProject();
 
     const handleSave = () => {
         updateProject.mutate(
@@ -40,6 +45,14 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
         setName(project.name);
         setDescription(project.description || '');
         setIsEditing(false);
+    };
+
+    const handleDelete = () => {
+        if (window.confirm(`Are you sure you want to delete "${project.name}"? This will permanently remove all meetings and data within it.`)) {
+            deleteProject.mutate(project.id, {
+                onSuccess: () => router.push('/projects'),
+            });
+        }
     };
 
     if (isEditing) {
@@ -96,10 +109,27 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
                     <p className="mt-2 text-muted-foreground">{project.description}</p>
                 )}
             </div>
-            <Button onClick={() => setIsEditing(true)} variant="outline" size="sm">
-                <Pencil className="mr-2 h-4 w-4" />
-                Edit
-            </Button>
+            <div className="flex items-center gap-2">
+                <Button onClick={() => setIsEditing(true)} variant="outline" size="sm">
+                    <Pencil className="mr-2 h-4 w-4" />
+                    Edit
+                </Button>
+                {can('delete_project') && (
+                    <Button
+                        onClick={handleDelete}
+                        variant="outline"
+                        size="sm"
+                        className="text-destructive border-destructive/40 hover:bg-destructive/10 hover:text-destructive"
+                        disabled={deleteProject.isPending}
+                    >
+                        {deleteProject.isPending
+                            ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            : <Trash2 className="mr-2 h-4 w-4" />
+                        }
+                        Delete
+                    </Button>
+                )}
+            </div>
         </div>
     );
 }

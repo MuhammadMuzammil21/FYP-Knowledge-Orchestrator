@@ -5,6 +5,7 @@ import { SessionProvider } from 'next-auth/react';
 import { Toaster } from '@/components/ui/sonner';
 import { NavbarWrapper } from '@/components/layout/NavbarWrapper';
 import { useState } from 'react';
+import { WorkspaceProvider } from '@/contexts/WorkspaceContext';
 
 export function Providers({ children }: { children: React.ReactNode }) {
     const [queryClient] = useState(
@@ -22,9 +23,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
     return (
         <SessionProvider>
             <QueryClientProvider client={queryClient}>
-                <NavbarWrapper />
-                {children}
-                <Toaster />
+                <WorkspaceProvider>
+                    <NavbarWrapper />
+                    {children}
+                    <Toaster />
+                </WorkspaceProvider>
             </QueryClientProvider>
         </SessionProvider>
     );

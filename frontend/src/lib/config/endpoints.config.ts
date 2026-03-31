@@ -92,6 +92,26 @@ export const ENDPOINT_CONFIG = {
     },
 
     /**
+     * Teams endpoints
+     */
+    teams: {
+        base: '/api/teams',
+        endpoints: {
+            list: '',
+            create: '',
+            detail: (slug: string) => `/${slug}`,
+            update: (slug: string) => `/${slug}`,
+            delete: (slug: string) => `/${slug}`,
+            members: (slug: string) => `/${slug}/members`,
+            memberUpdate: (slug: string, userId: string) => `/${slug}/members/${userId}`,
+            memberRemove: (slug: string, userId: string) => `/${slug}/members/${userId}`,
+            invites: (slug: string) => `/${slug}/invites`,
+            revokeInvite: (slug: string, inviteId: string) => `/${slug}/invites/${inviteId}`,
+            acceptInvite: () => '/invites/accept',
+        },
+    },
+
+    /**
      * User endpoints
      */
     users: {

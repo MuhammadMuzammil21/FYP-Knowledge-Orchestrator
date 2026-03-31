@@ -56,6 +56,13 @@ export async function getMeeting(meetingId: string): Promise<MeetingDetail> {
     return response.data;
 }
 
+export async function deleteMeeting(meetingId: string): Promise<{ message: string }> {
+    const response = await apiClient.delete<{ message: string }>(
+        API_ENDPOINTS.MEETING_DETAIL(meetingId)
+    );
+    return response.data;
+}
+
 export async function getMeetingStatus(meetingId: string): Promise<MeetingStatusDetail> {
     const response = await apiClient.get<MeetingStatusDetail>(
         API_ENDPOINTS.MEETING_STATUS(meetingId)

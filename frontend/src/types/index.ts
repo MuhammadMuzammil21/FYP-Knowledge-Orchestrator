@@ -337,3 +337,54 @@ export interface CreateKnownSpeakerRequest {
 export interface UpdateKnownSpeakerRequest {
     name: string;
 }
+
+// ─── Team Types ──────────────────────────────────────────────────────────────
+
+export type TeamRole = 'owner' | 'admin' | 'member' | 'viewer';
+
+export interface Team {
+    id: string;
+    name: string;
+    slug: string;
+    description: string | null;
+    owner_id: string;
+    member_count: number;
+    your_role: TeamRole;
+    created_at: string;
+}
+
+export interface TeamDetail extends Team {
+    members: TeamMember[];
+}
+
+export interface TeamMember {
+    user_id: string;
+    name: string;
+    email: string;
+    role: TeamRole;
+    joined_at: string;
+}
+
+export interface TeamInvite {
+    id: string;
+    email: string;
+    role: TeamRole;
+    invited_by: string;
+    created_at: string;
+    expires_at: string;
+}
+
+export interface CreateTeamRequest {
+    name: string;
+    slug: string;
+    description?: string;
+}
+
+export interface InviteMemberRequest {
+    email: string;
+    role: TeamRole;
+}
+
+export interface TeamListResponse {
+    teams: Team[];
+}

@@ -11,12 +11,14 @@ import { RAGChat } from '@/components/meetings/RAGChat';
 import { ProgressBar } from '@/components/meetings/ProgressBar';
 import { StatusBadge } from '@/components/meetings/StatusBadge';
 import { SpeakersPanel } from '@/components/speakers/SpeakersPanel';
-import { useMeeting, useTranscript, useEntities } from '@/hooks/useMeetingDetail';
+import { useMeeting, useTranscript, useEntities, useDeleteMeeting } from '@/hooks/useMeetingDetail';
 import { useMeetingStatus } from '@/hooks/useMeetingStatus';
 import { useProjectConflicts } from '@/hooks/useKnowledgeGraph';
-import { ArrowLeft, Network } from 'lucide-react';
+import { useWorkspace } from '@/contexts/WorkspaceContext';
+import { ArrowLeft, Network, Trash2, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { formatDateTime } from '@/lib/utils/date';
 
 interface MeetingDetailPageProps {
@@ -25,6 +27,8 @@ interface MeetingDetailPageProps {
 
 export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
     const { id } = use(params);
+    const router = useRouter();
+    const { can } = useWorkspace();
 
     const { data: meeting, isLoading: meetingLoading } = useMeeting(id);
     const { data: status } = useMeetingStatus(id, true);
@@ -32,6 +36,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
     const { data: entitiesData, isLoading: entitiesLoading } = useEntities(id);
     // Conflicts are now at project level
     const { data: conflictsData, isLoading: conflictsLoading } = useProjectConflicts(meeting?.projectId || '');
+    const deleteMeeting = useDeleteMeeting();
 
     if (meetingLoading) {
         return (
@@ -84,6 +89,27 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                                     View Graph
                                 </Button>
                             </Link>
+                        )}
+                        {can('delete_meeting') && (
+                            <Button
+                                variant="outline"
+                                size="default"
+                                className="text-destructive border-destructive/40 hover:bg-destructive/10 hover:text-destructive w-full sm:w-auto"
+                                disabled={deleteMeeting.isPending}
+                                onClick={() => {
+                                    if (window.confirm('Are you sure you want to delete this meeting? This action cannot be undone.')) {
+                                        deleteMeeting.mutate(id, {
+                                            onSuccess: () => router.push('/meetings'),
+                                        });
+                                    }
+                                }}
+                            >
+                                {deleteMeeting.isPending
+                                    ? <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    : <Trash2 className="mr-2 h-4 w-4" />
+                                }
+                                Delete
+                            </Button>
                         )}
                         <StatusBadge status={meeting.status} />
                     </div>
