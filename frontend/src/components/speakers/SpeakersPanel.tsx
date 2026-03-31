@@ -83,19 +83,19 @@ export function SpeakersPanel({ meetingId }: SpeakersPanelProps) {
                 {speakers.map((speaker) => (
                     <div
                         key={speaker.id}
-                        className="flex items-center justify-between rounded-lg border p-4"
+                        className="flex flex-col sm:flex-row sm:items-center justify-between rounded-lg border p-4 gap-4 sm:gap-0"
                     >
-                        <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10">
+                        <div className="flex items-start sm:items-center gap-3 w-full sm:w-auto">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 shrink-0">
                                 <User className="h-5 w-5 text-primary" />
                             </div>
-                            <div>
+                            <div className="flex-1 min-w-0">
                                 {editingId === speaker.id ? (
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex flex-wrap items-center gap-2 w-full">
                                         <Input
                                             value={editName}
                                             onChange={(e) => setEditName(e.target.value)}
-                                            className="w-48"
+                                            className="w-full sm:w-48"
                                             disabled={updateSpeaker.isPending}
                                             autoFocus
                                             onKeyDown={(e) => {
@@ -103,26 +103,28 @@ export function SpeakersPanel({ meetingId }: SpeakersPanelProps) {
                                                 if (e.key === 'Escape') handleCancel();
                                             }}
                                         />
-                                        <Button
-                                            size="sm"
-                                            onClick={() => handleSave(speaker.id)}
-                                            disabled={!editName.trim() || updateSpeaker.isPending}
-                                        >
-                                            <Check className="h-4 w-4" />
-                                        </Button>
-                                        <Button
-                                            size="sm"
-                                            variant="outline"
-                                            onClick={handleCancel}
-                                            disabled={updateSpeaker.isPending}
-                                        >
-                                            <X className="h-4 w-4" />
-                                        </Button>
+                                        <div className="flex gap-2">
+                                            <Button
+                                                size="sm"
+                                                onClick={() => handleSave(speaker.id)}
+                                                disabled={!editName.trim() || updateSpeaker.isPending}
+                                            >
+                                                <Check className="h-4 w-4" />
+                                            </Button>
+                                            <Button
+                                                size="sm"
+                                                variant="outline"
+                                                onClick={handleCancel}
+                                                disabled={updateSpeaker.isPending}
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </Button>
+                                        </div>
                                     </div>
                                 ) : (
                                     <>
-                                        <p className="font-medium">{speaker.display_name}</p>
-                                        <p className="text-xs text-muted-foreground">
+                                        <p className="font-medium truncate">{speaker.display_name}</p>
+                                        <p className="text-xs text-muted-foreground truncate">
                                             {speaker.original_label}
                                             {speaker.known_speaker_id && (
                                                 <span className="ml-2 inline-flex items-center gap-1 text-primary">
@@ -141,6 +143,7 @@ export function SpeakersPanel({ meetingId }: SpeakersPanelProps) {
                                 variant="outline"
                                 size="sm"
                                 onClick={() => handleEdit(speaker)}
+                                className="w-full sm:w-auto shrink-0"
                             >
                                 <Edit2 className="mr-2 h-4 w-4" />
                                 Edit

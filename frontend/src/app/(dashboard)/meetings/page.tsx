@@ -99,7 +99,7 @@ export default function MeetingsPage() {
           </div>
 
           {/* Pagination */}
-          <div className="mt-4 flex items-center justify-between">
+          <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0">
             <p className="text-xs text-muted-foreground">
               Showing {offset + 1}–{offset + data.length}
             </p>

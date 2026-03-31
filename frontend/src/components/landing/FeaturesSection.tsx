@@ -43,8 +43,8 @@ const features = [
     illustration: (
       <div className="mt-4 flex flex-wrap gap-2">
         <Badge className="bg-primary/10 text-primary dark:bg-primary/20 dark:text-primary border-transparent text-xs">Task: Update roadmap</Badge>
-        <Badge className="bg-accent/15 text-accent-foreground dark:bg-accent/20 dark:text-accent border-transparent text-xs">Decision: Launch Q1</Badge>
-        <Badge className="bg-accent/10 text-accent-foreground dark:bg-accent/15 dark:text-accent border-transparent text-xs">Topic: Revenue growth</Badge>
+        <Badge className="bg-accent/15 text-accent dark:bg-accent/20 border-transparent text-xs">Decision: Launch Q1</Badge>
+        <Badge className="bg-accent/10 text-accent dark:bg-accent/15 border-transparent text-xs">Topic: Revenue growth</Badge>
       </div>
     ),
   },

@@ -41,9 +41,9 @@ export const APP_CONFIG = {
      */
     ui: {
         meetingStatusColors: {
-            queued: 'bg-accent/10 text-accent-foreground',
+            queued: 'bg-accent/10 text-accent',
             processing: 'bg-primary/10 text-primary',
-            completed: 'bg-accent/15 text-accent-foreground',
+            completed: 'bg-accent/15 text-accent',
             error: 'bg-destructive/10 text-destructive',
         },
         stageLabels: {

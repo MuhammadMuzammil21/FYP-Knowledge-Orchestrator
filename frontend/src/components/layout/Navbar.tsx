@@ -56,7 +56,7 @@ export function Navbar() {
   const breadcrumbs = getBreadcrumbs()
 
   return (
-    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border bg-background/95 backdrop-blur-sm px-4 md:px-6 shrink-0">
+    <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border/80 bg-background/95 backdrop-blur-sm px-4 md:px-6 shrink-0 shadow-sm dark:shadow-none">
       {/* Left zone */}
       <div className="flex items-center gap-3">
         {/* Mobile hamburger */}
@@ -71,7 +71,7 @@ export function Navbar() {
         </Button>
 
         {/* Breadcrumbs */}
-        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 overflow-hidden min-w-0">
           {breadcrumbs.map((crumb, i) => (
             <div key={i} className="flex items-center gap-1.5">
               {i > 0 && (
@@ -85,7 +85,9 @@ export function Navbar() {
                   {crumb.label}
                 </Link>
               ) : (
-                <span className="text-sm font-medium text-foreground">{crumb.label}</span>
+                <span className="text-sm font-medium text-foreground truncate max-w-[140px] sm:max-w-none">
+                  {crumb.label}
+                </span>
               )}
             </div>
           ))}

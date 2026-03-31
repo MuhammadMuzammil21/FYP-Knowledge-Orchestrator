@@ -102,15 +102,15 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
     }
 
     return (
-        <div className="flex items-start justify-between">
-            <div>
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 sm:gap-0">
+            <div className="w-full sm:w-auto">
                 <h1 className="text-3xl font-bold">{project.name}</h1>
                 {project.description && (
                     <p className="mt-2 text-muted-foreground">{project.description}</p>
                 )}
             </div>
-            <div className="flex items-center gap-2">
-                <Button onClick={() => setIsEditing(true)} variant="outline" size="sm">
+            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2 w-full sm:w-auto">
+                <Button onClick={() => setIsEditing(true)} variant="outline" size="sm" className="flex-1 sm:flex-none">
                     <Pencil className="mr-2 h-4 w-4" />
                     Edit
                 </Button>
@@ -119,7 +119,7 @@ export function ProjectHeader({ project }: ProjectHeaderProps) {
                         onClick={handleDelete}
                         variant="outline"
                         size="sm"
-                        className="text-destructive border-destructive/40 hover:bg-destructive/10 hover:text-destructive"
+                        className="flex-1 sm:flex-none text-destructive border-destructive/40 hover:bg-destructive/10 hover:text-destructive"
                         disabled={deleteProject.isPending}
                     >
                         {deleteProject.isPending

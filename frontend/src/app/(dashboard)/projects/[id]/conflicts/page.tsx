@@ -68,17 +68,17 @@ export default function ProjectConflictsPage({ params }: ProjectConflictsPagePro
                 <div className="space-y-6">
                     {/* Summary */}
                     <div className="grid gap-4 md:grid-cols-3">
-                        <Card className="p-4">
+                        <Card className="p-4 border-border/80 bg-card shadow-sm">
                             <div className="text-sm text-muted-foreground">Total Conflicts</div>
                             <div className="mt-1 text-3xl font-bold">{conflictsData.total_conflicts}</div>
                         </Card>
-                        <Card className="p-4">
+                        <Card className="p-4 border-destructive/30 bg-destructive/5 dark:bg-destructive/5 dark:border-destructive/20 shadow-sm">
                             <div className="text-sm text-muted-foreground">Unresolved</div>
                             <div className="mt-1 text-3xl font-bold text-destructive">
                                 {unresolvedConflicts.length}
                             </div>
                         </Card>
-                        <Card className="p-4">
+                        <Card className="p-4 border-accent/30 bg-accent/5 dark:bg-accent/5 dark:border-accent/20 shadow-sm">
                             <div className="text-sm text-muted-foreground">Resolved</div>
                             <div className="mt-1 text-3xl font-bold text-accent">
                                 {resolvedConflicts.length}
@@ -96,7 +96,7 @@ export default function ProjectConflictsPage({ params }: ProjectConflictsPagePro
                             <div className="space-y-3">
                                 {unresolvedConflicts.map((conflict) => (
                                     <Card key={conflict.id} className="p-6">
-                                        <div className="flex items-start justify-between">
+                                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                                             <div className="flex-1">
                                                 <div className="mb-2 flex items-center gap-2">
                                                     <Badge
@@ -113,7 +113,7 @@ export default function ProjectConflictsPage({ params }: ProjectConflictsPagePro
                                                     </span>
                                                 </div>
                                                 <p className="mb-3">{conflict.description}</p>
-                                                <div className="text-sm text-muted-foreground">
+                                                <div className="text-sm text-muted-foreground flex flex-wrap items-center gap-1">
                                                     <span>Between meetings: </span>
                                                     <Link
                                                         href={`/meetings/${conflict.source_meeting_id}`}
@@ -130,7 +130,7 @@ export default function ProjectConflictsPage({ params }: ProjectConflictsPagePro
                                                     </Link>
                                                 </div>
                                             </div>
-                                            <Button onClick={() => handleResolveClick(conflict)}>
+                                            <Button onClick={() => handleResolveClick(conflict)} className="w-full sm:w-auto flex-shrink-0">
                                                 Resolve
                                             </Button>
                                         </div>

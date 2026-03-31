@@ -41,6 +41,7 @@ export function GraphDetailPanel({ node, onClose }: GraphDetailPanelProps) {
         background: 'hsl(var(--card))',
         borderLeft: '1px solid hsl(var(--border))',
         borderRadius: '0 12px 12px 0',
+        boxShadow: '-4px 0 12px oklch(0 0 0 / 0.08)',
         overflow: 'auto',
         zIndex: 20,
         display: 'flex',
@@ -114,7 +115,7 @@ export function GraphDetailPanel({ node, onClose }: GraphDetailPanelProps) {
             {displayProperties.map(([key, value]) => (
               <div key={key} style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                 <span style={{
-                  fontSize: 10,
+                  fontSize: 11,
                   fontWeight: 600,
                   textTransform: 'uppercase',
                   letterSpacing: '0.3px',

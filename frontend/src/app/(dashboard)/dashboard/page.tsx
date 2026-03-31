@@ -385,7 +385,7 @@ export default function DashboardPage() {
                     </div>
                   </AccordionTrigger>
                   <AccordionContent>
-                    <div className="grid grid-cols-3 gap-3 pb-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pb-3">
                       <div className="space-y-1.5">
                         <Label htmlFor="minSpeakers" className="text-xs font-medium">
                           Min speakers
@@ -538,13 +538,13 @@ export default function DashboardPage() {
             </div>
 
             {/* Form card footer with CTA */}
-            <div className="border-t border-border px-6 py-4 flex items-center justify-between bg-muted/30">
+            <div className="border-t border-border px-6 py-4 flex flex-col sm:flex-row items-center justify-between bg-muted/30 gap-3 sm:gap-0">
               <p className="text-xs text-muted-foreground hidden sm:block">
                 Processing usually takes under 5 minutes
               </p>
               {!can('upload_meeting') ? (
-                <div title="Viewers cannot upload meetings" className="ml-auto">
-                  <Button disabled className="gap-2 min-w-[148px]" size="default">
+                <div title="Viewers cannot upload meetings" className="w-full sm:w-auto sm:ml-auto">
+                  <Button disabled className="gap-2 min-w-[148px] w-full sm:w-auto" size="default">
                     <Zap className="h-4 w-4" />
                     Start analysis
                   </Button>
@@ -553,7 +553,7 @@ export default function DashboardPage() {
                 <Button
                   onClick={handleUpload}
                   disabled={!file || isUploading}
-                  className="gap-2 min-w-[148px] ml-auto"
+                  className="gap-2 min-w-[148px] w-full sm:w-auto sm:ml-auto"
                   size="default"
                 >
                   {isUploading ? (

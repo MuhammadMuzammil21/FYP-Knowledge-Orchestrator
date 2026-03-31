@@ -59,7 +59,7 @@ function NavItem({
           'group flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm transition-all duration-150',
           'border-l-2',
           isActive
-            ? 'border-primary bg-primary/10 text-primary font-medium'
+            ? 'border-primary bg-primary/15 text-primary font-medium dark:bg-primary/10'
             : 'border-transparent text-muted-foreground hover:bg-accent/60 hover:text-foreground hover:border-border'
         )}
       >

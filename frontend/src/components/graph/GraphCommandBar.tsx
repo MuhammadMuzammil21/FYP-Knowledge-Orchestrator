@@ -3,6 +3,7 @@
 import { useRef, useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, Maximize2 } from 'lucide-react';
 import type { LayoutPreset } from './graphLayouts';
 import { LAYOUT_LABELS } from './graphLayouts';
@@ -94,8 +95,8 @@ export function GraphCommandBar({
         />
       </div>
 
-      {/* Layout presets */}
-      <div style={{ display: 'flex', gap: 3 }}>
+      {/* Layout presets - Desktop */}
+      <div className="hidden sm:flex" style={{ gap: 3 }}>
         {ALL_LAYOUTS.map((preset) => (
           <Button
             key={preset}
@@ -107,6 +108,20 @@ export function GraphCommandBar({
             {LAYOUT_LABELS[preset]}
           </Button>
         ))}
+      </div>
+
+      {/* Layout presets - Mobile */}
+      <div className="flex sm:hidden w-full order-3 mt-2">
+        <Select value={activeLayout} onValueChange={(val: any) => onLayoutChange(val)}>
+          <SelectTrigger className="h-[28px] text-[11px] w-full bg-background">
+            <SelectValue placeholder="Layout presets" />
+          </SelectTrigger>
+          <SelectContent>
+            {ALL_LAYOUTS.map(preset => (
+              <SelectItem key={preset} value={preset} className="text-[11px]">{LAYOUT_LABELS[preset]}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Fit button */}

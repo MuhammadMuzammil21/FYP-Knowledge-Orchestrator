@@ -11,20 +11,20 @@ const severityConfig = {
     high: {
         icon: AlertTriangle,
         color: 'text-destructive',
-        bgColor: 'bg-destructive/10',
-        borderColor: 'border-destructive/20',
+        bgColor: 'bg-destructive/10 dark:bg-destructive/10',
+        borderColor: 'border-destructive/50 dark:border-destructive/20',
     },
     medium: {
         icon: AlertCircle,
-        color: 'text-accent-foreground',
-        bgColor: 'bg-accent/5',
-        borderColor: 'border-accent/20',
+        color: 'text-accent dark:text-accent-foreground',
+        bgColor: 'bg-accent/10 dark:bg-accent/5',
+        borderColor: 'border-accent/50 dark:border-accent/20',
     },
     low: {
         icon: Info,
         color: 'text-primary',
-        bgColor: 'bg-primary/10',
-        borderColor: 'border-primary/20',
+        bgColor: 'bg-primary/10 dark:bg-primary/10',
+        borderColor: 'border-primary/40 dark:border-primary/20',
     },
 };
 

@@ -27,7 +27,7 @@ export default function MeetingGraphPage({ params }: MeetingGraphPageProps) {
     }
 
     return (
-        <div className="flex h-full flex-col p-8">
+        <div className="flex h-full flex-col p-4 md:p-8">
             <Link
                 href={`/meetings/${id}`}
                 className="mb-4 inline-flex items-center text-sm text-primary hover:underline"

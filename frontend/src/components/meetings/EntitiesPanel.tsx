@@ -25,7 +25,7 @@ export function EntitiesPanel({ entities }: EntitiesPanelProps) {
                     <CardContent>
                         <div className="flex flex-wrap gap-2">
                             {speakers.map((speaker, index) => (
-                                <Badge key={index} variant="secondary">
+                                <Badge key={index} className="bg-primary/10 text-primary border border-primary/30 dark:bg-primary/10 dark:text-primary dark:border-primary/20">
                                     {speaker}
                                 </Badge>
                             ))}
@@ -46,7 +46,7 @@ export function EntitiesPanel({ entities }: EntitiesPanelProps) {
                     <CardContent>
                         <div className="flex flex-wrap gap-2">
                             {topics.map((topic, index) => (
-                                <Badge key={index} variant="outline">
+                                <Badge key={index} className="bg-accent/10 text-accent border border-accent/40 dark:bg-accent/10 dark:text-accent dark:border-accent/20">
                                     {topic}
                                 </Badge>
                             ))}
@@ -69,7 +69,7 @@ export function EntitiesPanel({ entities }: EntitiesPanelProps) {
                             {tasks.map((task, index) => (
                                 <div
                                     key={index}
-                                    className="rounded-lg border p-3 hover:bg-muted"
+                                    className="rounded-lg border border-border bg-muted/40 dark:bg-muted/20 p-3 hover:bg-muted transition-colors"
                                 >
                                     <div className="mb-1 font-medium">{task.task}</div>
                                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -105,7 +105,7 @@ export function EntitiesPanel({ entities }: EntitiesPanelProps) {
                             {decisions.map((decision, index) => (
                                 <div
                                     key={index}
-                                    className="rounded-lg border p-3 hover:bg-muted"
+                                    className="rounded-lg border border-border bg-muted/40 dark:bg-muted/20 p-3 hover:bg-muted transition-colors"
                                 >
                                     <div className="mb-1 font-medium">{decision.statement}</div>
                                     <div className="text-sm text-muted-foreground">

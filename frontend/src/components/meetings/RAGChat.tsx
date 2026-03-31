@@ -119,7 +119,7 @@ export function RAGChat({ meetingId }: RAGChatProps) {
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto mb-4 px-2 min-h-[300px] md:min-h-[400px] max-h-[500px] md:max-h-[600px]">
+            <div className="flex-1 overflow-y-auto mb-4 px-2 min-h-[250px] md:min-h-[400px] max-h-[500px] md:max-h-[600px]">
                 {messages.length === 0 && !isLoading && (
                     <div className="flex h-full items-center justify-center text-muted-foreground text-center">
                         <div className="space-y-3">

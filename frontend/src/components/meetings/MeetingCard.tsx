@@ -17,14 +17,14 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
 
   return (
     <Link href={`/meetings/${meeting.id}`}>
-      <div className="group flex items-center gap-4 px-4 py-3.5 hover:bg-accent/40 transition-colors duration-150 border-b border-border/50 last:border-0 cursor-pointer">
+      <div className="group flex items-center gap-4 px-4 py-3.5 hover:bg-muted dark:hover:bg-accent/40 transition-colors duration-150 border-b border-border/50 last:border-0 cursor-pointer">
         {/* Status dot */}
         <div
           className={cn(
             'h-2 w-2 rounded-full flex-shrink-0',
             meeting.status === 'completed' && 'bg-accent',
             meeting.status === 'processing' && 'bg-primary animate-pulse',
-            meeting.status === 'queued' && 'bg-accent',
+            meeting.status === 'queued' && 'bg-muted-foreground',
             meeting.status === 'error' && 'bg-destructive'
           )}
         />

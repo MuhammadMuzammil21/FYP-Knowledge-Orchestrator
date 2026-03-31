@@ -94,7 +94,7 @@ export function KnowledgeGraphViewer({ nodes, edges }: KnowledgeGraphViewerProps
         nodeCount={visibleNodes.length}
         edgeCount={visibleEdges.length}
       />
-      <div style={{ position: 'relative', flex: 1 }}>
+      <div style={{ position: 'relative', flex: 1, minHeight: 400 }}>
         <CytoscapeGraph
           nodes={visibleNodes}
           edges={visibleEdges}
@@ -103,7 +103,7 @@ export function KnowledgeGraphViewer({ nodes, edges }: KnowledgeGraphViewerProps
           cyRef={interaction.cyRef}
           onNodeSelect={handleNodeSelect}
           onBackgroundTap={handleBackgroundTap}
-          height={560}
+          height="100%"
         />
         <GraphDetailPanel
           node={interaction.selectedNode}

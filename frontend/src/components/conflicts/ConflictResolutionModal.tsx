@@ -63,18 +63,18 @@ export function ConflictResolutionModal({
                 <div className="space-y-4 py-4">
                     {/* Conflict Details */}
                     <div className="rounded-lg border bg-muted p-4">
-                        <div className="mb-2 flex items-center gap-2">
+                        <div className="mb-2 flex flex-wrap items-center gap-2">
                             <span
-                                className={`rounded px-2 py-1 text-xs font-semibold uppercase ${conflict.severity === 'high'
+                                className={`shrink-0 rounded px-2 py-1 text-xs font-semibold uppercase ${conflict.severity === 'high'
                                     ? 'bg-destructive/10 text-destructive'
                                     : conflict.severity === 'medium'
-                                        ? 'bg-accent/15 text-accent-foreground'
+                                        ? 'bg-accent/15 text-accent'
                                         : 'bg-primary/10 text-primary'
                                     }`}
                             >
                                 {conflict.severity}
                             </span>
-                            <span className="text-sm text-muted-foreground">{conflict.conflict_type}</span>
+                            <span className="text-sm text-muted-foreground break-words min-w-0 flex-1">{conflict.conflict_type}</span>
                         </div>
                         <p className="text-sm">{conflict.description}</p>
                     </div>

@@ -17,25 +17,25 @@ const statusConfig: Record<
 > = {
   queued: {
     dot: 'bg-accent',
-    container: 'bg-accent/10 border border-accent/20',
+    container: 'bg-accent/15 border border-accent/40 dark:bg-accent/10 dark:border-accent/20',
     label: 'Queued',
-    text: 'text-accent-foreground dark:text-accent',
+    text: 'text-accent dark:text-accent',
   },
   processing: {
     dot: 'bg-primary animate-pulse',
-    container: 'bg-primary/10 border border-primary/20',
+    container: 'bg-primary/15 border border-primary/40 dark:bg-primary/10 dark:border-primary/20',
     label: 'Processing',
     text: 'text-primary dark:text-primary',
   },
   completed: {
     dot: 'bg-accent',
-    container: 'bg-accent/10 border border-accent/20',
+    container: 'bg-accent/15 border border-accent/40 dark:bg-accent/10 dark:border-accent/20',
     label: 'Completed',
-    text: 'text-accent-foreground dark:text-accent',
+    text: 'text-accent dark:text-accent',
   },
   error: {
     dot: 'bg-destructive',
-    container: 'bg-destructive/10 border border-destructive/20',
+    container: 'bg-destructive/15 border border-destructive/40 dark:bg-destructive/10 dark:border-destructive/20',
     label: 'Error',
     text: 'text-destructive dark:text-destructive',
   },

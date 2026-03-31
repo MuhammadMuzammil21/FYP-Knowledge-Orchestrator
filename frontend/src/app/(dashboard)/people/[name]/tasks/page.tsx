@@ -66,29 +66,31 @@ export default function PersonTasksPage({ params }: PersonTasksPageProps) {
                             <div className="space-y-3">
                                 {pendingTasks.map((task) => (
                                     <Card key={task.id} className="p-4">
-                                        <div className="flex items-start gap-3">
-                                            <Circle className="mt-1 h-5 w-5 text-muted-foreground" />
-                                            <div className="flex-1">
-                                                <p className="font-medium">{task.description}</p>
-                                                <div className="mt-2 flex items-center gap-4 text-sm text-muted-foreground">
-                                                    {task.due_date && (
-                                                        <div className="flex items-center gap-1">
-                                                            <Calendar className="h-4 w-4" />
-                                                            <span>
-                                                                Due:{' '}
-                                                                {formatDate(task.due_date)}
-                                                            </span>
-                                                        </div>
-                                                    )}
-                                                    <Link
-                                                        href={`/meetings/${task.meeting_id}`}
-                                                        className="text-primary hover:underline"
-                                                    >
-                                                        {task.meeting_title || `Meeting ${task.meeting_id.slice(0, 8)}`}
-                                                    </Link>
+                                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                                            <div className="flex items-start gap-3 flex-1 min-w-0">
+                                                <Circle className="mt-1 h-5 w-5 text-muted-foreground shrink-0" />
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="font-medium break-words leading-relaxed">{task.description}</p>
+                                                    <div className="mt-2 flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
+                                                        {task.due_date && (
+                                                            <div className="flex items-center gap-1 shrink-0">
+                                                                <Calendar className="h-4 w-4 shrink-0" />
+                                                                <span>
+                                                                    Due:{' '}
+                                                                    {formatDate(task.due_date)}
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                        <Link
+                                                            href={`/meetings/${task.meeting_id}`}
+                                                            className="text-primary hover:underline truncate"
+                                                        >
+                                                            {task.meeting_title || `Meeting ${task.meeting_id.slice(0, 8)}`}
+                                                        </Link>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <Badge variant="outline">{task.status}</Badge>
+                                            <Badge variant="outline" className="w-fit shrink-0 sm:mt-0 mt-1">{task.status}</Badge>
                                         </div>
                                     </Card>
                                 ))}
@@ -104,21 +106,23 @@ export default function PersonTasksPage({ params }: PersonTasksPageProps) {
                             </h2>
                             <div className="space-y-3">
                                 {completedTasks.map((task) => (
-                                    <Card key={task.id} className="p-4 opacity-75">
-                                        <div className="flex items-start gap-3">
-                                            <CheckCircle2 className="mt-1 h-5 w-5 text-accent" />
-                                            <div className="flex-1">
-                                                <p className="font-medium line-through">{task.description}</p>
-                                                <div className="mt-2 flex items-center gap-4 text-sm text-muted-foreground">
-                                                    <Link
-                                                        href={`/meetings/${task.meeting_id}`}
-                                                        className="text-primary hover:underline"
-                                                    >
-                                                        {task.meeting_title || `Meeting ${task.meeting_id.slice(0, 8)}`}
-                                                    </Link>
+                                    <Card key={task.id} className="p-4 opacity-75 md:hover:opacity-100 transition-opacity">
+                                        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                                            <div className="flex items-start gap-3 flex-1 min-w-0">
+                                                <CheckCircle2 className="mt-1 h-5 w-5 text-accent shrink-0" />
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="font-medium line-through break-words leading-relaxed">{task.description}</p>
+                                                    <div className="mt-2 flex flex-wrap items-center gap-2 sm:gap-4 text-sm text-muted-foreground">
+                                                        <Link
+                                                            href={`/meetings/${task.meeting_id}`}
+                                                            className="text-primary hover:underline truncate"
+                                                        >
+                                                            {task.meeting_title || `Meeting ${task.meeting_id.slice(0, 8)}`}
+                                                        </Link>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <Badge variant="outline" className="bg-accent/10">
+                                            <Badge variant="outline" className="bg-accent/10 w-fit shrink-0 sm:mt-0 mt-1">
                                                 {task.status}
                                             </Badge>
                                         </div>

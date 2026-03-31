@@ -76,7 +76,7 @@ export function HeroSection() {
                 <h3 className="font-semibold text-sm">Q4 product review</h3>
                 <p className="text-xs text-muted-foreground mt-0.5">December 10, 2025 · 2 speakers detected</p>
               </div>
-              <Badge className="bg-accent/15 text-accent-foreground dark:bg-accent/20 dark:text-accent border-transparent">
+              <Badge className="bg-accent/15 text-accent dark:bg-accent/20 border-transparent">
                 Completed
               </Badge>
             </div>

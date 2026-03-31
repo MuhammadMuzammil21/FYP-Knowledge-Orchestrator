@@ -268,4 +268,21 @@
 
 .animate-hero-glow {
   animation: hero-glow 6s ease-in-out infinite;
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .shadow-soft {
+    box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.06);
+  }
+  .dark .shadow-soft {
+    box-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.4);
+  }
 }

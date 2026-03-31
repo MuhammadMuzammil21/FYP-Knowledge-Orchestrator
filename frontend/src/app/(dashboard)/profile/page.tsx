@@ -112,7 +112,7 @@ export default function ProfilePage() {
                             </CardDescription>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
                                 <div className="flex items-center gap-3">
                                     <Calendar className="h-5 w-5 text-muted-foreground" />
                                     <div>
@@ -124,7 +124,7 @@ export default function ProfilePage() {
 
                             <Separator />
 
-                            <div className="flex items-center justify-between">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
                                 <div className="flex items-center gap-3">
                                     <Shield className="h-5 w-5 text-muted-foreground" />
                                     <div>
@@ -142,12 +142,12 @@ export default function ProfilePage() {
 
                             <Separator />
 
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-3">
-                                    <User className="h-5 w-5 text-muted-foreground" />
-                                    <div>
-                                        <p className="text-sm font-medium">User ID</p>
-                                        <p className="text-sm text-muted-foreground font-mono">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0 font-mono">
+                                <div className="flex items-center gap-3 min-w-0">
+                                    <User className="h-5 w-5 text-muted-foreground shrink-0" />
+                                    <div className="min-w-0">
+                                        <p className="text-sm font-medium font-sans">User ID</p>
+                                        <p className="text-sm text-muted-foreground font-mono break-all pr-2">
                                             {session.user.id}
                                         </p>
                                     </div>

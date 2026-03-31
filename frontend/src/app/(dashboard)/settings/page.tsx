@@ -3,12 +3,19 @@
 import { useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useTheme } from 'next-themes';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import { updateProfile } from '@/lib/api/auth';
 import { getErrorMessage } from '@/lib/api/client';
@@ -22,6 +29,7 @@ export default function SettingsPage() {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+    const { theme, setTheme } = useTheme();
 
     const handleUpdateProfile = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -82,20 +90,20 @@ export default function SettingsPage() {
 
                 <Tabs defaultValue="account" className="space-y-6">
                     <TabsList className="w-full justify-start overflow-x-auto h-auto p-1 bg-muted/50 scrollbar-hide">
-                        <TabsTrigger value="account" className="flex-1 min-w-[100px]">
-                            <User className="mr-2 h-4 w-4" />
+                        <TabsTrigger value="account" className="flex-1 min-w-[90px] text-xs sm:text-sm whitespace-nowrap">
+                            <User className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
                             Account
                         </TabsTrigger>
-                        <TabsTrigger value="security" className="flex-1 min-w-[100px]">
-                            <Lock className="mr-2 h-4 w-4" />
+                        <TabsTrigger value="security" className="flex-1 min-w-[90px] text-xs sm:text-sm whitespace-nowrap">
+                            <Lock className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
                             Security
                         </TabsTrigger>
-                        <TabsTrigger value="notifications" className="flex-1 min-w-[120px]">
-                            <Bell className="mr-2 h-4 w-4" />
+                        <TabsTrigger value="notifications" className="flex-1 min-w-[110px] text-xs sm:text-sm whitespace-nowrap">
+                            <Bell className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
                             Notifications
                         </TabsTrigger>
-                        <TabsTrigger value="appearance" className="flex-1 min-w-[110px]">
-                            <Palette className="mr-2 h-4 w-4" />
+                        <TabsTrigger value="appearance" className="flex-1 min-w-[100px] text-xs sm:text-sm whitespace-nowrap">
+                            <Palette className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
                             Appearance
                         </TabsTrigger>
                     </TabsList>
@@ -135,7 +143,7 @@ export default function SettingsPage() {
                                         </p>
                                     </div>
 
-                                    <Button type="submit" disabled={isLoading}>
+                                    <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">
                                         {isLoading ? 'Saving...' : 'Save Changes'}
                                     </Button>
                                 </form>
@@ -189,7 +197,7 @@ export default function SettingsPage() {
                                         />
                                     </div>
 
-                                    <Button type="submit" disabled={isLoading}>
+                                    <Button type="submit" disabled={isLoading} className="w-full sm:w-auto">
                                         {isLoading ? 'Updating...' : 'Change Password'}
                                     </Button>
                                 </form>
@@ -256,9 +264,24 @@ export default function SettingsPage() {
                                                 Choose your preferred color theme
                                             </p>
                                         </div>
-                                        <Button variant="outline" size="sm">
-                                            Light Mode
-                                        </Button>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="outline" size="sm" className="capitalize min-w-[100px]">
+                                                    {theme || 'system'} Mode
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <DropdownMenuItem onClick={() => setTheme('light')}>
+                                                    Light Mode
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => setTheme('dark')}>
+                                                    Dark Mode
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem onClick={() => setTheme('system')}>
+                                                    System Mode
+                                                </DropdownMenuItem>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
                                     </div>
 
                                     <Separator />

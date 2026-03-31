@@ -64,7 +64,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
     const formattedDate = formatDateTime(meeting.createdAt);
 
     return (
-        <div className="h-full overflow-y-auto p-4 md:p-8">
+        <div className="min-h-full overflow-y-auto p-3 sm:p-4 md:p-8">
             {/* Header */}
             <div className="mb-6">
                 <Link
@@ -124,17 +124,17 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
             )}
 
             {/* Tabs */}
-            <Tabs defaultValue="transcript" className="h-[calc(100%-200px)]">
-                <TabsList className="mb-4" style={{ display: 'flex', width: '100%', height: 'auto', padding: '4px' }}>
-                    <TabsTrigger value="transcript" style={{ flex: 1 }}>Transcript</TabsTrigger>
-                    <TabsTrigger value="entities" style={{ flex: 1 }}>Entities</TabsTrigger>
-                    <TabsTrigger value="speakers" style={{ flex: 1 }}>Speakers</TabsTrigger>
-                    <TabsTrigger value="conflicts" style={{ flex: 1 }}>Conflicts</TabsTrigger>
-                    <TabsTrigger value="rag" style={{ flex: 1 }}>Chat</TabsTrigger>
+            <Tabs defaultValue="transcript" className="flex-1">
+                <TabsList className="mb-4 flex w-full h-auto p-1 bg-muted/60 dark:bg-muted/40 border border-border/60 rounded-lg overflow-x-auto">
+                    <TabsTrigger value="transcript" className="flex-1 min-w-[80px] text-xs sm:text-sm">Transcript</TabsTrigger>
+                    <TabsTrigger value="entities" className="flex-1 min-w-[72px] text-xs sm:text-sm">Entities</TabsTrigger>
+                    <TabsTrigger value="speakers" className="flex-1 min-w-[76px] text-xs sm:text-sm">Speakers</TabsTrigger>
+                    <TabsTrigger value="conflicts" className="flex-1 min-w-[76px] text-xs sm:text-sm">Conflicts</TabsTrigger>
+                    <TabsTrigger value="rag" className="flex-1 min-w-[54px] text-xs sm:text-sm">Chat</TabsTrigger>
                 </TabsList>
 
                 {/* Transcript Tab */}
-                <TabsContent value="transcript" className="h-full">
+                <TabsContent value="transcript" className="min-h-[300px]">
                     {transcriptLoading ? (
                         <Skeleton className="h-full" />
                     ) : transcriptData ? (
@@ -154,7 +154,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                 </TabsContent>
 
                 {/* Entities Tab */}
-                <TabsContent value="entities" className="h-full overflow-y-auto">
+                <TabsContent value="entities" className="min-h-[300px] overflow-y-auto">
                     {entitiesLoading ? (
                         <div className="space-y-4">
                             <Skeleton className="h-32" />
@@ -175,7 +175,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                 </TabsContent>
 
                 {/* Speakers Tab */}
-                <TabsContent value="speakers" className="h-full overflow-y-auto">
+                <TabsContent value="speakers" className="min-h-[300px] overflow-y-auto">
                     {meeting.status === 'completed' ? (
                         <SpeakersPanel meetingId={id} />
                     ) : (
@@ -188,7 +188,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                 </TabsContent>
 
                 {/* Conflicts Tab */}
-                <TabsContent value="conflicts" className="h-full overflow-y-auto">
+                <TabsContent value="conflicts" className="min-h-[300px] overflow-y-auto">
                     {conflictsLoading ? (
                         <div className="space-y-4">
                             <Skeleton className="h-24" />
@@ -208,7 +208,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                 </TabsContent>
 
                 {/* RAG Chat Tab */}
-                <TabsContent value="rag" className="h-full">
+                <TabsContent value="rag" className="min-h-[300px]">
                     {meeting.status === 'completed' ? (
                         <RAGChat meetingId={id} />
                     ) : (

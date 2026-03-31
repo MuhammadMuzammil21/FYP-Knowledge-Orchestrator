@@ -69,15 +69,15 @@ const tabContent: Record<Tab, TabContent> = {
         <div>
           <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Decisions</h4>
           <div className="space-y-2">
-            <Badge className="bg-accent/15 text-accent-foreground dark:bg-accent/20 dark:text-accent border-transparent text-xs">Prioritize API docs this week</Badge>
-            <Badge className="bg-accent/15 text-accent-foreground dark:bg-accent/20 dark:text-accent border-transparent text-xs ml-2">Load test before public launch</Badge>
+            <Badge className="bg-accent/15 text-accent dark:bg-accent/20 border-transparent text-xs">Prioritize API docs this week</Badge>
+            <Badge className="bg-accent/15 text-accent dark:bg-accent/20 border-transparent text-xs ml-2">Load test before public launch</Badge>
           </div>
         </div>
         <div>
           <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Topics</h4>
           <div className="space-y-2">
-            <Badge className="bg-accent/10 text-accent-foreground dark:bg-accent/15 dark:text-accent border-transparent text-xs">Q4 product launch</Badge>
-            <Badge className="bg-accent/10 text-accent-foreground dark:bg-accent/15 dark:text-accent border-transparent text-xs ml-2">Developer preview</Badge>
+            <Badge className="bg-accent/10 text-accent dark:bg-accent/15 border-transparent text-xs">Q4 product launch</Badge>
+            <Badge className="bg-accent/10 text-accent dark:bg-accent/15 border-transparent text-xs ml-2">Developer preview</Badge>
           </div>
         </div>
       </div>
@@ -174,7 +174,7 @@ export function DemoSection() {
             className={cn(
               'rounded-lg px-4 py-2 text-sm font-medium transition-all',
               activeTab === tab
-                ? 'bg-background text-foreground shadow-sm'
+                ? 'bg-background text-foreground shadow-sm ring-1 ring-border/60 dark:ring-0 dark:shadow-sm'
                 : 'text-muted-foreground hover:text-foreground'
             )}
           >
@@ -203,7 +203,7 @@ export function DemoSection() {
 
         {/* Right - mockup */}
         <div className="lg:col-span-3">
-          <div className="rounded-2xl border border-border bg-card overflow-hidden shadow-xl shadow-primary/5">
+          <div className="rounded-2xl border border-border/70 bg-card overflow-hidden shadow-xl shadow-black/[0.08] dark:shadow-primary/5">
             {content.mockup}
           </div>
         </div>

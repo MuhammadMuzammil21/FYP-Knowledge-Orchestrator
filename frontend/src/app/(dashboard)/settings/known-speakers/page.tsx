@@ -77,41 +77,43 @@ export default function KnownSpeakersPage() {
                 <div className="space-y-4">
                     {speakers.map((speaker) => (
                         <Card key={speaker.id} className="p-6">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-4">
-                                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0">
+                                <div className="flex items-start sm:items-center gap-4 w-full sm:w-auto">
+                                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 shrink-0">
                                         <User className="h-6 w-6 text-primary" />
                                     </div>
-                                    <div>
+                                    <div className="flex-1 min-w-0">
                                         {editingId === speaker.id ? (
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex flex-wrap items-center gap-2 w-full">
                                                 <Input
                                                     value={editName}
                                                     onChange={(e) => setEditName(e.target.value)}
-                                                    className="w-64"
+                                                    className="w-full sm:w-64"
                                                     disabled={updateSpeaker.isPending}
                                                     autoFocus
                                                 />
-                                                <Button
-                                                    size="sm"
-                                                    onClick={() => handleSave(speaker.id)}
-                                                    disabled={!editName.trim() || updateSpeaker.isPending}
-                                                >
-                                                    <Check className="h-4 w-4" />
-                                                </Button>
-                                                <Button
-                                                    size="sm"
-                                                    variant="outline"
-                                                    onClick={handleCancel}
-                                                    disabled={updateSpeaker.isPending}
-                                                >
-                                                    <X className="h-4 w-4" />
-                                                </Button>
+                                                <div className="flex gap-2">
+                                                    <Button
+                                                        size="sm"
+                                                        onClick={() => handleSave(speaker.id)}
+                                                        disabled={!editName.trim() || updateSpeaker.isPending}
+                                                    >
+                                                        <Check className="h-4 w-4" />
+                                                    </Button>
+                                                    <Button
+                                                        size="sm"
+                                                        variant="outline"
+                                                        onClick={handleCancel}
+                                                        disabled={updateSpeaker.isPending}
+                                                    >
+                                                        <X className="h-4 w-4" />
+                                                    </Button>
+                                                </div>
                                             </div>
                                         ) : (
                                             <>
-                                                <h3 className="font-semibold text-lg">{speaker.name}</h3>
-                                                <p className="text-sm text-muted-foreground">
+                                                <h3 className="font-semibold text-lg truncate">{speaker.name}</h3>
+                                                <p className="text-sm text-muted-foreground truncate">
                                                     Appears in {speaker.meeting_count} meeting{speaker.meeting_count !== 1 ? 's' : ''}
                                                 </p>
                                             </>
@@ -120,11 +122,12 @@ export default function KnownSpeakersPage() {
                                 </div>
 
                                 {editingId !== speaker.id && (
-                                    <div className="flex gap-2">
+                                    <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                                         <Button
                                             variant="outline"
                                             size="sm"
                                             onClick={() => handleEdit(speaker)}
+                                            className="flex-1 sm:flex-none"
                                         >
                                             <Edit2 className="mr-2 h-4 w-4" />
                                             Edit
@@ -134,6 +137,7 @@ export default function KnownSpeakersPage() {
                                             size="sm"
                                             onClick={() => handleDelete(speaker.id, speaker.name)}
                                             disabled={deleteSpeaker.isPending}
+                                            className="flex-1 sm:flex-none"
                                         >
                                             <Trash2 className="mr-2 h-4 w-4" />
                                             Delete

@@ -12,9 +12,9 @@ export function ProjectCard({ project }: ProjectCardProps) {
 
   return (
     <Link href={`/projects/${project.id}`}>
-      <div className="group rounded-xl border border-border bg-card p-5 hover:border-primary/30 hover:bg-card transition-all duration-200 cursor-pointer relative overflow-hidden">
+      <div className="group rounded-xl border border-border/80 bg-card p-5 hover:border-primary/50 dark:hover:border-primary/30 hover:shadow-sm transition-all duration-200 cursor-pointer relative overflow-hidden">
         {/* Subtle hover background glow */}
-        <div className="pointer-events-none absolute inset-0 rounded-xl bg-primary/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+        <div className="pointer-events-none absolute inset-0 rounded-xl bg-primary/[0.04] dark:bg-primary/[0.02] opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
 
         {/* Card header */}
         <div className="relative flex items-start justify-between mb-4">

@@ -16,7 +16,7 @@ interface CytoscapeGraphProps {
   cyRef: React.MutableRefObject<cytoscape.Core | null>;
   onNodeSelect: (info: SelectedNodeInfo | null) => void;
   onBackgroundTap: () => void;
-  height?: number;
+  height?: number | string;
 }
 
 function getNodeDisplayName(node: GraphNode): string {
@@ -166,6 +166,7 @@ export function CytoscapeGraph({
     return (
       <div style={{
         height,
+        minHeight: 400,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -184,6 +185,7 @@ export function CytoscapeGraph({
       ref={containerRef}
       style={{
         height,
+        minHeight: 400,
         width: '100%',
         borderRadius: '12px',
         border: '0.5px solid var(--color-border-tertiary, hsl(var(--border)))',
