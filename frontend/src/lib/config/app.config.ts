@@ -12,6 +12,8 @@ export const APP_CONFIG = {
         allowedFileTypes: [
             'audio/mpeg', // mp3
             'audio/wav', // wav
+            'audio/x-wav',
+            'audio/wave',
             'audio/x-m4a', // m4a
             'audio/mp4', // m4a
             'audio/ogg', // ogg

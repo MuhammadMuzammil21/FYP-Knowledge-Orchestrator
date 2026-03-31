@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { FcGoogle } from 'react-icons/fc';
+import { Eye, EyeOff } from 'lucide-react';
 import { AuthBranding } from '@/components/auth/AuthBranding';
 
 function LoginForm() {
@@ -19,6 +20,7 @@ function LoginForm() {
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -81,14 +83,29 @@ function LoginForm() {
                                         Forgot password?
                                     </Link>
                                 </div>
-                                <Input
-                                    id="password"
-                                    type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
-                                    required
-                                    disabled={isLoading}
-                                />
+                                <div className="relative">
+                                    <Input
+                                        id="password"
+                                        type={showPassword ? "text" : "password"}
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                        disabled={isLoading}
+                                        className="pr-10"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                        disabled={isLoading}
+                                    >
+                                        {showPassword ? (
+                                            <Eye className="h-4 w-4" />
+                                        ) : (
+                                            <EyeOff className="h-4 w-4" />
+                                        )}
+                                    </button>
+                                </div>
                             </div>
                             <Button type="submit" className="w-full" disabled={isLoading}>
                                 {isLoading ? 'Signing in...' : 'Sign in'}

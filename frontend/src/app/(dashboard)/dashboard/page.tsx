@@ -39,6 +39,7 @@ import { ALLOWED_FILE_EXTENSIONS, MAX_FILE_SIZE } from '@/lib/constants'
 import type { MeetingUploadMetadata, Project } from '@/types'
 import { getProjects, createProject } from '@/lib/api/projects'
 import { cn } from '@/lib/utils'
+import { VoiceRecorder } from '@/components/recording/VoiceRecorder'
 import { useWorkspace } from '@/contexts/WorkspaceContext'
 
 export default function DashboardPage() {
@@ -59,7 +60,8 @@ export default function DashboardPage() {
   const [isCreatingProject, setIsCreatingProject] = useState(false)
   const [newProjectName, setNewProjectName] = useState('')
 
-  // New state for drag-and-drop
+  // New state for drag-and-drop & recording
+  const [inputMode, setInputMode] = useState<'upload' | 'record'>('upload')
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -145,6 +147,7 @@ export default function DashboardPage() {
       const response = await uploadMeeting(file, projectId, metadata)
 
       toast.success('Meeting uploaded successfully!')
+      setInputMode('upload')
       router.push(`/meetings/${response.meeting_id}`)
     } catch (error) {
       toast.error(getErrorMessage(error))
@@ -448,92 +451,146 @@ export default function DashboardPage() {
                 </AccordionItem>
               </Accordion>
 
-              {/* ─── FILE UPLOAD DROPZONE ─── */}
+              {/* ─── RECORDING INPUT — UPLOAD OR RECORD ─── */}
               <div className="space-y-1.5">
                 <Label className="text-sm font-medium">Recording</Label>
 
-                {/* Hidden native input */}
-                <input
-                  ref={fileInputRef}
-                  id="file"
-                  type="file"
-                  accept={ALLOWED_FILE_EXTENSIONS.join(',')}
-                  onChange={handleFileChange}
-                  disabled={isUploading}
-                  className="hidden"
-                />
-
-                {/* Dropzone area */}
-                <div
-                  onDragOver={handleDragOver}
-                  onDragLeave={handleDragLeave}
-                  onDrop={handleDrop}
-                  onClick={() => !isUploading && fileInputRef.current?.click()}
-                  className={cn(
-                    'relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed',
-                    'min-h-[140px] transition-all duration-200',
-                    !isUploading && 'cursor-pointer',
-                    isDragging
-                      ? 'border-primary bg-primary/[0.04] scale-[1.01]'
-                      : file
-                        ? 'border-border bg-muted/30 border-solid'
-                        : 'border-border hover:border-primary/50 hover:bg-primary/[0.02]',
-                    isUploading && 'opacity-60 cursor-not-allowed'
-                  )}
-                >
-                  {!file ? (
-                    /* Empty dropzone state */
-                    <div className="flex flex-col items-center gap-3 text-center px-6 py-6">
-                      <div
-                        className={cn(
-                          'h-11 w-11 rounded-full flex items-center justify-center transition-colors',
-                          isDragging ? 'bg-primary/20' : 'bg-primary/10'
-                        )}
-                      >
-                        <Upload
-                          className={cn(
-                            'h-5 w-5 transition-colors',
-                            isDragging ? 'text-primary' : 'text-primary/70'
-                          )}
-                        />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium">
-                          {isDragging ? 'Drop to upload' : 'Drop your recording here'}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          or click to browse — MP3, WAV, M4A, OGG
-                        </p>
-                      </div>
-                    </div>
-                  ) : (
-                    /* File selected state */
-                    <div className="flex items-center gap-3 px-5 py-4 w-full">
-                      <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <FileAudio className="h-5 w-5 text-primary" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium truncate">{file.name}</p>
-                        <p className="text-xs text-muted-foreground mt-0.5">
-                          {(file.size / 1024 / 1024).toFixed(2)} MB
-                        </p>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-7 w-7 flex-shrink-0 text-muted-foreground hover:text-foreground"
-                        onClick={clearFile}
-                        disabled={isUploading}
-                      >
-                        <X className="h-3.5 w-3.5" />
-                      </Button>
-                    </div>
-                  )}
+                {/* Mode toggle */}
+                <div className="flex gap-1 rounded-lg border border-border bg-muted/40 p-0.5 mb-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setInputMode('upload')
+                      setFile(null)
+                      if (fileInputRef.current) fileInputRef.current.value = ''
+                    }}
+                    className={cn(
+                      'flex-1 rounded-md py-1 text-xs font-medium transition-all duration-150',
+                      inputMode === 'upload'
+                        ? 'bg-background text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    )}
+                    disabled={isUploading}
+                  >
+                    Upload File
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setInputMode('record')
+                      setFile(null)
+                      if (fileInputRef.current) fileInputRef.current.value = ''
+                    }}
+                    className={cn(
+                      'flex-1 rounded-md py-1 text-xs font-medium transition-all duration-150',
+                      inputMode === 'record'
+                        ? 'bg-background text-foreground shadow-sm'
+                        : 'text-muted-foreground hover:text-foreground'
+                    )}
+                    disabled={isUploading}
+                  >
+                    Record Live
+                  </button>
                 </div>
 
-                <p className="text-xs text-muted-foreground">
-                  Supported formats: MP3, WAV, M4A, OGG · Maximum 100MB
-                </p>
+                {/* Upload tab */}
+                {inputMode === 'upload' && (
+                  <>
+                    {/* Hidden native input */}
+                    <input
+                      ref={fileInputRef}
+                      id="file"
+                      type="file"
+                      accept={ALLOWED_FILE_EXTENSIONS.join(',')}
+                      onChange={handleFileChange}
+                      disabled={isUploading}
+                      className="hidden"
+                    />
+
+                    {/* Dropzone area */}
+                    <div
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onDrop={handleDrop}
+                      onClick={() => !isUploading && fileInputRef.current?.click()}
+                      className={cn(
+                        'relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed',
+                        'min-h-[140px] transition-all duration-200',
+                        !isUploading && 'cursor-pointer',
+                        isDragging
+                          ? 'border-primary bg-primary/[0.04] scale-[1.01]'
+                          : file
+                            ? 'border-border bg-muted/30 border-solid'
+                            : 'border-border hover:border-primary/50 hover:bg-primary/[0.02]',
+                        isUploading && 'opacity-60 cursor-not-allowed'
+                      )}
+                    >
+                      {!file ? (
+                        <div className="flex flex-col items-center gap-3 text-center px-6 py-6">
+                          <div
+                            className={cn(
+                              'h-11 w-11 rounded-full flex items-center justify-center transition-colors',
+                              isDragging ? 'bg-primary/20' : 'bg-primary/10'
+                            )}
+                          >
+                            <Upload
+                              className={cn(
+                                'h-5 w-5 transition-colors',
+                                isDragging ? 'text-primary' : 'text-primary/70'
+                              )}
+                            />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium">
+                              {isDragging ? 'Drop to upload' : 'Drop your recording here'}
+                            </p>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              or click to browse — MP3, WAV, M4A, OGG
+                            </p>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-3 px-5 py-4 w-full">
+                          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                            <FileAudio className="h-5 w-5 text-primary" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium truncate">{file.name}</p>
+                            <p className="text-xs text-muted-foreground mt-0.5">
+                              {(file.size / 1024 / 1024).toFixed(2)} MB
+                            </p>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 flex-shrink-0 text-muted-foreground hover:text-foreground"
+                            onClick={clearFile}
+                            disabled={isUploading}
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      Supported formats: MP3, WAV, M4A, OGG · Maximum 100MB
+                    </p>
+                  </>
+                )}
+
+                {/* Record tab */}
+                {inputMode === 'record' && (
+                  <>
+                    <VoiceRecorder
+                      onRecordingComplete={(wavFile) => setFile(wavFile)}
+                      onDiscard={() => setFile(null)}
+                      disabled={isUploading}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Records as WAV · 48kHz stereo · Maximum 100MB (~18 min)
+                    </p>
+                  </>
+                )}
               </div>
             </div>
 
