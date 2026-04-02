@@ -1,17 +1,17 @@
 import { render, screen } from '@testing-library/react';
 import { ProgressBar } from '../ProgressBar';
-import type { MeetingStatusDetail } from '@/types';
+import type { MeetingStatusDetail } from '@/types/domain.types';
 
 const mockStatus: MeetingStatusDetail = {
-    meeting_id: 'meeting-123',
+    id: 'meeting-123',
     status: 'processing',
     stage: 'llm_cleanup',
     progress: 45,
-    asr: { done: true, transcript_raw_available: true },
-    llm_cleanup: { done: false, streaming_available: true },
-    background: { conflicts: 'pending', knowledge_graph: 'pending', rag: 'pending' },
-    final_transcript_ready: false,
-    insights_ready: false,
+    asr: { done: true, transcriptRawAvailable: true },
+    llmCleanup: { done: false, streamingAvailable: true },
+    background: { conflicts: 'pending', knowledgeGraph: 'pending', rag: 'pending' },
+    finalTranscriptReady: false,
+    insightsReady: false,
 };
 
 describe('ProgressBar', () => {

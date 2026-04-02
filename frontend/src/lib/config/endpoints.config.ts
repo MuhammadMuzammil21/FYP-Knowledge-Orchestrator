@@ -49,6 +49,11 @@ export const ENDPOINT_CONFIG = {
             speakerDetail: (meetingId: string, speakerId: number) => `/${meetingId}/speakers/${speakerId}`,
             // NEW: Meeting graph endpoint
             graph: (id: string) => `/${id}/graph`,
+            // Audio streaming
+            audio: (id: string) => `/${id}/audio`,
+            // Manual transcript editing
+            transcriptUpdate: (id: string) => `/${id}/transcript`,
+            transcriptHistory: (id: string) => `/${id}/transcript/history`,
         },
     },
 
@@ -108,6 +113,8 @@ export const ENDPOINT_CONFIG = {
             invites: (slug: string) => `/${slug}/invites`,
             revokeInvite: (slug: string, inviteId: string) => `/${slug}/invites/${inviteId}`,
             acceptInvite: () => '/invites/accept',
+            // Team analytics
+            dashboard: (slug: string) => `/${slug}/dashboard`,
         },
     },
 

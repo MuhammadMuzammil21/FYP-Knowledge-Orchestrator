@@ -41,6 +41,7 @@
     "remark-gfm": "^4.0.1",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
+    "wavesurfer.js": "^7.12.5",
     "zod": "^4.1.13"
   },
   "devDependencies": {

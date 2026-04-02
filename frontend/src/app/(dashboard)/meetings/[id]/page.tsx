@@ -1,48 +1,88 @@
 'use client';
 
-import { use } from 'react';
+import { use, useState, useRef, useCallback } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogDescription,
+} from '@/components/ui/dialog';
 import { TranscriptViewer } from '@/components/meetings/TranscriptViewer';
+import { AudioPlayer, type AudioPlayerHandle } from '@/components/meetings/AudioPlayer';
 import { EntitiesPanel } from '@/components/meetings/EntitiesPanel';
 import { ConflictsPanel } from '@/components/meetings/ConflictsPanel';
 import { RAGChat } from '@/components/meetings/RAGChat';
 import { ProgressBar } from '@/components/meetings/ProgressBar';
 import { StatusBadge } from '@/components/meetings/StatusBadge';
 import { SpeakersPanel } from '@/components/speakers/SpeakersPanel';
-import { useMeeting, useTranscript, useEntities, useDeleteMeeting } from '@/hooks/useMeetingDetail';
+import {
+    useMeeting, useTranscript, useEntities, useDeleteMeeting, useMeetingAudio,
+} from '@/hooks/useMeetingDetail';
 import { useMeetingStatus } from '@/hooks/useMeetingStatus';
 import { useProjectConflicts } from '@/hooks/useKnowledgeGraph';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
-import { ArrowLeft, Network, Trash2, Loader2 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { ArrowLeft, Network, Trash2, Loader2, AudioWaveform, ShieldAlert } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { formatDateTime } from '@/lib/utils/date';
+import { cn } from '@/lib/utils';
 
 interface MeetingDetailPageProps {
     params: Promise<{ id: string }>;
 }
+
+const LEGAL_DISCLAIMER =
+    'By starting this recording, you confirm that you have informed all participants and ' +
+    'obtained their consent to record and transcribe this conversation for meeting documentation ' +
+    'and AI analysis purposes.';
 
 export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
     const { id } = use(params);
     const router = useRouter();
     const { can } = useWorkspace();
 
+    const [currentTime, setCurrentTime] = useState(0);
+    const [activeTab, setActiveTab] = useState('transcript');
+    const audioPlayerRef = useRef<AudioPlayerHandle>(null);
+
     const { data: meeting, isLoading: meetingLoading } = useMeeting(id);
     const { data: status } = useMeetingStatus(id, true);
     const { data: transcriptData, isLoading: transcriptLoading } = useTranscript(id);
     const { data: entitiesData, isLoading: entitiesLoading } = useEntities(id);
-    // Conflicts are now at project level
     const { data: conflictsData, isLoading: conflictsLoading } = useProjectConflicts(meeting?.projectId || '');
+    const { audioUrl, isLoading: audioLoading } = useMeetingAudio(id);
     const deleteMeeting = useDeleteMeeting();
+
+    const handleSegmentSeek = useCallback((seconds: number) => {
+        audioPlayerRef.current?.seekTo(seconds);
+        // Switch to transcript tab so user can follow along
+        setActiveTab('transcript');
+    }, []);
+
+    const handleTimeUpdate = useCallback((t: number) => {
+        setCurrentTime(t);
+    }, []);
+
+    // Speaker names from transcript for the relabeling dropdown
+    const speakerNames = transcriptData?.content
+        ? Array.from(new Set(
+            transcriptData.content.split('\n')
+                .map(line => line.split(':')[0].trim())
+                .filter(Boolean)
+        ))
+        : [];
 
     if (meetingLoading) {
         return (
             <div className="h-full p-8">
                 <Skeleton className="mb-4 h-8 w-64" />
                 <Skeleton className="mb-8 h-4 w-96" />
+                <Skeleton className="h-48 mb-4" />
                 <Skeleton className="h-96" />
             </div>
         );
@@ -62,6 +102,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
     }
 
     const formattedDate = formatDateTime(meeting.createdAt);
+    const isCompleted = meeting.status === 'completed';
 
     return (
         <div className="min-h-full overflow-y-auto p-3 sm:p-4 md:p-8">
@@ -82,7 +123,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                         <p className="text-muted-foreground">{formattedDate}</p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2">
-                        {meeting.status === 'completed' && (
+                        {isCompleted && (
                             <Link href={`/meetings/${id}/graph`}>
                                 <Button variant="outline" className="w-full sm:w-auto">
                                     <Network className="mr-2 h-4 w-4" />
@@ -123,8 +164,31 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                 </Card>
             )}
 
+            {/* ── Audio Player ── */}
+            {isCompleted && (
+                <div className="mb-5">
+                    {audioLoading ? (
+                        <div className="rounded-xl border border-border bg-card p-5 flex items-center gap-3 text-muted-foreground">
+                            <Loader2 className="h-4 w-4 animate-spin flex-shrink-0" />
+                            <span className="text-sm">Loading audio…</span>
+                        </div>
+                    ) : audioUrl ? (
+                        <AudioPlayer
+                            ref={audioPlayerRef}
+                            src={audioUrl}
+                            onTimeUpdate={handleTimeUpdate}
+                        />
+                    ) : (
+                        <div className="rounded-xl border border-border bg-card p-4 flex items-center gap-3 text-muted-foreground">
+                            <AudioWaveform className="h-4 w-4 flex-shrink-0" />
+                            <span className="text-sm">Audio not available for this meeting</span>
+                        </div>
+                    )}
+                </div>
+            )}
+
             {/* Tabs */}
-            <Tabs defaultValue="transcript" className="flex-1">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1">
                 <TabsList className="mb-4 flex w-full h-auto p-1 bg-muted/60 dark:bg-muted/40 border border-border/60 rounded-lg overflow-x-auto">
                     <TabsTrigger value="transcript" className="flex-1 min-w-[80px] text-xs sm:text-sm">Transcript</TabsTrigger>
                     <TabsTrigger value="entities" className="flex-1 min-w-[72px] text-xs sm:text-sm">Entities</TabsTrigger>
@@ -136,16 +200,25 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                 {/* Transcript Tab */}
                 <TabsContent value="transcript" className="min-h-[300px]">
                     {transcriptLoading ? (
-                        <Skeleton className="h-full" />
+                        <div className="space-y-3">
+                            <Skeleton className="h-10 w-full" />
+                            {[...Array(6)].map((_, i) => (
+                                <Skeleton key={i} className="h-16 w-full" />
+                            ))}
+                        </div>
                     ) : transcriptData ? (
                         <TranscriptViewer
+                            meetingId={id}
                             transcript={transcriptData.content}
                             isLlmRewritten={transcriptData.isLlmRewritten}
+                            currentTime={currentTime}
+                            onSeek={audioUrl ? handleSegmentSeek : undefined}
+                            speakerNames={speakerNames}
                         />
                     ) : (
                         <Card className="flex h-full items-center justify-center">
                             <p className="text-muted-foreground/70">
-                                {meeting.status === 'completed'
+                                {isCompleted
                                     ? 'No transcript available'
                                     : 'Transcript will be available once processing is complete'}
                             </p>
@@ -166,7 +239,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                     ) : (
                         <Card className="flex h-full items-center justify-center">
                             <p className="text-muted-foreground/70">
-                                {meeting.status === 'completed'
+                                {isCompleted
                                     ? 'No entities extracted'
                                     : 'Entities will be available once processing is complete'}
                             </p>
@@ -176,7 +249,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
 
                 {/* Speakers Tab */}
                 <TabsContent value="speakers" className="min-h-[300px] overflow-y-auto">
-                    {meeting.status === 'completed' ? (
+                    {isCompleted ? (
                         <SpeakersPanel meetingId={id} />
                     ) : (
                         <Card className="flex h-full items-center justify-center">
@@ -199,7 +272,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                     ) : (
                         <Card className="flex h-full items-center justify-center">
                             <p className="text-muted-foreground/70">
-                                {meeting.status === 'completed'
+                                {isCompleted
                                     ? 'No conflicts detected'
                                     : 'Conflicts will be checked once processing is complete'}
                             </p>
@@ -209,7 +282,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
 
                 {/* RAG Chat Tab */}
                 <TabsContent value="rag" className="min-h-[300px]">
-                    {meeting.status === 'completed' ? (
+                    {isCompleted ? (
                         <RAGChat meetingId={id} />
                     ) : (
                         <Card className="flex h-full items-center justify-center">

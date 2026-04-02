@@ -6,9 +6,11 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import { Folder, Plus } from 'lucide-react'
 import Link from 'next/link'
+import { useWorkspace } from '@/contexts/WorkspaceContext'
 
 export default function ProjectsPage() {
-  const { data: projects, isLoading, error } = useProjects()
+  const { activeTeamId, isTeamWorkspace, workspace } = useWorkspace()
+  const { data: projects, isLoading, error } = useProjects(activeTeamId)
 
   if (error) {
     return (
@@ -29,7 +31,9 @@ export default function ProjectsPage() {
       {/* Page header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold tracking-tight">Projects</h1>
+          <h1 className="text-xl font-bold tracking-tight">
+            {isTeamWorkspace && typeof workspace !== 'string' ? `${workspace.name} — Projects` : 'Projects'}
+          </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             Organize meetings into projects for cross-meeting insights
           </p>

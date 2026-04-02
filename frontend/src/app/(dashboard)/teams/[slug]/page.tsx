@@ -4,7 +4,7 @@ import { use, useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
-import { useTeam, useTeamInvites, useInviteMember, useRevokeInvite, useUpdateMemberRole, useRemoveMember, useUpdateTeam, useDeleteTeam } from '@/hooks/useTeams';
+import { useTeam, useTeamInvites, useInviteMember, useRevokeInvite, useUpdateMemberRole, useRemoveMember, useUpdateTeam, useDeleteTeam, useTeamDashboard } from '@/hooks/useTeams';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,7 +13,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { ArrowLeft, Loader2, Trash2, Mail, Users, Settings } from 'lucide-react';
+import { ArrowLeft, Loader2, Trash2, Mail, Users, Settings, LayoutDashboard, FolderOpen, Mic } from 'lucide-react';
 import type { TeamRole } from '@/types';
 
 export default function TeamDetailsPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -24,6 +24,7 @@ export default function TeamDetailsPage({ params }: { params: Promise<{ slug: st
     // Data hooks
     const { data: team, isLoading: isTeamLoading } = useTeam(slug);
     const { data: invites, isLoading: isInvitesLoading } = useTeamInvites(slug);
+    const { data: dashboard } = useTeamDashboard(slug);
 
     // Mutation hooks
     const updateRole = useUpdateMemberRole(slug);
@@ -112,12 +113,64 @@ export default function TeamDetailsPage({ params }: { params: Promise<{ slug: st
                 </div>
             </div>
 
-            <Tabs defaultValue="members" className="w-full">
-                <TabsList className="grid w-full grid-cols-3 max-w-[400px]">
+            <Tabs defaultValue="overview" className="w-full">
+                <TabsList className="grid w-full grid-cols-4 max-w-[520px]">
+                    <TabsTrigger value="overview"><LayoutDashboard className="w-4 h-4 mr-2"/>Overview</TabsTrigger>
                     <TabsTrigger value="members"><Users className="w-4 h-4 mr-2"/> Members</TabsTrigger>
                     <TabsTrigger value="invites"><Mail className="w-4 h-4 mr-2"/> Invites</TabsTrigger>
                     <TabsTrigger value="settings"><Settings className="w-4 h-4 mr-2"/> Settings</TabsTrigger>
                 </TabsList>
+
+                {/* OVERVIEW TAB */}
+                <TabsContent value="overview" className="mt-6 space-y-6">
+                    <div>
+                        <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide mb-4">Team Stats</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            {/* Projects card */}
+                            <div className="rounded-xl border border-border bg-card p-5 flex items-center gap-4">
+                                <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                    <FolderOpen className="h-5 w-5 text-primary" />
+                                </div>
+                                <div>
+                                    <p className="text-2xl font-bold tabular-nums">
+                                        {dashboard?.projects_count ?? '—'}
+                                    </p>
+                                    <p className="text-sm text-muted-foreground">Projects</p>
+                                </div>
+                            </div>
+                            {/* Meetings card */}
+                            <div className="rounded-xl border border-border bg-card p-5 flex items-center gap-4">
+                                <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                    <Mic className="h-5 w-5 text-primary" />
+                                </div>
+                                <div>
+                                    <p className="text-2xl font-bold tabular-nums">
+                                        {dashboard?.meetings_count ?? '—'}
+                                    </p>
+                                    <p className="text-sm text-muted-foreground">Meetings</p>
+                                </div>
+                            </div>
+                            {/* Members card */}
+                            <div className="rounded-xl border border-border bg-card p-5 flex items-center gap-4">
+                                <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                                    <Users className="h-5 w-5 text-primary" />
+                                </div>
+                                <div>
+                                    <p className="text-2xl font-bold tabular-nums">
+                                        {team.members?.length ?? '—'}
+                                    </p>
+                                    <p className="text-sm text-muted-foreground">Members</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {team.description && (
+                        <div className="rounded-xl border border-border bg-card p-5">
+                            <h3 className="font-semibold mb-2 text-sm">About this team</h3>
+                            <p className="text-sm text-muted-foreground leading-relaxed">{team.description}</p>
+                        </div>
+                    )}
+                </TabsContent>
 
                 {/* MEMBERS TAB */}
                 <TabsContent value="members" className="mt-6 space-y-4">

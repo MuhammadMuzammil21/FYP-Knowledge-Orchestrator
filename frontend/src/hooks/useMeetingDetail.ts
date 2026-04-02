@@ -1,14 +1,21 @@
 /**
- * Refactored useMeetingDetail Hook
- * Now uses MeetingService for all meeting-related data fetching
+ * useMeetingDetail Hook
+ * Meeting-related data fetching with all new backend endpoints
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { meetingService } from '@/lib/services';
-import { deleteMeeting } from '@/lib/api/meetings';
+import {
+    deleteMeeting,
+    updateTranscript,
+    getTranscriptHistory,
+    getMeetingAudioUrl,
+    type UpdateTranscriptRequest,
+} from '@/lib/api/meetings';
 import { APP_CONFIG } from '@/lib/config/app.config';
 import { toast } from 'sonner';
 import { getErrorMessage } from '@/lib/api/client';
+import { useEffect, useState } from 'react';
 
 /**
  * Hook to fetch meeting detail
@@ -62,4 +69,65 @@ export function useDeleteMeeting() {
             toast.error(getErrorMessage(error));
         },
     });
+}
+
+/**
+ * Hook to update a meeting transcript (manual editing).
+ */
+export function useUpdateTranscript(meetingId: string) {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (payload: UpdateTranscriptRequest) => updateTranscript(meetingId, payload),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['transcript', meetingId] });
+            queryClient.invalidateQueries({ queryKey: ['transcript-history', meetingId] });
+            toast.success('Transcript saved successfully');
+        },
+        onError: (error) => toast.error(getErrorMessage(error)),
+    });
+}
+
+/**
+ * Hook to get transcript version history.
+ */
+export function useTranscriptHistory(meetingId: string) {
+    return useQuery({
+        queryKey: ['transcript-history', meetingId],
+        queryFn: () => getTranscriptHistory(meetingId),
+        enabled: !!meetingId,
+        staleTime: 60 * 1000,
+    });
+}
+
+/**
+ * Hook to load the authenticated audio URL for the meeting.
+ * Returns a blob ObjectURL that is safely revoked on unmount.
+ */
+export function useMeetingAudio(meetingId: string) {
+    const [audioUrl, setAudioUrl] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        if (!meetingId) return;
+        let objectUrl: string | null = null;
+        setIsLoading(true);
+        setError(null);
+
+        getMeetingAudioUrl(meetingId)
+            .then((url) => {
+                objectUrl = url;
+                setAudioUrl(url);
+            })
+            .catch((err) => {
+                setError(getErrorMessage(err));
+            })
+            .finally(() => setIsLoading(false));
+
+        return () => {
+            if (objectUrl) URL.revokeObjectURL(objectUrl);
+        };
+    }, [meetingId]);
+
+    return { audioUrl, isLoading, error };
 }

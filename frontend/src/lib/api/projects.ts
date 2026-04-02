@@ -21,11 +21,14 @@ export async function createProject(data: CreateProjectRequest): Promise<Project
 }
 
 /**
- * Get all projects for the current user
+ * Get all projects for the current user/workspace
  */
-export async function getProjects(): Promise<ProjectListResponse> {
+export async function getProjects(
+    params?: { team_id?: string; personal?: string }
+): Promise<ProjectListResponse> {
     const response = await apiClient.get<ProjectListResponse>(
-        API_ENDPOINTS.PROJECTS_LIST
+        API_ENDPOINTS.PROJECTS_LIST,
+        { params }
     );
     return response.data;
 }

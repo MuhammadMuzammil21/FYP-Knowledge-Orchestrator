@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
     getTeams, getTeam, createTeam, updateTeam, deleteTeam,
-    inviteMember, getInvites, revokeInvite, updateMemberRole, removeMember,
+    inviteMember, getInvites, revokeInvite, updateMemberRole, removeMember, getTeamDashboard,
 } from '@/lib/api/teams';
 import type { CreateTeamRequest, InviteMemberRequest, TeamRole } from '@/types';
 import { toast } from 'sonner';
@@ -10,10 +10,7 @@ import { getErrorMessage } from '@/lib/api/client';
 export function useTeams() {
     return useQuery({
         queryKey: ['teams'],
-        queryFn: async () => {
-            const response = await getTeams();
-            return response.teams;
-        },
+        queryFn: () => getTeams(), // returns Team[] directly
         staleTime: 5 * 60 * 1000,
     });
 }
@@ -122,5 +119,14 @@ export function useRemoveMember(slug: string) {
             toast.success('Member removed');
         },
         onError: (error) => toast.error(getErrorMessage(error)),
+    });
+}
+
+export function useTeamDashboard(slug: string) {
+    return useQuery({
+        queryKey: ['team-dashboard', slug],
+        queryFn: () => getTeamDashboard(slug),
+        enabled: !!slug,
+        staleTime: 2 * 60 * 1000,
     });
 }

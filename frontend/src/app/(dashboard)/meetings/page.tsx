@@ -13,9 +13,9 @@ import { useWorkspace } from '@/contexts/WorkspaceContext'
 export default function MeetingsPage() {
   const [offset, setOffset] = useState(0)
   const limit = PAGINATION_DEFAULTS.LIMIT
-  const { can } = useWorkspace()
+  const { can, activeTeamId, isTeamWorkspace, workspace } = useWorkspace()
 
-  const { data, isLoading, error } = useMeetings({ limit, offset })
+  const { data, isLoading, error } = useMeetings({ limit, offset, team_id: activeTeamId })
 
   const handlePrevious = () => setOffset(Math.max(0, offset - limit))
   const handleNext = () => setOffset(offset + limit)
@@ -42,7 +42,9 @@ export default function MeetingsPage() {
       {/* Page header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-xl font-bold tracking-tight">All meetings</h1>
+          <h1 className="text-xl font-bold tracking-tight">
+            {isTeamWorkspace && typeof workspace !== 'string' ? `${workspace.name} — Meetings` : 'All meetings'}
+          </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             {!isLoading && data
               ? `${data.length + offset} recording${data.length !== 1 ? 's' : ''}`

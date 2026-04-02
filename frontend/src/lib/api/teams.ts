@@ -2,15 +2,14 @@ import apiClient from './client';
 import type {
     Team,
     TeamDetail,
-    TeamListResponse,
     TeamInvite,
     CreateTeamRequest,
     InviteMemberRequest,
     TeamRole,
 } from '@/types';
 
-export async function getTeams(): Promise<TeamListResponse> {
-    const response = await apiClient.get<TeamListResponse>('/api/teams');
+export async function getTeams(): Promise<Team[]> {
+    const response = await apiClient.get<Team[]>('/api/teams');
     return response.data;
 }
 
@@ -61,5 +60,15 @@ export async function updateMemberRole(slug: string, userId: string, role: TeamR
 
 export async function removeMember(slug: string, userId: string): Promise<{ message: string }> {
     const response = await apiClient.delete<{ message: string }>(`/api/teams/${slug}/members/${userId}`);
+    return response.data;
+}
+
+export interface TeamDashboard {
+    projects_count: number;
+    meetings_count: number;
+}
+
+export async function getTeamDashboard(slug: string): Promise<TeamDashboard> {
+    const response = await apiClient.get<TeamDashboard>(`/api/teams/${slug}/dashboard`);
     return response.data;
 }

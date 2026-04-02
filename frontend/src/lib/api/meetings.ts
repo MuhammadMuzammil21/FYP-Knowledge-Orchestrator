@@ -15,6 +15,31 @@ import type {
     PaginationParams,
 } from '@/types';
 
+// --- Types for new endpoints ---
+export interface TranscriptSegmentUpdate {
+    speaker: string;
+    text: string;
+    start: number;
+    end: number;
+}
+
+export interface UpdateTranscriptRequest {
+    content?: string;
+    segments?: TranscriptSegmentUpdate[];
+}
+
+export interface TranscriptVersion {
+    id: number;
+    created_at: string;
+    edited_by: string | null;
+    preview: string; // first ~80 chars of content
+}
+
+export interface TranscriptHistoryResponse {
+    meeting_id: string;
+    versions: TranscriptVersion[];
+}
+
 export async function uploadMeeting(
     file: File,
     projectId: string,
@@ -110,6 +135,44 @@ export async function ragQuery(meetingId: string, query: string): Promise<RAGRes
     const response = await apiClient.get<RAGResponse>(
         API_ENDPOINTS.MEETING_RAG_QUERY(meetingId),
         { params: { q: query } }
+    );
+    return response.data;
+}
+
+/**
+ * Fetch meeting audio as a blob and return an ObjectURL for the <audio> element.
+ * Bearer token is sent automatically by `apiClient` (Axios interceptor).
+ * The returned URL MUST be revoked with URL.revokeObjectURL() on unmount.
+ */
+export async function getMeetingAudioUrl(meetingId: string): Promise<string> {
+    const response = await apiClient.get<Blob>(
+        `/api/meetings/${meetingId}/audio`,
+        { responseType: 'blob' }
+    );
+    return URL.createObjectURL(response.data);
+}
+
+/**
+ * Update the meeting transcript (manual edit support).
+ * Both fields are optional — you can update just content or just segments.
+ */
+export async function updateTranscript(
+    meetingId: string,
+    payload: UpdateTranscriptRequest
+): Promise<{ message: string }> {
+    const response = await apiClient.put<{ message: string }>(
+        API_ENDPOINTS.MEETING_TRANSCRIPT(meetingId),
+        payload
+    );
+    return response.data;
+}
+
+/**
+ * Get the version history of a meeting transcript.
+ */
+export async function getTranscriptHistory(meetingId: string): Promise<TranscriptHistoryResponse> {
+    const response = await apiClient.get<TranscriptHistoryResponse>(
+        `/api/meetings/${meetingId}/transcript/history`
     );
     return response.data;
 }

@@ -5,13 +5,20 @@ import { toast } from 'sonner';
 import { getErrorMessage } from '@/lib/api/client';
 
 /**
- * Hook to fetch all projects for the current user
+ * Hook to fetch all projects for the current workspace.
+ * @param teamId - UUID of the active team, or null for personal workspace
  */
-export function useProjects() {
+export function useProjects(teamId?: string | null) {
     return useQuery({
-        queryKey: ['projects'],
+        queryKey: ['projects', teamId ?? 'personal'],
         queryFn: async () => {
-            const response = await getProjects();
+            const params: { team_id?: string; personal?: string } = {};
+            if (teamId) {
+                params.team_id = teamId;
+            } else {
+                params.personal = 'true';
+            }
+            const response = await getProjects(params);
             return response.projects; // Extract projects array
         },
         staleTime: 5 * 60 * 1000, // 5 minutes

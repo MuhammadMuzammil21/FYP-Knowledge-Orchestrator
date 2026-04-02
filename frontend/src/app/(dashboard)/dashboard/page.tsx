@@ -41,6 +41,17 @@ import { getProjects, createProject } from '@/lib/api/projects'
 import { cn } from '@/lib/utils'
 import { VoiceRecorder } from '@/components/recording/VoiceRecorder'
 import { useWorkspace } from '@/contexts/WorkspaceContext'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog'
+
+const RECORDING_CONSENT_TEXT =
+  'By starting this recording, you confirm that you have informed all participants and obtained ' +
+  'their consent to record and transcribe this conversation for meeting documentation and AI analysis purposes.'
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -64,6 +75,8 @@ export default function DashboardPage() {
   const [inputMode, setInputMode] = useState<'upload' | 'record'>('upload')
   const [isDragging, setIsDragging] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [consentGiven, setConsentGiven] = useState(false)
+  const [showConsentDialog, setShowConsentDialog] = useState(false)
 
   // Fetch projects on mount
   useEffect(() => {
@@ -474,13 +487,17 @@ export default function DashboardPage() {
                   >
                     Upload File
                   </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setInputMode('record')
-                      setFile(null)
-                      if (fileInputRef.current) fileInputRef.current.value = ''
-                    }}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!consentGiven) {
+                          setShowConsentDialog(true)
+                        } else {
+                          setInputMode('record')
+                          setFile(null)
+                          if (fileInputRef.current) fileInputRef.current.value = ''
+                        }
+                      }}
                     className={cn(
                       'flex-1 rounded-md py-1 text-xs font-medium transition-all duration-150',
                       inputMode === 'record'
@@ -593,6 +610,44 @@ export default function DashboardPage() {
                 )}
               </div>
             </div>
+
+            {/* Consent Dialog */}
+            <Dialog open={showConsentDialog} onOpenChange={setShowConsentDialog}>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <div className="flex items-center gap-2 mb-2">
+                    <div className="h-9 w-9 rounded-full bg-amber-500/10 flex items-center justify-center flex-shrink-0">
+                      <span className="text-amber-600 text-base">⚠️</span>
+                    </div>
+                    <DialogTitle className="text-base">Recording Consent Required</DialogTitle>
+                  </div>
+                  <DialogDescription className="text-sm leading-relaxed text-foreground/80">
+                    {RECORDING_CONSENT_TEXT}
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="flex gap-3 mt-4">
+                  <Button
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => setShowConsentDialog(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    className="flex-1"
+                    onClick={() => {
+                      setConsentGiven(true)
+                      setShowConsentDialog(false)
+                      setInputMode('record')
+                      setFile(null)
+                      if (fileInputRef.current) fileInputRef.current.value = ''
+                    }}
+                  >
+                    I Confirm &amp; Proceed
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
 
             {/* Form card footer with CTA */}
             <div className="border-t border-border px-6 py-4 flex flex-col sm:flex-row items-center justify-between bg-muted/30 gap-3 sm:gap-0">
