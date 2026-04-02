@@ -82,3 +82,14 @@ export async function updateUserProfile(data: {
     const response = await apiClient.put<User>(API_ENDPOINTS.USER_UPDATE_PROFILE, data);
     return response.data;
 }
+
+export async function logout(): Promise<{ success: boolean }> {
+    const response = await apiClient.post(API_ENDPOINTS.AUTH_LOGOUT);
+    
+    // Clear the manual override token if it exists
+    if (typeof window !== 'undefined') {
+        window.sessionStorage.removeItem('harbaat_temp_access_token');
+    }
+    
+    return response.data;
+}

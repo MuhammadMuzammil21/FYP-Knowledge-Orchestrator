@@ -7,6 +7,8 @@ import type { User } from '@/types';
 declare module 'next-auth' {
     interface Session {
         accessToken?: string;
+        accessTokenExpires?: number;
+        error?: string;
         user: User & DefaultSession['user'];
     }
 
@@ -17,6 +19,8 @@ declare module 'next-auth' {
         created_at: string;
         email_verified: boolean;
         accessToken?: string;
+        refreshToken?: string;
+        expiresIn?: number;
     }
 }
 
@@ -45,78 +49,134 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 }
 
                 try {
-                    const response = await apiLogin({
-                        email: credentials.email as string,
-                        password: credentials.password as string,
+                    // We hit the backend directly. 
+                    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+                    const res = await fetch(`${baseUrl}/api/auth/login`, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            email: credentials.email,
+                            password: credentials.password,
+                        }),
+                        headers: { "Content-Type": "application/json" }
                     });
 
-                    if (response.access_token && response.user) {
+                    const data = await res.json();
+                    
+                    if (res.ok && data.access_token) {
+                        // Extract Refresh Token from Set-Cookie header if present
+                        // Note: In server-side fetch, we can get headers
+                        const setCookie = res.headers.get("set-cookie");
+                        let refreshToken = "";
+                        if (setCookie) {
+                            const match = setCookie.match(/refresh_token=([^;]+)/);
+                            if (match) refreshToken = match[1];
+                        }
+
                         return {
-                            ...response.user,
-                            accessToken: response.access_token,
+                            ...data.user,
+                            accessToken: data.access_token,
+                            refreshToken: refreshToken, // Put it in the user object so jwt callback sees it
+                            expiresIn: data.expires_in || 900,
                         } as any;
                     }
 
                     return null;
                 } catch (error) {
-                    console.error('Auth error:', error);
+                    console.error('Auth authorize error:', error);
                     return null;
                 }
             },
         }),
     ],
     callbacks: {
-        async jwt({ token, user, account, trigger }) {
-            // On initial sign in (Google or Credentials)
+        async jwt({ token, user, account }) {
+            // Initial sign in
             if (account && user) {
+                let accessToken = (user as any).accessToken;
+                let refreshToken = (user as any).refreshToken;
+                let expiresIn = (user as any).expiresIn || 900;
+                let userData = user;
+
+                // For Google, we must exchange the id_token for our backend tokens
                 if (account.provider === 'google') {
                     try {
-                        // Exchange Google ID Token for our backend JWT
-                        const response = await googleLogin(account.id_token as string);
+                        const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+                        const res = await fetch(`${baseUrl}/api/auth/google`, {
+                            method: 'POST',
+                            body: JSON.stringify({
+                                credential: account.id_token,
+                            }),
+                            headers: { "Content-Type": "application/json" }
+                        });
+
+                        const data = await res.json();
                         
-                        if (response.access_token && response.user) {
-                            token.accessToken = response.access_token;
-                            token.user = response.user;
+                        if (res.ok && data.access_token) {
+                            accessToken = data.access_token;
+                            userData = data.user;
+                            expiresIn = data.expires_in || 900;
+                            
+                            // Extract Refresh Token from backend cookie
+                            const setCookie = res.headers.get("set-cookie");
+                            if (setCookie) {
+                                const match = setCookie.match(/refresh_token=([^;]+)/);
+                                if (match) refreshToken = match[1];
+                            }
                         }
                     } catch (error) {
-                        console.error('Google backend exchange error:', error);
-                        // Optional: trigger error or redirect
+                        console.error('Logout sync error:', error);
                     }
-                } else if (account.provider === 'credentials') {
-                    token.accessToken = (user as any).accessToken;
-                    token.user = user as any;
                 }
+
+                token.accessToken = accessToken;
+                token.refreshToken = refreshToken;
+                token.accessTokenExpires = Date.now() + expiresIn * 1000;
+                token.user = userData as any;
+                return token;
             }
 
-            // When session.update() is called, re-fetch user data from backend
-            if (trigger === 'update' && token.accessToken) {
+            // Return previous token if the access token has not expired yet
+            if (Date.now() < (token.accessTokenExpires as number)) {
+                return token;
+            }
+
+            // Access token has expired, try to update it
+            if (token.refreshToken) {
                 try {
-                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api'}/auth/me`, {
+                    const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+                    // We call the backend refresh. We send the refresh token in the body OR cookie.
+                    // Since it's server-to-server, we send it in the cookie header manually.
+                    const response = await fetch(`${baseUrl}/api/auth/refresh`, {
+                        method: 'POST',
                         headers: {
-                            'Authorization': `Bearer ${token.accessToken}`,
+                            'Cookie': `refresh_token=${token.refreshToken}`,
                         },
                     });
 
-                    if (response.ok) {
-                        const updatedUser = await response.json();
-                        token.user = {
-                            ...(token.user || {}),
-                            ...updatedUser,
-                        } as any;
-                    }
+                    const refreshedTokens = await response.json();
+
+                    if (!response.ok) throw refreshedTokens;
+
+                    return {
+                        ...token,
+                        accessToken: refreshedTokens.access_token,
+                        accessTokenExpires: Date.now() + (refreshedTokens.expires_in || 900) * 1000,
+                        // Backend might rotate refresh tokens, check for new one
+                        refreshToken: token.refreshToken, // Default to old one if not rotated
+                    };
                 } catch (error) {
-                    console.error('Failed to refresh user data:', error);
+                    console.error("Error refreshing access token", error);
+                    return { ...token, error: "RefreshAccessTokenError" };
                 }
             }
 
             return token;
         },
         async session({ session, token }) {
-            if (token.accessToken) {
+            if (token) {
                 session.accessToken = token.accessToken as string;
-            }
-            if (token.user) {
                 session.user = token.user as any;
+                session.error = token.error as string;
             }
             return session;
         },
