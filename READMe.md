@@ -1,24 +1,25 @@
-# AI Meeting Knowledge Orchestrator
+# HarBaat AI (formerly Knowledge Orchestrator)
 
-Transform your meetings into structured, searchable knowledge with AI-powered transcription and entity extraction.
+An enterprise-grade, multi-tenant workspace for transforming your meetings into structured, searchable knowledge with AI-powered transcription and entity extraction.
 
 ## 🚀 Features
 
 ### Core Features
-- **Audio Upload**: Support for MP3, WAV, M4A, and OGG formats
-- **Meeting Library**: View all processed meetings in one place
-- **Speaker Diarization**: Automatic identification of different speakers
-- **Transcript Viewer**: Clean, readable transcripts with timestamps
-- **Smart Search**: Find specific content within transcripts
-- **Entity Extraction**: Automatic extraction of tasks, decisions, and action items
-- **Knowledge Graph**: Structured storage for organizational memory
+- **Multi-Tenant Workspaces**: Dedicated, isolated projects and team environments.
+- **Role-Based Access Control (RBAC)**: Manage granular permissions across projects and meetings.
+- **Audio Upload**: Support for MP3, WAV, M4A, and OGG formats with mandatory recording consent flows.
+- **Meeting Library**: View all processed meetings with scoped data fetching and advanced analytics.
+- **Premium Audio Playback**: Synchronized audio and transcript editing suite.
+- **Speaker Diarization**: Automatic identification of different speakers.
+- **Smart Search**: Find specific content within transcripts.
+- **Entity Extraction & Knowledge Graph**: Automatic extraction of tasks/decisions, visualized via an interactive Cytoscape.js graph.
 
 ### Authentication & User Management
-- **User Registration & Login**: Secure account creation and authentication
-- **Email Verification**: Verify email addresses with secure tokens (7-day expiry)
-- **Password Reset**: Forgot password flow with secure reset tokens (1-hour expiry)
-- **User Profiles**: View and edit profile information
-- **Session Management**: JWT-based authentication with NextAuth
+- **User Registration & Login**: Secure account creation and authentication.
+- **Email Verification**: Verify email addresses with secure tokens (7-day expiry).
+- **Password Reset**: Forgot password flow with secure reset tokens (1-hour expiry).
+- **User Profiles**: View and edit profile information.
+- **Session Management**: JWT-based authentication with NextAuth.
 
 ## 📋 Prerequisites
 
@@ -350,14 +351,17 @@ NEXT_PUBLIC_API_URL=http://localhost:8000/api
 - **Next.js 16** - React framework with App Router
 - **React 19** - UI library
 - **TypeScript** - Type safety
-- **Tailwind CSS** - Styling
+- **Tailwind CSS v4** - Styling & Dark-first premium design
 - **NextAuth.js** - Authentication and session management
 - **TanStack Query** - Data fetching and caching
 - **Zustand** - State management
+- **Cytoscape.js** - Knowledge graph visualization
+- **Wavesurfer.js** - Audio playback synchronization
 - **Axios** - HTTP client
 - **Lucide React** - Icons
 - **Sonner** - Toast notifications
 - **shadcn/ui** - UI component library
+- **next-themes** - Dark/Light mode support
 
 ### Backend
 - **FastAPI** - Python web framework
@@ -371,18 +375,19 @@ NEXT_PUBLIC_API_URL=http://localhost:8000/api
 
 - [ ] Integrate actual ASR pipeline (WhisperX)
 - [ ] Add LLM-based entity extraction
-- [ ] Implement Neo4j knowledge graph
-- [ ] Add audio playback synchronized with transcript
+- [x] Implement interactive knowledge graph (Cytoscape.js) ✅
+- [x] Add audio playback synchronized with transcript ✅
 - [ ] Support real-time transcription
 - [x] Add user authentication ✅
 - [x] Email verification ✅
 - [x] Password reset functionality ✅
 - [x] User profile management ✅
+- [x] Implement Multi-Tenancy & Teams ✅
+- [x] Add role-based access control (RBAC) ✅
 - [ ] Implement task management features
 - [ ] Export functionality (PDF, Word)
 - [ ] Add database persistence (currently in-memory)
 - [ ] Integrate email service (SendGrid/AWS SES) for production
-- [ ] Add role-based access control (RBAC)
 - [ ] Implement OAuth providers (Google, GitHub)
 
 ## 🐛 Troubleshooting
@@ -434,7 +439,7 @@ NEXTAUTH_URL=http://localhost:3000
 ## 👥 Team
 
 - **Asim Majeed** (22K-4535) - ASR & Transcription
-- **Muhammad Muzammil** (22K-4267) - Dashboard & LLM Integration
+- **Muhammad Muzammil** (22K-4267) - Dashboard, Multi-Tenancy & LLM Integration
 - **Ayan Hasan** (22K-4367) - Knowledge Graph & Entity Extraction
 
 ## 📄 License
