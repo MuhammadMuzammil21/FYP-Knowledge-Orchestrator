@@ -107,12 +107,12 @@ export function Sidebar() {
       >
         {/* Header zone */}
         <div className="flex h-14 items-center justify-between px-4 shrink-0 border-b border-border">
-          <div className="flex items-center gap-2.5">
+          <Link href="/" className="flex items-center gap-2.5">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-[oklch(0.88_0.05_150)] to-[oklch(0.65_0.12_195)] shadow-sm">
               <MessageSquare className="h-3.5 w-3.5 text-primary-foreground" strokeWidth={2.5} />
             </div>
             <span className="text-sm font-semibold tracking-tight">HarBaat AI</span>
-          </div>
+          </Link>
           <div className="flex items-center gap-1">
             <ThemeToggle />
             <Button
