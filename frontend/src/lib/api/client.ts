@@ -13,14 +13,23 @@ const apiClient: AxiosInstance = axios.create({
 
 let isRefreshing = false;
 let refreshSubscribers: ((token: string) => void)[] = [];
+let refreshRejections: ((error: any) => void)[] = [];
 
-const subscribeTokenRefresh = (cb: (token: string) => void) => {
-    refreshSubscribers.push(cb);
+const subscribeTokenRefresh = (onSuccess: (token: string) => void, onError: (error: any) => void) => {
+    refreshSubscribers.push(onSuccess);
+    refreshRejections.push(onError);
 };
 
 const onRefreshed = (token: string) => {
     refreshSubscribers.forEach((cb) => cb(token));
     refreshSubscribers = [];
+    refreshRejections = [];
+};
+
+const onRefreshFailed = (error: any) => {
+    refreshRejections.forEach((cb) => cb(error));
+    refreshSubscribers = [];
+    refreshRejections = [];
 };
 
 // Request interceptor to add JWT token
@@ -69,13 +78,16 @@ apiClient.interceptors.response.use(
 
         if (axiosError.response?.status === 401 && !originalRequest._retry && typeof window !== 'undefined') {
             if (isRefreshing) {
-                return new Promise((resolve) => {
-                    subscribeTokenRefresh((token) => {
-                        if (originalRequest.headers) {
-                            originalRequest.headers.Authorization = `Bearer ${token}`;
-                        }
-                        resolve(apiClient(originalRequest));
-                    });
+                return new Promise((resolve, reject) => {
+                    subscribeTokenRefresh(
+                        (token) => {
+                            if (originalRequest.headers) {
+                                originalRequest.headers.Authorization = `Bearer ${token}`;
+                            }
+                            resolve(apiClient(originalRequest));
+                        },
+                        (err) => reject(err)
+                    );
                 });
             }
 
@@ -101,13 +113,22 @@ apiClient.interceptors.response.use(
                 return apiClient(originalRequest);
             } catch (refreshError) {
                 // Refresh failed - clean up and redirect to login
+                onRefreshFailed(refreshError);
                 window.sessionStorage.removeItem('harbaat_temp_access_token');
+                
                 if (typeof window !== 'undefined') {
+                    // Prevent further refresh attempts while we redirect
+                    isRefreshing = true; 
                     window.location.href = '/login?error=SessionExpired';
                 }
                 return Promise.reject(refreshError);
             } finally {
-                isRefreshing = false;
+                // Only clear if we didn't just decide to stay "refreshing" during redirect
+                if (typeof window !== 'undefined' && window.location.pathname === '/login') {
+                    isRefreshing = false;
+                } else if (!isRefreshing) {
+                    isRefreshing = false;
+                }
             }
         }
 
