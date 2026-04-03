@@ -63,12 +63,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     const data = await res.json();
                     
                     if (res.ok && data.access_token) {
-                        // Extract Refresh Token from Set-Cookie header if present
-                        // Note: In server-side fetch, we can get headers
                         const setCookie = res.headers.get("set-cookie");
                         let refreshToken = "";
                         if (setCookie) {
-                            const match = setCookie.match(/refresh_token=([^;]+)/);
+                            const match = setCookie.match(/harbaat_refresh=([^;]+)/i);
                             if (match) refreshToken = match[1];
                         }
 
@@ -119,7 +117,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                             // Extract Refresh Token from backend cookie
                             const setCookie = res.headers.get("set-cookie");
                             if (setCookie) {
-                                const match = setCookie.match(/refresh_token=([^;]+)/);
+                                const match = setCookie.match(/harbaat_refresh=([^;]+)/i);
                                 if (match) refreshToken = match[1];
                             }
                         }
@@ -144,12 +142,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             if (token.refreshToken) {
                 try {
                     const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-                    // We call the backend refresh. We send the refresh token in the body OR cookie.
-                    // Since it's server-to-server, we send it in the cookie header manually.
+                    // We call the backend refresh. 
+                    // IMPORTANT: We must use the exact cookie name the backend expects: harbaat_refresh
                     const response = await fetch(`${baseUrl}/api/auth/refresh`, {
                         method: 'POST',
                         headers: {
-                            'Cookie': `refresh_token=${token.refreshToken}`,
+                            'Cookie': `harbaat_refresh=${token.refreshToken}`,
                         },
                     });
 
@@ -161,8 +159,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         ...token,
                         accessToken: refreshedTokens.access_token,
                         accessTokenExpires: Date.now() + (refreshedTokens.expires_in || 900) * 1000,
-                        // Backend might rotate refresh tokens, check for new one
-                        refreshToken: token.refreshToken, // Default to old one if not rotated
+                        // Update refresh token if shifted by backend (rotation)
+                        refreshToken: refreshedTokens.refresh_token || token.refreshToken,
                     };
                 } catch (error) {
                     console.error("Error refreshing access token", error);

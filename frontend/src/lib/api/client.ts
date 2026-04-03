@@ -12,6 +12,7 @@ const apiClient: AxiosInstance = axios.create({
 });
 
 let isRefreshing = false;
+let sessionFailed = false; // Persistent failure flag for the current page session
 let refreshSubscribers: ((token: string) => void)[] = [];
 let refreshRejections: ((error: any) => void)[] = [];
 
@@ -21,28 +22,31 @@ const subscribeTokenRefresh = (onSuccess: (token: string) => void, onError: (err
 };
 
 const onRefreshed = (token: string) => {
+    isRefreshing = false;
+    sessionFailed = false;
     refreshSubscribers.forEach((cb) => cb(token));
     refreshSubscribers = [];
     refreshRejections = [];
 };
 
 const onRefreshFailed = (error: any) => {
+    isRefreshing = false;
+    sessionFailed = true;
     refreshRejections.forEach((cb) => cb(error));
     refreshSubscribers = [];
     refreshRejections = [];
 };
 
-// Request interceptor to add JWT token
 apiClient.interceptors.request.use(
     async (config: InternalAxiosRequestConfig) => {
-        // Get token from session (will be set by NextAuth)
+        if (sessionFailed && !config.url?.includes('/auth/login')) {
+            return Promise.reject({ response: { status: 401 } } as AxiosError);
+        }
         if (typeof window !== 'undefined') {
-            // First check if we have a manually overriding token from a refresh
             const manualToken = window.sessionStorage.getItem('harbaat_temp_access_token');
             if (manualToken) {
                 config.headers.Authorization = `Bearer ${manualToken}`;
             } else {
-                // Client-side: get token from NextAuth session
                 const session = await fetch('/api/auth/session').then((res) => res.json());
                 if (session?.accessToken) {
                     config.headers.Authorization = `Bearer ${session.accessToken}`;
@@ -76,7 +80,21 @@ apiClient.interceptors.response.use(
         const axiosError = error as AxiosError<any>;
         const originalRequest = axiosError.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
+        if (originalRequest?.url?.includes('/auth/refresh')) {
+            sessionFailed = true;
+            isRefreshing = false;
+            return Promise.reject(axiosError);
+        }
+
         if (axiosError.response?.status === 401 && !originalRequest._retry && typeof window !== 'undefined') {
+            if (window.location.pathname === '/login') {
+                return Promise.reject(axiosError);
+            }
+
+            if (sessionFailed) {
+                return Promise.reject(axiosError);
+            }
+
             if (isRefreshing) {
                 return new Promise((resolve, reject) => {
                     subscribeTokenRefresh(
@@ -95,14 +113,11 @@ apiClient.interceptors.response.use(
             isRefreshing = true;
 
             try {
-                // Call backend refresh endpoint
                 const { data } = await axios.post(`${API_BASE_URL}/api/auth/refresh`, {}, {
                     withCredentials: true 
                 });
                 
                 const newAccessToken = data.access_token;
-                
-                // Store temporarily so subsequent requests can use it immediately
                 window.sessionStorage.setItem('harbaat_temp_access_token', newAccessToken);
                 
                 onRefreshed(newAccessToken);
@@ -112,23 +127,13 @@ apiClient.interceptors.response.use(
                 }
                 return apiClient(originalRequest);
             } catch (refreshError) {
-                // Refresh failed - clean up and redirect to login
                 onRefreshFailed(refreshError);
                 window.sessionStorage.removeItem('harbaat_temp_access_token');
                 
                 if (typeof window !== 'undefined') {
-                    // Prevent further refresh attempts while we redirect
-                    isRefreshing = true; 
                     window.location.href = '/login?error=SessionExpired';
                 }
                 return Promise.reject(refreshError);
-            } finally {
-                // Only clear if we didn't just decide to stay "refreshing" during redirect
-                if (typeof window !== 'undefined' && window.location.pathname === '/login') {
-                    isRefreshing = false;
-                } else if (!isRefreshing) {
-                    isRefreshing = false;
-                }
             }
         }
 
@@ -138,7 +143,6 @@ apiClient.interceptors.response.use(
 
 export default apiClient;
 
-// Helper function to handle API errors
 export function getErrorMessage(error: unknown): string {
     if (axios.isAxiosError(error)) {
         const data = error.response?.data as any;
@@ -146,7 +150,6 @@ export function getErrorMessage(error: unknown): string {
             if (typeof data.detail === 'string') {
                 return data.detail;
             } else if (Array.isArray(data.detail)) {
-                // Validation errors
                 return data.detail.map((err: any) => err.msg).join(', ');
             }
         }
