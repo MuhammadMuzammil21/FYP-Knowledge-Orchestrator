@@ -45,6 +45,7 @@ export const API_ENDPOINTS = {
     MEETING_RAG_QUERY: (id: string) => `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.ragQuery(id)}`,
     MEETING_SPEAKERS: (id: string) => `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.speakers(id)}`,
     MEETING_SPEAKER_UPDATE: (meetingId: string, speakerId: number) => `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.speakerDetail(meetingId, speakerId)}`,
+    MEETING_SPEAKER_LINK_USER: (meetingId: string, speakerId: number) => `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.speakerLinkUser(meetingId, speakerId)}`,
     MEETING_GRAPH: (id: string) => `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.graph(id)}`,
 
     // Projects
@@ -67,6 +68,13 @@ export const API_ENDPOINTS = {
     // Users
     USER_ME: `${ENDPOINT_CONFIG.users.base}${ENDPOINT_CONFIG.users.endpoints.me}`,
     USER_UPDATE_PROFILE: `${ENDPOINT_CONFIG.users.base}${ENDPOINT_CONFIG.users.endpoints.updateMe}`,
+    USER_VOICE: `${ENDPOINT_CONFIG.users.base}${ENDPOINT_CONFIG.users.endpoints.voice}`,
+    USER_NOTIFICATIONS: `${ENDPOINT_CONFIG.users.base}${ENDPOINT_CONFIG.users.endpoints.notifications}`,
+    USER_NOTIFICATIONS_UNREAD_COUNT: `${ENDPOINT_CONFIG.users.base}${ENDPOINT_CONFIG.users.endpoints.notificationsUnreadCount}`,
+    USER_NOTIFICATION_READ: (id: number) => `${ENDPOINT_CONFIG.users.base}${ENDPOINT_CONFIG.users.endpoints.notificationRead(id)}`,
+    USER_NOTIFICATIONS_READ_ALL: `${ENDPOINT_CONFIG.users.base}${ENDPOINT_CONFIG.users.endpoints.notificationsReadAll}`,
+    USER_NOTIFICATION_DELETE: (id: number) => `${ENDPOINT_CONFIG.users.base}${ENDPOINT_CONFIG.users.endpoints.notificationDelete(id)}`,
+    USER_NOTIFICATION_PREFERENCES: `${ENDPOINT_CONFIG.users.base}${ENDPOINT_CONFIG.users.endpoints.notificationPreferences}`,
 
     // Teams
     TEAMS_LIST: ENDPOINT_CONFIG.teams.base,

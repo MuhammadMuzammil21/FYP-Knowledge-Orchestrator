@@ -47,3 +47,31 @@ export async function addSpeaker(
     );
     return response.data;
 }
+
+/**
+ * Link a speaker to a user
+ */
+export async function linkSpeakerToUser(
+    meetingId: string,
+    speakerId: number,
+    userId: string
+): Promise<Speaker> {
+    const response = await apiClient.post<Speaker>(
+        API_ENDPOINTS.MEETING_SPEAKER_LINK_USER(meetingId, speakerId),
+        { user_id: userId }
+    );
+    return response.data;
+}
+
+/**
+ * Unlink a speaker from a user
+ */
+export async function unlinkSpeakerFromUser(
+    meetingId: string,
+    speakerId: number
+): Promise<Speaker> {
+    const response = await apiClient.delete<Speaker>(
+        API_ENDPOINTS.MEETING_SPEAKER_LINK_USER(meetingId, speakerId)
+    );
+    return response.data;
+}

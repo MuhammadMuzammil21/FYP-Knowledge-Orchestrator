@@ -2,8 +2,9 @@
 
 import { usePathname } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { ChevronRight, Search, Bell, HelpCircle, Menu } from 'lucide-react'
+import { ChevronRight, Search, HelpCircle, Menu } from 'lucide-react'
 import { useMobileMenu } from '@/contexts/MobileMenuContext'
+import { NotificationMenu } from './NotificationMenu'
 import Link from 'next/link'
 
 export function Navbar() {
@@ -105,15 +106,7 @@ export function Navbar() {
         >
           <Search className="h-4 w-4" />
         </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-8 w-8 text-muted-foreground hover:text-foreground"
-          aria-label="Notifications"
-          title="Notifications"
-        >
-          <Bell className="h-4 w-4" />
-        </Button>
+        <NotificationMenu />
         <Button
           variant="ghost"
           size="icon"

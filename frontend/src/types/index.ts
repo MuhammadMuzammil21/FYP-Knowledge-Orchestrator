@@ -251,6 +251,8 @@ export interface Speaker {
     display_name: string;
     known_speaker_id: number | null;
     has_embedding: boolean;
+    linked_user_id?: string;
+    neo4j_person_name?: string;
 }
 
 export interface SpeakersResponse {
@@ -387,4 +389,34 @@ export interface InviteMemberRequest {
 
 export interface TeamListResponse {
     teams: Team[];
+}
+
+
+// Voice Identity
+export interface VoiceIdentityResponse {
+    status: 'pending' | 'ready' | 'error' | 'not_registered';
+    updated_at?: string;
+}
+
+// Notifications
+export interface NotificationResponse {
+    id: number;
+    meeting_id?: string;
+    type: 'mention' | 'summary' | 'conflict' | 'action_item';
+    title: string;
+    message: string;
+    extra_data: {
+        absent?: boolean;
+        project_id?: string;
+        [key: string]: any;
+    };
+    read: boolean;
+    created_at: string;
+}
+
+export interface NotificationPreferences {
+    notify_on_mention: boolean;
+    notify_on_summary: boolean;
+    email_on_mention: boolean;
+    [key: string]: any;
 }

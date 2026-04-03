@@ -1,11 +1,14 @@
 'use client';
 
 import { useState } from 'react';
-import { useSpeakers, useUpdateSpeaker } from '@/hooks/useSpeakers';
+import { useSpeakers, useUpdateSpeaker, useLinkSpeaker, useUnlinkSpeaker } from '@/hooks/useSpeakers';
+import { useWorkspace } from '@/contexts/WorkspaceContext';
+import { useTeam } from '@/hooks/useTeams';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { User, Edit2, Check, X, Link as LinkIcon } from 'lucide-react';
 import type { Speaker } from '@/types'; // API type with snake_case
 
@@ -14,15 +17,22 @@ interface SpeakersPanelProps {
 }
 
 export function SpeakersPanel({ meetingId }: SpeakersPanelProps) {
+    const { activeTeamSlug } = useWorkspace();
+    const { data: teamDetail } = useTeam(activeTeamSlug || '');
     const { data: speakers, isLoading, error } = useSpeakers(meetingId);
+    
     const updateSpeaker = useUpdateSpeaker(meetingId);
+    const linkSpeaker = useLinkSpeaker(meetingId);
+    const unlinkSpeaker = useUnlinkSpeaker(meetingId);
 
     const [editingId, setEditingId] = useState<number | null>(null);
     const [editName, setEditName] = useState('');
+    const [editLinkedUser, setEditLinkedUser] = useState<string>('none');
 
     const handleEdit = (speaker: Speaker) => {
         setEditingId(speaker.id);
         setEditName(speaker.display_name);
+        setEditLinkedUser(speaker.linked_user_id || 'none');
     };
 
     const handleSave = (speakerId: number) => {
@@ -31,8 +41,15 @@ export function SpeakersPanel({ meetingId }: SpeakersPanelProps) {
                 { speakerId, displayName: editName.trim() },
                 {
                     onSuccess: () => {
+                        if (editLinkedUser === 'none') {
+                            unlinkSpeaker.mutate({ speakerId });
+                        } else if (editLinkedUser) {
+                            linkSpeaker.mutate({ speakerId, userId: editLinkedUser });
+                        }
+                        
                         setEditingId(null);
                         setEditName('');
+                        setEditLinkedUser('none');
                     },
                 }
             );
@@ -42,6 +59,7 @@ export function SpeakersPanel({ meetingId }: SpeakersPanelProps) {
     const handleCancel = () => {
         setEditingId(null);
         setEditName('');
+        setEditLinkedUser('none');
     };
 
     if (error) {
@@ -92,17 +110,34 @@ export function SpeakersPanel({ meetingId }: SpeakersPanelProps) {
                             <div className="flex-1 min-w-0">
                                 {editingId === speaker.id ? (
                                     <div className="flex flex-wrap items-center gap-2 w-full">
-                                        <Input
-                                            value={editName}
-                                            onChange={(e) => setEditName(e.target.value)}
-                                            className="w-full sm:w-48"
-                                            disabled={updateSpeaker.isPending}
-                                            autoFocus
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') handleSave(speaker.id);
-                                                if (e.key === 'Escape') handleCancel();
-                                            }}
-                                        />
+                                        <div className="flex flex-col gap-2 w-full sm:w-48">
+                                            <Input
+                                                value={editName}
+                                                onChange={(e) => setEditName(e.target.value)}
+                                                className="w-full"
+                                                disabled={updateSpeaker.isPending || linkSpeaker.isPending || unlinkSpeaker.isPending}
+                                                autoFocus
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter') handleSave(speaker.id);
+                                                    if (e.key === 'Escape') handleCancel();
+                                                }}
+                                            />
+                                            {teamDetail && teamDetail.members && teamDetail.members.length > 0 && (
+                                                <Select value={editLinkedUser} onValueChange={setEditLinkedUser}>
+                                                    <SelectTrigger className="w-full h-8 text-xs">
+                                                        <SelectValue placeholder="Link to member" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="none">Not linked</SelectItem>
+                                                        {teamDetail.members.map(m => (
+                                                            <SelectItem key={m.user_id} value={m.user_id}>
+                                                                {m.name || m.email}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            )}
+                                        </div>
                                         <div className="flex gap-2">
                                             <Button
                                                 size="sm"
@@ -126,10 +161,15 @@ export function SpeakersPanel({ meetingId }: SpeakersPanelProps) {
                                         <p className="font-medium truncate">{speaker.display_name}</p>
                                         <p className="text-xs text-muted-foreground truncate">
                                             {speaker.original_label}
-                                            {speaker.known_speaker_id && (
+                                            {speaker.linked_user_id ? (
                                                 <span className="ml-2 inline-flex items-center gap-1 text-primary">
                                                     <LinkIcon className="h-3 w-3" />
-                                                    Linked
+                                                    {speaker.neo4j_person_name || 'Linked Member'}
+                                                </span>
+                                            ) : speaker.known_speaker_id && (
+                                                <span className="ml-2 inline-flex items-center gap-1 text-primary">
+                                                    <LinkIcon className="h-3 w-3" />
+                                                    Linked (Voice)
                                                 </span>
                                             )}
                                         </p>

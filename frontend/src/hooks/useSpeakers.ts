@@ -4,7 +4,7 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getSpeakers, updateSpeaker, addSpeaker } from '@/lib/api/speakers';
+import { getSpeakers, updateSpeaker, addSpeaker, linkSpeakerToUser, unlinkSpeakerFromUser } from '@/lib/api/speakers';
 
 /**
  * Hook to fetch meeting speakers
@@ -47,6 +47,36 @@ export function useAddSpeaker(meetingId: string) {
             addSpeaker(meetingId, { original_label: originalLabel, display_name: displayName }),
         onSuccess: () => {
             // Invalidate speakers query to refetch
+            queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
+        },
+    });
+}
+
+/**
+ * Hook to link speaker to user
+ */
+export function useLinkSpeaker(meetingId: string) {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ speakerId, userId }: { speakerId: number; userId: string }) =>
+            linkSpeakerToUser(meetingId, speakerId, userId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
+        },
+    });
+}
+
+/**
+ * Hook to unlink speaker from user
+ */
+export function useUnlinkSpeaker(meetingId: string) {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ speakerId }: { speakerId: number }) =>
+            unlinkSpeakerFromUser(meetingId, speakerId),
+        onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
         },
     });

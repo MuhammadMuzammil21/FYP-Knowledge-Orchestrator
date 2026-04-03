@@ -49,6 +49,7 @@ export const ENDPOINT_CONFIG = {
             // NEW: Speaker endpoints
             speakers: (id: string) => `/${id}/speakers`,
             speakerDetail: (meetingId: string, speakerId: number) => `/${meetingId}/speakers/${speakerId}`,
+            speakerLinkUser: (meetingId: string, speakerId: number) => `/${meetingId}/speakers/${speakerId}/link-user`,
             // NEW: Meeting graph endpoint
             graph: (id: string) => `/${id}/graph`,
             // Audio streaming
@@ -128,6 +129,13 @@ export const ENDPOINT_CONFIG = {
         endpoints: {
             me: '/me',
             updateMe: '/me',
+            voice: '/me/voice',
+            notifications: '/me/notifications',
+            notificationsUnreadCount: '/me/notifications/unread-count',
+            notificationRead: (id: number) => `/me/notifications/${id}/read`,
+            notificationsReadAll: '/me/notifications/read-all',
+            notificationDelete: (id: number) => `/me/notifications/${id}`,
+            notificationPreferences: '/me/notification-preferences',
         },
     },
 } as const;

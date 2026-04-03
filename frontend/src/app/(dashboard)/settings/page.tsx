@@ -19,7 +19,9 @@ import {
 import { toast } from 'sonner';
 import { updateProfile } from '@/lib/api/auth';
 import { getErrorMessage } from '@/lib/api/client';
-import { User, Lock, Bell, Palette } from 'lucide-react';
+import { User, Lock, Bell, Palette, Mic } from 'lucide-react';
+import { VoiceIdentityTab } from './VoiceIdentityTab';
+import { NotificationsTab } from './NotificationsTab';
 
 export default function SettingsPage() {
     const { data: session, update } = useSession();
@@ -101,6 +103,10 @@ export default function SettingsPage() {
                         <TabsTrigger value="notifications" className="flex-1 min-w-[110px] text-xs sm:text-sm whitespace-nowrap">
                             <Bell className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
                             Notifications
+                        </TabsTrigger>
+                        <TabsTrigger value="voice" className="flex-1 min-w-[110px] text-xs sm:text-sm whitespace-nowrap">
+                            <Mic className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                            Voice Identity
                         </TabsTrigger>
                         <TabsTrigger value="appearance" className="flex-1 min-w-[100px] text-xs sm:text-sm whitespace-nowrap">
                             <Palette className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
@@ -207,43 +213,12 @@ export default function SettingsPage() {
 
                     {/* Notifications Tab */}
                     <TabsContent value="notifications">
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Notification Preferences</CardTitle>
-                                <CardDescription>
-                                    Manage how you receive notifications
-                                </CardDescription>
-                            </CardHeader>
-                            <CardContent>
-                                <div className="space-y-4">
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="font-medium">Email Notifications</p>
-                                            <p className="text-sm text-muted-foreground">
-                                                Receive email updates about your meetings
-                                            </p>
-                                        </div>
-                                        <Button variant="outline" size="sm">
-                                            Coming Soon
-                                        </Button>
-                                    </div>
+                        <NotificationsTab />
+                    </TabsContent>
 
-                                    <Separator />
-
-                                    <div className="flex items-center justify-between">
-                                        <div>
-                                            <p className="font-medium">Meeting Reminders</p>
-                                            <p className="text-sm text-muted-foreground">
-                                                Get notified when meetings are processed
-                                            </p>
-                                        </div>
-                                        <Button variant="outline" size="sm">
-                                            Coming Soon
-                                        </Button>
-                                    </div>
-                                </div>
-                            </CardContent>
-                        </Card>
+                    {/* Voice Identity Tab */}
+                    <TabsContent value="voice">
+                        <VoiceIdentityTab />
                     </TabsContent>
 
                     {/* Appearance Tab */}
