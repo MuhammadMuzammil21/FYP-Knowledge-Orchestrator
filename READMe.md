@@ -480,11 +480,3 @@ Currently, the application generates verification and reset tokens but doesn't s
    EMAIL_FROM=noreply@yourapp.com
    ```
 
-## 🙏 Acknowledgments
-
-- OpenAI Whisper for ASR capabilities
-- FastAPI for the backend framework
-- Next.js for the frontend framework
-- NextAuth.js for authentication
-- TanStack Query for data fetching
-- shadcn/ui for UI components
