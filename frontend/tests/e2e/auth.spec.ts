@@ -26,7 +26,7 @@ test.describe('Authentication & Session Management', () => {
 
   test('Account lifecycle: Signup with new credentials', async ({ page }) => {
     const randomSuffix = Math.floor(Math.random() * 10000);
-    const signupEmail = `e2e_${randomSuffix}@harbaat.test`;
+    const signupEmail = `e2e_${randomSuffix}@harbaat-test.com`;
     
     await page.goto('/signup');
     
@@ -59,7 +59,7 @@ test.describe('Authentication & Session Management', () => {
     await page.click('button[role="tab"]:has-text("Security")');
     
     // Verify security tab loaded
-    await expect(page.getByText('Password', { exact: false })).toBeVisible();
+    await expect(page.getByText('Security Settings')).toBeVisible();
     
     // The guide mentions "Revoke" buttons under "Active Sessions"
     // If sessions aren't implemented yet, this will wait/fail predictably
