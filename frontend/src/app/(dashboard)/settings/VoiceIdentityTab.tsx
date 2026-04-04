@@ -1,13 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Mic, Square, Trash2, Loader2, Play } from 'lucide-react';
+import { Mic, Square, Trash2, Loader2, Play, Upload } from 'lucide-react';
 import { useVoiceIdentity, useRegisterVoiceIdentity, useDeleteVoiceIdentity } from '@/hooks/useVoiceIdentity';
 import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
 import { toast } from 'sonner';
+
+const IS_TEST_ENV = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test';
+
 
 function formatTime(seconds: number): string {
     const m = Math.floor(seconds / 60);
@@ -19,6 +22,7 @@ export function VoiceIdentityTab() {
     const { data, isLoading } = useVoiceIdentity();
     const registerMutation = useRegisterVoiceIdentity();
     const deleteMutation = useDeleteVoiceIdentity();
+    const fileInputRef = useRef<HTMLInputElement>(null);
     
     // Recorder state
     const recorder = useVoiceRecorder();
@@ -69,31 +73,60 @@ export function VoiceIdentityTab() {
                     </div>
                 ) : (
                     <>
-                        <div className="rounded-lg border p-4 bg-muted/30">
-                            <h4 className="font-medium mb-1">Status</h4>
-                            {data?.status === 'ready' && (
-                                <p className="text-sm text-green-600 dark:text-green-400 font-medium tracking-wide flex items-center">
-                                    <span className="h-2 w-2 rounded-full bg-green-500 mr-2" />
-                                    Voice Registered
-                                </p>
-                            )}
-                            {data?.status === 'pending' && (
-                                <p className="text-sm text-blue-600 dark:text-blue-400 font-medium tracking-wide flex items-center">
-                                    <span className="h-2 w-2 rounded-full bg-blue-500 mr-2 animate-pulse" />
-                                    Processing Voice Profile...
-                                </p>
-                            )}
-                            {data?.status === 'error' && (
-                                <p className="text-sm text-red-600 dark:text-red-400 font-medium tracking-wide flex items-center">
-                                    <span className="h-2 w-2 rounded-full bg-red-500 mr-2" />
-                                    Processing Failed. Please try again.
-                                </p>
-                            )}
-                            {(!data || data.status === 'not_registered') && (
-                                <p className="text-sm text-muted-foreground font-medium tracking-wide flex items-center">
-                                    <span className="h-2 w-2 rounded-full bg-muted-foreground/50 mr-2" />
-                                    Not Registered
-                                </p>
+                        <div className="rounded-lg border p-4 bg-muted/30 flex flex-col gap-4">
+                            <div>
+                                <h4 className="font-medium mb-1">Status</h4>
+                                {data?.status === 'ready' && (
+                                    <p className="text-sm text-green-600 dark:text-green-400 font-medium tracking-wide flex items-center">
+                                        <span className="h-2 w-2 rounded-full bg-green-500 mr-2" />
+                                        Voice Registered
+                                    </p>
+                                )}
+                                {data?.status === 'pending' && (
+                                    <p className="text-sm text-blue-600 dark:text-blue-400 font-medium tracking-wide flex items-center">
+                                        <span className="h-2 w-2 rounded-full bg-blue-500 mr-2 animate-pulse" />
+                                        Processing Voice Profile...
+                                    </p>
+                                )}
+                                {data?.status === 'error' && (
+                                    <p className="text-sm text-red-600 dark:text-red-400 font-medium tracking-wide flex items-center">
+                                        <span className="h-2 w-2 rounded-full bg-red-500 mr-2" />
+                                        Processing Failed. Please try again.
+                                    </p>
+                                )}
+                                {(!data || data.status === 'not_registered') && (
+                                    <p className="text-sm text-muted-foreground font-medium tracking-wide flex items-center">
+                                        <span className="h-2 w-2 rounded-full bg-muted-foreground/50 mr-2" />
+                                        Not Registered
+                                    </p>
+                                )}
+                            </div>
+
+                            {/* E2E Test Helper: Allow manual upload in dev/test */}
+                            {IS_TEST_ENV && (
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="file"
+                                        ref={fileInputRef}
+                                        accept=".wav"
+                                        className="hidden"
+                                        onChange={async (e) => {
+                                            const file = e.target.files?.[0];
+                                            if (file) {
+                                                registerMutation.mutate(file);
+                                            }
+                                        }}
+                                    />
+                                    <Button 
+                                        variant="outline" 
+                                        size="sm" 
+                                        onClick={() => fileInputRef.current?.click()}
+                                        disabled={registerMutation.isPending}
+                                    >
+                                        <Upload className="h-4 w-4 mr-2" />
+                                        Manual Upload
+                                    </Button>
+                                </div>
                             )}
                         </div>
 
