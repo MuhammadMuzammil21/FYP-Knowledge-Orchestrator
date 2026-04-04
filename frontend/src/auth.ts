@@ -63,9 +63,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     const data = await res.json();
                     
                     if (res.ok && data.access_token) {
+                        // Extract Refresh Token from Set-Cookie header if present
+                        // Note: In server-side fetch, we can get headers
                         const setCookie = res.headers.get("set-cookie");
                         let refreshToken = "";
                         if (setCookie) {
+                            // Look for our specific cookie name
                             const match = setCookie.match(/harbaat_refresh=([^;]+)/i);
                             if (match) refreshToken = match[1];
                         }
@@ -87,7 +90,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         }),
     ],
     callbacks: {
-        async jwt({ token, user, account }) {
+        async jwt({ token, user, account, trigger, session }: any) {
             // Initial sign in
             if (account && user) {
                 let accessToken = (user as any).accessToken;
@@ -133,17 +136,27 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 return token;
             }
 
-            // Return previous token if the access token has not expired yet
-            if (Date.now() < (token.accessTokenExpires as number)) {
+            // Check if we requested a manual update or if we're nearing expiry
+            const REFRESH_THRESHOLD = 60 * 1000; // 60 seconds is safer than 30 buffer
+            const isNearingExpiry = Date.now() > (token.accessTokenExpires as number) - REFRESH_THRESHOLD;
+            const shouldForceRefresh = (trigger === 'update' && session?.forceRefresh) || isNearingExpiry;
+
+            // Return previous token if the access token has not expired yet and not manual update
+            if (!shouldForceRefresh && Date.now() < (token.accessTokenExpires as number)) {
                 return token;
             }
 
-            // Access token has expired, try to update it
+            // Do not attempt to refresh if we already failed previously (terminal state)
+            if (token.error === "RefreshAccessTokenError") {
+                return token;
+            }
+
+            // Access token has expired or nearing expiry, try to update it
             if (token.refreshToken) {
                 try {
                     const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-                    // We call the backend refresh. 
-                    // IMPORTANT: We must use the exact cookie name the backend expects: harbaat_refresh
+                    console.log(`[NextAuth] Refreshing token. Reason: ${shouldForceRefresh ? (isNearingExpiry ? 'Nearing expiry' : 'Manual update') : 'Expired'}`);
+                    
                     const response = await fetch(`${baseUrl}/api/auth/refresh`, {
                         method: 'POST',
                         headers: {
@@ -151,19 +164,23 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         },
                     });
 
-                    const refreshedTokens = await response.json();
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        console.error("[NextAuth] Backend refresh failed:", errorData);
+                        throw new Error("RefreshAccessTokenError");
+                    }
 
-                    if (!response.ok) throw refreshedTokens;
+                    const refreshedTokens = await response.json();
 
                     return {
                         ...token,
                         accessToken: refreshedTokens.access_token,
                         accessTokenExpires: Date.now() + (refreshedTokens.expires_in || 900) * 1000,
-                        // Update refresh token if shifted by backend (rotation)
                         refreshToken: refreshedTokens.refresh_token || token.refreshToken,
+                        error: undefined, // Clear any previous error
                     };
                 } catch (error) {
-                    console.error("Error refreshing access token", error);
+                    console.error("[NextAuth] Error during JWT refresh callback", error);
                     return { ...token, error: "RefreshAccessTokenError" };
                 }
             }

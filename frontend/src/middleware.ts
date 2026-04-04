@@ -12,16 +12,19 @@ export default auth((req) => {
         route === '/' ? pathname === '/' : pathname.startsWith(route)
     );
 
+    const isSessionInvalid = !session || session.error === 'RefreshAccessTokenError';
+
     // If not authenticated and trying to access protected route
-    if (!session && !isPublicRoute) {
+    if (isSessionInvalid && !isPublicRoute) {
         const loginUrl = new URL('/login', req.url);
         loginUrl.searchParams.set('callbackUrl', pathname);
+        // Also could pass a query param indicating session expiry, but we rely on apiClient's query param if possible
         return NextResponse.redirect(loginUrl);
     }
 
     // If authenticated but email not verified, redirect to verification page
     if (
-        session &&
+        !isSessionInvalid &&
         !session.user?.email_verified &&
         pathname !== '/verify-email' &&
         !isPublicRoute
@@ -30,7 +33,7 @@ export default auth((req) => {
     }
 
     // If authenticated and trying to access auth pages (not landing), redirect to dashboard
-    if (session && isPublicRoute && pathname !== '/') {
+    if (!isSessionInvalid && isPublicRoute && pathname !== '/') {
         return NextResponse.redirect(new URL('/dashboard', req.url));
     }
 
