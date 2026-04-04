@@ -96,40 +96,28 @@ FYP-Knowledge-Orchestrator/
 │
 ├── frontend/
 │   ├── public/             # Static assets
+│   ├── tests/              # E2E Infrastructure
+│   │   ├── e2e/            # Playwright specifications
+│   │   └── fixtures/       # Test audio samples
 │   ├── src/
 │   │   ├── app/            # Next.js App Router pages
-│   │   │   ├── layout.tsx  # Root layout
-│   │   │   ├── page.tsx    # Home page
-│   │   │   ├── profile/    # User profile page
+│   │   │   ├── (dashboard)/ # Grouped dashboard routes
 │   │   │   ├── auth/       # Authentication pages
-│   │   │   │   ├── signin/      # Sign in page
-│   │   │   │   ├── signup/      # Sign up page
-│   │   │   │   ├── forgot-password/  # Password reset request
-│   │   │   │   ├── reset-password/   # Password reset form
-│   │   │   │   └── verify-email/     # Email verification
-│   │   │   ├── providers.tsx # React Query & other providers
-│   │   │   └── globals.css # Global styles
-│   │   ├── lib/
-│   │   │   ├── api/        # API client & services
-│   │   │   │   ├── client.ts      # Axios client configuration
-│   │   │   │   ├── meetings.ts    # Meeting API endpoints
-│   │   │   │   └── auth.ts        # Authentication API endpoints
-│   │   │   ├── hooks/      # Custom React hooks
-│   │   │   │   ├── useMeetings.ts
-│   │   │   │   └── useTranscript.ts
-│   │   │   └── utils/      # Utility functions
-│   │   │       ├── cn.ts           # Class name utilities
-│   │   │       ├── formatters.ts   # Date/time formatters
-│   │   │       └── validation.ts   # Form validation
-│   │   ├── config/         # Configuration constants
-│   │   │   └── constants.ts
-│   │   ├── auth.ts         # NextAuth configuration
-│   │   ├── middleware.ts  # Auth middleware
-│   │   └── types/          # TypeScript type definitions
-│   │       └── index.ts
-│   ├── components/         # React components
-│   │   ├── layout/         # Layout components (UserMenu, etc.)
-│   │   └── ui/             # UI components (shadcn/ui)
+│   │   │   └── providers.tsx # Context providers
+│   │   ├── components/     # React components
+│   │   │   ├── layout/     # Layout components
+│   │   │   │   └── __tests__/ # Layout unit tests
+│   │   │   └── ui/         # UI primitives (shadcn/ui)
+│   │   │       └── __tests__/ # UI unit tests
+│   │   ├── contexts/       # React Contexts (Workspace, MobileMenu)
+│   │   ├── hooks/          # Custom React hooks
+│   │   │   └── __tests__/  # Hook unit tests
+│   │   ├── lib/            # Shared libraries & services
+│   │   ├── types/          # TypeScript definitions
+│   │   └── config/         # System configuration
+│   ├── jest.config.ts      # Jest configuration
+│   ├── jest.setup.ts       # Global test mocks
+│   ├── playwright.config.ts # Playwright configuration
 │   ├── package.json
 │   ├── next.config.ts      # Next.js configuration
 │   ├── tailwind.config.ts  # Tailwind CSS configuration
@@ -295,15 +283,64 @@ GET /api/meetings/{meeting_id}/status
 POST /api/meetings/{meeting_id}/mock-complete
 ```
 
-## 🧪 Testing with Mock Data
+## 🧪 Testing
 
-For development purposes, you can simulate completed processing:
+HarBaat AI maintains a robust testing environment split into three distinct layers: Component/Unit Testing, End-to-End Testing, and Code Quality.
+
+### 1. Component & Unit Testing (Jest & RTL)
+We use **Jest** and **React Testing Library** for verifying individual components and business logic. All critical components follow "Gold Standard" patterns:
+- **UI Primitives**: Atomic testing of variants, accessibility, and basic interactions (e.g., `Button`).
+- **Business Logic**: Integration testing for complex components (e.g., `Sidebar` RBAC logic).
+- **Custom Hooks**: State machine verification for specialized hooks (e.g., `useVoiceRecorder`).
+
+**Commands:**
+```bash
+# Run all unit tests
+npm test
+
+# Run tests in watch mode
+npm run test:watch
+
+# Generate coverage report
+npm run test:coverage
+```
+
+### 2. End-to-End Testing (Playwright)
+**Playwright** handles multi-browser verification of critical user flows. E2E tests target our hosted backend at `https://asim-ai.duckdns.org`.
+
+**Covered Flows:**
+- **Authentication**: Signup, Email Verification, Login, and Session Revocation.
+- **Voice Identity**: Automated registration using audio fixtures.
+- **Meeting Analysis**: File upload processing and real-time status tracking.
+- **Mentions**: Cross-user notification triggers and badge updates.
+
+**Commands:**
+```bash
+# Run E2E tests (Headless)
+npm run test:e2e
+
+# Run E2E tests with UI Mode
+npm run test:e2e:ui
+```
+
+### 3. Code Quality & Formatting
+We use **Prettier**, **ESLint**, and **Husky** to ensure consistent code quality and prevent regressions.
+
+**Commands:**
+```bash
+# Format codebase
+npm run format
+
+# Lint codebase
+npm run lint
+```
+
+### 4. Testing with Mock Data
+For development purposes, you can simulate completed processing on the backend:
 
 ```bash
 curl -X POST http://localhost:8000/api/meetings/{meeting_id}/mock-complete
 ```
-
-This will populate the meeting with sample transcript and entity data.
 
 ## 🎨 Customization
 
