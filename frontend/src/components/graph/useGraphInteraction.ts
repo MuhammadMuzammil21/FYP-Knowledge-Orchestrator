@@ -6,8 +6,8 @@ import type { LayoutPreset } from './graphLayouts';
 import type { GraphNode } from '@/types';
 
 export interface SelectedNodeInfo {
-  cytoscapeId: string;        // the string ID used by Cytoscape
-  originalNode: GraphNode;    // the original API GraphNode
+  cytoscapeId: string; // the string ID used by Cytoscape
+  originalNode: GraphNode; // the original API GraphNode
   displayName: string;
   nodeType: string;
   connections: Array<{
@@ -57,7 +57,7 @@ export function useGraphInteraction(): UseGraphInteractionReturn {
   }, []);
 
   const toggleTypeFilter = useCallback((type: string) => {
-    setActiveTypeFilters(prev => {
+    setActiveTypeFilters((prev) => {
       const next = new Set(prev);
       next.has(type) ? next.delete(type) : next.add(type);
       return next;
@@ -89,7 +89,7 @@ export function useGraphInteraction(): UseGraphInteractionReturn {
     cy.elements().removeClass('dimmed search-match');
     if (!query.trim()) return;
     const q = query.toLowerCase();
-    cy.nodes().forEach(node => {
+    cy.nodes().forEach((node) => {
       const name = (node.data('displayName') || '').toLowerCase();
       const type = (node.data('nodeType') || '').toLowerCase();
       const matches = name.includes(q) || type.includes(q);
@@ -106,9 +106,18 @@ export function useGraphInteraction(): UseGraphInteractionReturn {
   }, []);
 
   return {
-    selectedNode, searchQuery, activeLayout, activeTypeFilters, cyRef,
-    selectNode, setSearchQuery, setActiveLayout,
-    toggleTypeFilter, clearTypeFilters,
-    highlightNeighborhood, resetHighlight, applySearchHighlight,
+    selectedNode,
+    searchQuery,
+    activeLayout,
+    activeTypeFilters,
+    cyRef,
+    selectNode,
+    setSearchQuery,
+    setActiveLayout,
+    toggleTypeFilter,
+    clearTypeFilters,
+    highlightNeighborhood,
+    resetHighlight,
+    applySearchHighlight,
   };
 }

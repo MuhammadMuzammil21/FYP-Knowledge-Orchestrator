@@ -12,171 +12,173 @@ import { Mail, CheckCircle2 } from 'lucide-react';
 import { AuthBranding } from '@/components/auth/AuthBranding';
 
 function VerifyEmailContent() {
-    const { data: session, update } = useSession();
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const token = searchParams.get('token');
+  const { data: session, update } = useSession();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams.get('token');
 
-    const [isVerifying, setIsVerifying] = useState(false);
-    const [isResending, setIsResending] = useState(false);
-    const [isVerified, setIsVerified] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [isResending, setIsResending] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
 
-    useEffect(() => {
-        if (token) {
-            handleVerify(token);
-        }
-    }, [token]);
+  useEffect(() => {
+    if (token) {
+      handleVerify(token);
+    }
+  }, [token]);
 
-    const handleVerify = async (verificationToken: string) => {
-        setIsVerifying(true);
-        try {
-            await verifyEmail(verificationToken);
-            setIsVerified(true);
-            toast.success('Email verified successfully!');
+  const handleVerify = async (verificationToken: string) => {
+    setIsVerifying(true);
+    try {
+      await verifyEmail(verificationToken);
+      setIsVerified(true);
+      toast.success('Email verified successfully!');
 
-            // Update session
-            await update();
+      // Update session
+      await update();
 
-            setTimeout(() => {
-                router.push('/dashboard');
-            }, 2000);
-        } catch (error) {
-            toast.error(getErrorMessage(error));
-        } finally {
-            setIsVerifying(false);
-        }
-    };
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 2000);
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    } finally {
+      setIsVerifying(false);
+    }
+  };
 
-    const handleResend = async () => {
-        if (!session?.user?.email) {
-            toast.error('No email found');
-            return;
-        }
-
-        setIsResending(true);
-        try {
-            await resendVerification(session.user.email);
-            toast.success('Verification email sent! Check your inbox.');
-        } catch (error) {
-            toast.error(getErrorMessage(error));
-        } finally {
-            setIsResending(false);
-        }
-    };
-
-    if (isVerified) {
-        return (
-            <div className="flex min-h-screen items-center justify-center bg-background px-4">
-                <div className="w-full max-w-md">
-                    <AuthBranding />
-                    <Card>
-                        <CardHeader className="text-center">
-                            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent/10">
-                                <CheckCircle2 className="h-8 w-8 text-accent" />
-                            </div>
-                            <CardTitle className="text-2xl font-bold">Email Verified!</CardTitle>
-                            <CardDescription>
-                                Your email has been successfully verified. Redirecting to dashboard...
-                            </CardDescription>
-                        </CardHeader>
-                    </Card>
-                </div>
-            </div>
-        );
+  const handleResend = async () => {
+    if (!session?.user?.email) {
+      toast.error('No email found');
+      return;
     }
 
+    setIsResending(true);
+    try {
+      await resendVerification(session.user.email);
+      toast.success('Verification email sent! Check your inbox.');
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    } finally {
+      setIsResending(false);
+    }
+  };
+
+  if (isVerified) {
     return (
-        <div className="flex min-h-screen items-center justify-center bg-background px-4">
-            <div className="w-full max-w-md">
-                <AuthBranding />
-                <Card>
-                    <CardHeader className="text-center">
-                        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                            <Mail className="h-8 w-8 text-primary" />
-                        </div>
-                        <CardTitle className="text-2xl font-bold">Verify your email</CardTitle>
-                        <CardDescription>
-                            {token
-                                ? 'Verifying your email address...'
-                                : 'Please verify your email address to continue'}
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {!token && (
-                            <>
-                                <p className="text-center text-sm text-muted-foreground">
-                                    We've sent a verification link to{' '}
-                                    <span className="font-semibold text-foreground">{session?.user?.email}</span>
-                                </p>
-                                <p className="text-center text-sm text-muted-foreground">
-                                    Click the link in the email to verify your account.
-                                </p>
-                                <div className="space-y-2 pt-4">
-                                    <Button
-                                        onClick={async () => {
-                                            try {
-                                                await update();
-                                                // Check if email is now verified
-                                                const response = await fetch('/api/auth/session');
-                                                const updatedSession = await response.json();
-                                                if (updatedSession?.user?.email_verified) {
-                                                    toast.success('Email verified! Redirecting...');
-                                                    setTimeout(() => router.push('/dashboard'), 1000);
-                                                } else {
-                                                    toast.info('Email not verified yet');
-                                                }
-                                            } catch (error) {
-                                                toast.error('Failed to check status');
-                                            }
-                                        }}
-                                        variant="default"
-                                        className="w-full"
-                                    >
-                                        Check Verification Status
-                                    </Button>
-                                    <Button
-                                        onClick={handleResend}
-                                        disabled={isResending}
-                                        variant="outline"
-                                        className="w-full"
-                                    >
-                                        {isResending ? 'Sending...' : 'Resend verification email'}
-                                    </Button>
-                                </div>
-                            </>
-                        )}
-                        {isVerifying && (
-                            <div className="text-center">
-                                <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
-                                <p className="mt-2 text-sm text-muted-foreground">Verifying...</p>
-                            </div>
-                        )}
-                        {!token && (
-                            <div className="mt-4 text-center text-sm text-muted-foreground">
-                                Already verified?{' '}
-                                <button
-                                    onClick={() => signOut({ callbackUrl: '/login' })}
-                                    className="text-primary hover:underline"
-                                >
-                                    Sign out and sign in again
-                                </button>
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
-            </div>
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <div className="w-full max-w-md">
+          <AuthBranding />
+          <Card>
+            <CardHeader className="text-center">
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-accent/10">
+                <CheckCircle2 className="h-8 w-8 text-accent" />
+              </div>
+              <CardTitle className="text-2xl font-bold">Email Verified!</CardTitle>
+              <CardDescription>
+                Your email has been successfully verified. Redirecting to dashboard...
+              </CardDescription>
+            </CardHeader>
+          </Card>
         </div>
+      </div>
     );
+  }
+
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+      <div className="w-full max-w-md">
+        <AuthBranding />
+        <Card>
+          <CardHeader className="text-center">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
+              <Mail className="h-8 w-8 text-primary" />
+            </div>
+            <CardTitle className="text-2xl font-bold">Verify your email</CardTitle>
+            <CardDescription>
+              {token
+                ? 'Verifying your email address...'
+                : 'Please verify your email address to continue'}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {!token && (
+              <>
+                <p className="text-center text-sm text-muted-foreground">
+                  We've sent a verification link to{' '}
+                  <span className="font-semibold text-foreground">{session?.user?.email}</span>
+                </p>
+                <p className="text-center text-sm text-muted-foreground">
+                  Click the link in the email to verify your account.
+                </p>
+                <div className="space-y-2 pt-4">
+                  <Button
+                    onClick={async () => {
+                      try {
+                        await update();
+                        // Check if email is now verified
+                        const response = await fetch('/api/auth/session');
+                        const updatedSession = await response.json();
+                        if (updatedSession?.user?.email_verified) {
+                          toast.success('Email verified! Redirecting...');
+                          setTimeout(() => router.push('/dashboard'), 1000);
+                        } else {
+                          toast.info('Email not verified yet');
+                        }
+                      } catch (error) {
+                        toast.error('Failed to check status');
+                      }
+                    }}
+                    variant="default"
+                    className="w-full"
+                  >
+                    Check Verification Status
+                  </Button>
+                  <Button
+                    onClick={handleResend}
+                    disabled={isResending}
+                    variant="outline"
+                    className="w-full"
+                  >
+                    {isResending ? 'Sending...' : 'Resend verification email'}
+                  </Button>
+                </div>
+              </>
+            )}
+            {isVerifying && (
+              <div className="text-center">
+                <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent"></div>
+                <p className="mt-2 text-sm text-muted-foreground">Verifying...</p>
+              </div>
+            )}
+            {!token && (
+              <div className="mt-4 text-center text-sm text-muted-foreground">
+                Already verified?{' '}
+                <button
+                  onClick={() => signOut({ callbackUrl: '/login' })}
+                  className="text-primary hover:underline"
+                >
+                  Sign out and sign in again
+                </button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
 }
 
 export default function VerifyEmailPage() {
-    return (
-        <Suspense fallback={
-            <div className="flex min-h-screen items-center justify-center bg-background">
-                <div className="text-muted-foreground">Loading...</div>
-            </div>
-        }>
-            <VerifyEmailContent />
-        </Suspense>
-    );
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center bg-background">
+          <div className="text-muted-foreground">Loading...</div>
+        </div>
+      }
+    >
+      <VerifyEmailContent />
+    </Suspense>
+  );
 }

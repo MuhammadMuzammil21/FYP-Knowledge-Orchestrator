@@ -1,23 +1,23 @@
-'use client'
+'use client';
 
-import { useState, useRef, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select'
+} from '@/components/ui/select';
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from '@/components/ui/accordion'
+} from '@/components/ui/accordion';
 import {
   Upload,
   Plus,
@@ -31,98 +31,98 @@ import {
   AlertTriangle,
   Loader2,
   Zap,
-} from 'lucide-react'
-import { toast } from 'sonner'
-import { uploadMeeting } from '@/lib/api/meetings'
-import { getErrorMessage } from '@/lib/api/client'
-import { ALLOWED_FILE_EXTENSIONS, MAX_FILE_SIZE } from '@/lib/constants'
-import type { MeetingUploadMetadata, Project } from '@/types'
-import { getProjects, createProject } from '@/lib/api/projects'
-import { cn } from '@/lib/utils'
-import { VoiceRecorder } from '@/components/recording/VoiceRecorder'
-import { useWorkspace } from '@/contexts/WorkspaceContext'
+} from 'lucide-react';
+import { toast } from 'sonner';
+import { uploadMeeting } from '@/lib/api/meetings';
+import { getErrorMessage } from '@/lib/api/client';
+import { ALLOWED_FILE_EXTENSIONS, MAX_FILE_SIZE } from '@/lib/constants';
+import type { MeetingUploadMetadata, Project } from '@/types';
+import { getProjects, createProject } from '@/lib/api/projects';
+import { cn } from '@/lib/utils';
+import { VoiceRecorder } from '@/components/recording/VoiceRecorder';
+import { useWorkspace } from '@/contexts/WorkspaceContext';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@/components/ui/dialog'
+} from '@/components/ui/dialog';
 
 const RECORDING_CONSENT_TEXT =
   'By starting this recording, you confirm that you have informed all participants and obtained ' +
-  'their consent to record and transcribe this conversation for meeting documentation and AI analysis purposes.'
+  'their consent to record and transcribe this conversation for meeting documentation and AI analysis purposes.';
 
 export default function DashboardPage() {
-  const router = useRouter()
-  const { can } = useWorkspace()
-  const [file, setFile] = useState<File | null>(null)
-  const [context, setContext] = useState('')
-  const [isUploading, setIsUploading] = useState(false)
+  const router = useRouter();
+  const { can } = useWorkspace();
+  const [file, setFile] = useState<File | null>(null);
+  const [context, setContext] = useState('');
+  const [isUploading, setIsUploading] = useState(false);
 
   // Metadata fields
-  const [title, setTitle] = useState('')
-  const [language, setLanguage] = useState('')
-  const [minSpeakers, setMinSpeakers] = useState<number | ''>('')
-  const [maxSpeakers, setMaxSpeakers] = useState<number | ''>('')
-  const [numSpeakers, setNumSpeakers] = useState<number | ''>('')
-  const [projects, setProjects] = useState<Project[]>([])
-  const [selectedProjectId, setSelectedProjectId] = useState<string>('')
-  const [isCreatingProject, setIsCreatingProject] = useState(false)
-  const [newProjectName, setNewProjectName] = useState('')
+  const [title, setTitle] = useState('');
+  const [language, setLanguage] = useState('');
+  const [minSpeakers, setMinSpeakers] = useState<number | ''>('');
+  const [maxSpeakers, setMaxSpeakers] = useState<number | ''>('');
+  const [numSpeakers, setNumSpeakers] = useState<number | ''>('');
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [selectedProjectId, setSelectedProjectId] = useState<string>('');
+  const [isCreatingProject, setIsCreatingProject] = useState(false);
+  const [newProjectName, setNewProjectName] = useState('');
 
   // New state for drag-and-drop & recording
-  const [inputMode, setInputMode] = useState<'upload' | 'record'>('upload')
-  const [isDragging, setIsDragging] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const [consentGiven, setConsentGiven] = useState(false)
-  const [showConsentDialog, setShowConsentDialog] = useState(false)
+  const [inputMode, setInputMode] = useState<'upload' | 'record'>('upload');
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [consentGiven, setConsentGiven] = useState(false);
+  const [showConsentDialog, setShowConsentDialog] = useState(false);
 
   // Fetch projects on mount
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const data = await getProjects()
-        setProjects(data.projects)
+        const data = await getProjects();
+        setProjects(data.projects);
         // Default to first project if available
         if (data.projects.length > 0) {
-          setSelectedProjectId(data.projects[0].id)
+          setSelectedProjectId(data.projects[0].id);
         }
       } catch (error) {
-        console.error('Failed to fetch projects:', error)
+        console.error('Failed to fetch projects:', error);
         // Don't block UI, just won't show projects
       }
-    }
-    fetchProjects()
-  }, [])
+    };
+    fetchProjects();
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0]
-    if (!selectedFile) return
+    const selectedFile = e.target.files?.[0];
+    if (!selectedFile) return;
 
     // Validate file type
-    const fileExt = '.' + selectedFile.name.split('.').pop()?.toLowerCase()
+    const fileExt = '.' + selectedFile.name.split('.').pop()?.toLowerCase();
     if (!ALLOWED_FILE_EXTENSIONS.includes(fileExt as any)) {
-      toast.error(`Invalid file type. Allowed: ${ALLOWED_FILE_EXTENSIONS.join(', ')}`)
-      return
+      toast.error(`Invalid file type. Allowed: ${ALLOWED_FILE_EXTENSIONS.join(', ')}`);
+      return;
     }
 
     // Validate file size
     if (selectedFile.size > MAX_FILE_SIZE) {
-      toast.error('File size exceeds 100MB limit')
-      return
+      toast.error('File size exceeds 100MB limit');
+      return;
     }
 
-    setFile(selectedFile)
-  }
+    setFile(selectedFile);
+  };
 
   const handleUpload = async () => {
     if (!file) {
-      toast.error('Please select a file')
-      return
+      toast.error('Please select a file');
+      return;
     }
 
-    setIsUploading(true)
+    setIsUploading(true);
 
     try {
       const metadata: MeetingUploadMetadata = {
@@ -132,69 +132,69 @@ export default function DashboardPage() {
         max_speakers: maxSpeakers ? Number(maxSpeakers) : undefined,
         num_speakers: numSpeakers ? Number(numSpeakers) : undefined,
         context: context || undefined,
-      }
+      };
 
-      let projectId = selectedProjectId
+      let projectId = selectedProjectId;
 
       // Create new project if needed
       if (isCreatingProject && newProjectName.trim()) {
-        const newProject = await createProject({ name: newProjectName })
-        projectId = newProject.id
+        const newProject = await createProject({ name: newProjectName });
+        projectId = newProject.id;
       } else if (!projectId && !isCreatingProject) {
         // Should not happen if validations work, but fallback
 
         // If no project selected and not creating one, handle error
         if (projects.length === 0) {
           // Create a default project if none exist
-          const defaultProject = await createProject({ name: 'My First Project' })
-          projectId = defaultProject.id
+          const defaultProject = await createProject({ name: 'My First Project' });
+          projectId = defaultProject.id;
         }
       }
 
       if (!projectId) {
-        toast.error('Please select or create a project')
-        setIsUploading(false)
-        return
+        toast.error('Please select or create a project');
+        setIsUploading(false);
+        return;
       }
 
-      const response = await uploadMeeting(file, projectId, metadata)
+      const response = await uploadMeeting(file, projectId, metadata);
 
-      toast.success('Meeting uploaded successfully!')
-      setInputMode('upload')
-      router.push(`/meetings/${response.meeting_id}`)
+      toast.success('Meeting uploaded successfully!');
+      setInputMode('upload');
+      router.push(`/meetings/${response.meeting_id}`);
     } catch (error) {
-      toast.error(getErrorMessage(error))
+      toast.error(getErrorMessage(error));
     } finally {
-      setIsUploading(false)
+      setIsUploading(false);
     }
-  }
+  };
 
   // Drag-and-drop handlers
   const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(true)
-  }
+    e.preventDefault();
+    setIsDragging(true);
+  };
   const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(false)
-  }
+    e.preventDefault();
+    setIsDragging(false);
+  };
   const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault()
-    setIsDragging(false)
-    const droppedFile = e.dataTransfer.files?.[0]
+    e.preventDefault();
+    setIsDragging(false);
+    const droppedFile = e.dataTransfer.files?.[0];
     if (droppedFile) {
       // Reuse existing handleFileChange logic by constructing a synthetic event
       const syntheticEvent = {
         target: { files: e.dataTransfer.files },
-      } as unknown as React.ChangeEvent<HTMLInputElement>
-      handleFileChange(syntheticEvent)
+      } as unknown as React.ChangeEvent<HTMLInputElement>;
+      handleFileChange(syntheticEvent);
     }
-  }
+  };
   const clearFile = (e: React.MouseEvent) => {
-    e.stopPropagation()
-    setFile(null)
-    if (fileInputRef.current) fileInputRef.current.value = ''
-  }
+    e.stopPropagation();
+    setFile(null);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
 
   return (
     <div className="p-4 md:p-6 max-w-6xl mx-auto w-full">
@@ -238,10 +238,7 @@ export default function DashboardPage() {
                       {step.num}
                     </div>
                     {i < arr.length - 1 && (
-                      <div
-                        className="w-px flex-1 bg-border my-1"
-                        style={{ minHeight: '20px' }}
-                      />
+                      <div className="w-px flex-1 bg-border my-1" style={{ minHeight: '20px' }} />
                     )}
                   </div>
                   <div className="pb-4">
@@ -314,9 +311,9 @@ export default function DashboardPage() {
                     value={selectedProjectId}
                     onValueChange={(val) => {
                       if (val === 'new') {
-                        setIsCreatingProject(true)
+                        setIsCreatingProject(true);
                       } else {
-                        setSelectedProjectId(val)
+                        setSelectedProjectId(val);
                       }
                     }}
                     disabled={isUploading}
@@ -353,8 +350,8 @@ export default function DashboardPage() {
                       size="icon"
                       className="h-9 w-9 flex-shrink-0"
                       onClick={() => {
-                        setIsCreatingProject(false)
-                        setNewProjectName('')
+                        setIsCreatingProject(false);
+                        setNewProjectName('');
                       }}
                       disabled={isUploading}
                     >
@@ -473,9 +470,9 @@ export default function DashboardPage() {
                   <button
                     type="button"
                     onClick={() => {
-                      setInputMode('upload')
-                      setFile(null)
-                      if (fileInputRef.current) fileInputRef.current.value = ''
+                      setInputMode('upload');
+                      setFile(null);
+                      if (fileInputRef.current) fileInputRef.current.value = '';
                     }}
                     className={cn(
                       'flex-1 rounded-md py-1 text-xs font-medium transition-all duration-150',
@@ -487,17 +484,17 @@ export default function DashboardPage() {
                   >
                     Upload File
                   </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (!consentGiven) {
-                          setShowConsentDialog(true)
-                        } else {
-                          setInputMode('record')
-                          setFile(null)
-                          if (fileInputRef.current) fileInputRef.current.value = ''
-                        }
-                      }}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (!consentGiven) {
+                        setShowConsentDialog(true);
+                      } else {
+                        setInputMode('record');
+                        setFile(null);
+                        if (fileInputRef.current) fileInputRef.current.value = '';
+                      }
+                    }}
                     className={cn(
                       'flex-1 rounded-md py-1 text-xs font-medium transition-all duration-150',
                       inputMode === 'record'
@@ -636,11 +633,11 @@ export default function DashboardPage() {
                   <Button
                     className="flex-1"
                     onClick={() => {
-                      setConsentGiven(true)
-                      setShowConsentDialog(false)
-                      setInputMode('record')
-                      setFile(null)
-                      if (fileInputRef.current) fileInputRef.current.value = ''
+                      setConsentGiven(true);
+                      setShowConsentDialog(false);
+                      setInputMode('record');
+                      setFile(null);
+                      if (fileInputRef.current) fileInputRef.current.value = '';
                     }}
                   >
                     I Confirm &amp; Proceed
@@ -687,5 +684,5 @@ export default function DashboardPage() {
         {/* end right column */}
       </div>
     </div>
-  )
+  );
 }

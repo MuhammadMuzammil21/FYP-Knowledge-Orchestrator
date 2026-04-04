@@ -11,126 +11,124 @@ import type { Team } from '@/types';
 
 // The inner component reads params and search params
 function InviteContent({ params }: { params: Promise<{ token: string }> }) {
-    const { token: pathToken } = use(params);
-    const searchParams = useSearchParams();
-    
-    // In case the token is passed as a query param instead of path param
-    const token = decodeURIComponent(pathToken) || searchParams.get('token');
+  const { token: pathToken } = use(params);
+  const searchParams = useSearchParams();
 
-    const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-    const [team, setTeam] = useState<Team | null>(null);
-    const [errorMessage, setErrorMessage] = useState('');
+  // In case the token is passed as a query param instead of path param
+  const token = decodeURIComponent(pathToken) || searchParams.get('token');
 
-    useEffect(() => {
-        if (!token) {
-            setStatus('error');
-            setErrorMessage('No invite token found in URL.');
-            return;
-        }
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const [team, setTeam] = useState<Team | null>(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
-        const processInvite = async () => {
-            try {
-                const result = await acceptInvite(token);
-                setTeam(result.team);
-                setStatus('success');
-            } catch (error: any) {
-                setStatus('error');
-                // Extract error message generically
-                const msg = error?.response?.data?.detail 
-                    ? (typeof error.response.data.detail === 'string' ? error.response.data.detail : error.response.data.detail[0]?.msg)
-                    : error?.message || 'Invalid or expired invite token.';
-                setErrorMessage(msg as string);
-            }
-        };
+  useEffect(() => {
+    if (!token) {
+      setStatus('error');
+      setErrorMessage('No invite token found in URL.');
+      return;
+    }
 
-        processInvite();
-    }, [token]);
+    const processInvite = async () => {
+      try {
+        const result = await acceptInvite(token);
+        setTeam(result.team);
+        setStatus('success');
+      } catch (error: any) {
+        setStatus('error');
+        // Extract error message generically
+        const msg = error?.response?.data?.detail
+          ? typeof error.response.data.detail === 'string'
+            ? error.response.data.detail
+            : error.response.data.detail[0]?.msg
+          : error?.message || 'Invalid or expired invite token.';
+        setErrorMessage(msg as string);
+      }
+    };
 
-    return (
-        <Card className="w-full max-w-md shadow-lg border-border/50 backdrop-blur-sm bg-card/95">
-            <CardHeader className="space-y-2 pb-4 pt-8 px-8 text-center border-b border-border/50 bg-muted/20">
-                <div className="flex justify-center mb-2">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[oklch(0.88_0.05_150)] to-[oklch(0.65_0.12_195)] shadow-sm">
-                        <Users className="h-6 w-6 text-primary-foreground" strokeWidth={2} />
-                    </div>
-                </div>
-                <h1 className="text-2xl font-semibold tracking-tight">Team Invitation</h1>
-                <p className="text-sm text-muted-foreground">
-                    Join your workspace on HarBaat AI
-                </p>
-            </CardHeader>
+    processInvite();
+  }, [token]);
 
-            <CardContent className="p-8">
-                {status === 'loading' && (
-                    <div className="flex flex-col items-center justify-center py-6 text-center space-y-4">
-                        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                        <p className="text-sm text-muted-foreground">Validating your invitation...</p>
-                    </div>
-                )}
+  return (
+    <Card className="w-full max-w-md shadow-lg border-border/50 backdrop-blur-sm bg-card/95">
+      <CardHeader className="space-y-2 pb-4 pt-8 px-8 text-center border-b border-border/50 bg-muted/20">
+        <div className="flex justify-center mb-2">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[oklch(0.88_0.05_150)] to-[oklch(0.65_0.12_195)] shadow-sm">
+            <Users className="h-6 w-6 text-primary-foreground" strokeWidth={2} />
+          </div>
+        </div>
+        <h1 className="text-2xl font-semibold tracking-tight">Team Invitation</h1>
+        <p className="text-sm text-muted-foreground">Join your workspace on HarBaat AI</p>
+      </CardHeader>
 
-                {status === 'success' && team && (
-                    <div className="flex flex-col items-center justify-center py-2 text-center space-y-6">
-                        <div className="h-12 w-12 rounded-full bg-accent/20 flex items-center justify-center">
-                            <CheckCircle2 className="h-6 w-6 text-accent-foreground" />
-                        </div>
-                        <div className="space-y-1">
-                            <h2 className="text-lg font-medium">You're in!</h2>
-                            <p className="text-sm text-muted-foreground">
-                                You've successfully joined <strong>{team.name}</strong>.
-                            </p>
-                        </div>
-                        <Link href={`/teams/${team.slug}`} className="w-full mt-2">
-                            <Button className="w-full gap-2 font-medium">
-                                Go to team
-                                <ArrowRight className="h-4 w-4" />
-                            </Button>
-                        </Link>
-                    </div>
-                )}
+      <CardContent className="p-8">
+        {status === 'loading' && (
+          <div className="flex flex-col items-center justify-center py-6 text-center space-y-4">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="text-sm text-muted-foreground">Validating your invitation...</p>
+          </div>
+        )}
 
-                {status === 'error' && (
-                    <div className="flex flex-col items-center justify-center py-2 text-center space-y-6">
-                        <div className="h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center">
-                            <XCircle className="h-6 w-6 text-destructive" />
-                        </div>
-                        <div className="space-y-1">
-                            <h2 className="text-lg font-medium">Invitation Failed</h2>
-                            <p className="text-sm text-destructive px-4">
-                                {errorMessage}
-                            </p>
-                        </div>
-                        <Link href="/dashboard" className="w-full mt-2">
-                            <Button variant="outline" className="w-full">
-                                Back to dashboard
-                            </Button>
-                        </Link>
-                    </div>
-                )}
-            </CardContent>
-        </Card>
-    );
+        {status === 'success' && team && (
+          <div className="flex flex-col items-center justify-center py-2 text-center space-y-6">
+            <div className="h-12 w-12 rounded-full bg-accent/20 flex items-center justify-center">
+              <CheckCircle2 className="h-6 w-6 text-accent-foreground" />
+            </div>
+            <div className="space-y-1">
+              <h2 className="text-lg font-medium">You're in!</h2>
+              <p className="text-sm text-muted-foreground">
+                You've successfully joined <strong>{team.name}</strong>.
+              </p>
+            </div>
+            <Link href={`/teams/${team.slug}`} className="w-full mt-2">
+              <Button className="w-full gap-2 font-medium">
+                Go to team
+                <ArrowRight className="h-4 w-4" />
+              </Button>
+            </Link>
+          </div>
+        )}
+
+        {status === 'error' && (
+          <div className="flex flex-col items-center justify-center py-2 text-center space-y-6">
+            <div className="h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center">
+              <XCircle className="h-6 w-6 text-destructive" />
+            </div>
+            <div className="space-y-1">
+              <h2 className="text-lg font-medium">Invitation Failed</h2>
+              <p className="text-sm text-destructive px-4">{errorMessage}</p>
+            </div>
+            <Link href="/dashboard" className="w-full mt-2">
+              <Button variant="outline" className="w-full">
+                Back to dashboard
+              </Button>
+            </Link>
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  );
 }
 
 // Ensure the icon doesn't break if Users wasn't imported properly
 import { Users } from 'lucide-react';
 
 export default function AcceptInvitePage({ params }: { params: Promise<{ token: string }> }) {
-    return (
-        <div className="flex min-h-screen items-center justify-center bg-background p-4 relative overflow-hidden">
-            {/* Background elements */}
-            <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[800px] h-[800px] bg-[radial-gradient(ellipse_at_center,oklch(0.88_0.05_150/0.1),transparent_70%)] rounded-full blur-3xl pointer-events-none" />
-            
-            <div className="relative z-10 w-full max-w-md">
-                <Suspense
-                    fallback={
-                        <Card className="w-full h-[400px] flex items-center justify-center border-border/50 bg-card/95">
-                            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                        </Card>
-                    }
-                >
-                    <InviteContent params={params} />
-                </Suspense>
-            </div>
-        </div>
-    );
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-background p-4 relative overflow-hidden">
+      {/* Background elements */}
+      <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[800px] h-[800px] bg-[radial-gradient(ellipse_at_center,oklch(0.88_0.05_150/0.1),transparent_70%)] rounded-full blur-3xl pointer-events-none" />
+
+      <div className="relative z-10 w-full max-w-md">
+        <Suspense
+          fallback={
+            <Card className="w-full h-[400px] flex items-center justify-center border-border/50 bg-card/95">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </Card>
+          }
+        >
+          <InviteContent params={params} />
+        </Suspense>
+      </div>
+    </div>
+  );
 }

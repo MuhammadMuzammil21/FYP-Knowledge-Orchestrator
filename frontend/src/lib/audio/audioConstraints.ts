@@ -37,16 +37,13 @@ export const FALLBACK_CONSTRAINTS: MediaStreamConstraints = {
  * All are decoded to raw PCM before WAV encoding anyway.
  */
 export const PREFERRED_MIME_TYPES = [
-  'audio/webm;codecs=pcm',   // Chrome 94+ — raw PCM, best quality
-  'audio/webm;codecs=opus',  // Chrome/Edge — Opus compression
-  'audio/ogg;codecs=opus',   // Firefox — Opus in OGG
-  'audio/mp4',               // Safari
-  'audio/webm',              // Generic fallback
+  'audio/webm;codecs=pcm', // Chrome 94+ — raw PCM, best quality
+  'audio/webm;codecs=opus', // Chrome/Edge — Opus compression
+  'audio/ogg;codecs=opus', // Firefox — Opus in OGG
+  'audio/mp4', // Safari
+  'audio/webm', // Generic fallback
 ] as const;
 
 export function getSupportedMimeType(): string {
-  return (
-    PREFERRED_MIME_TYPES.find((type) => MediaRecorder.isTypeSupported(type)) ??
-    ''
-  );
+  return PREFERRED_MIME_TYPES.find((type) => MediaRecorder.isTypeSupported(type)) ?? '';
 }

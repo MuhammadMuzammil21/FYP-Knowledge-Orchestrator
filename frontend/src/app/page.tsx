@@ -1,16 +1,16 @@
-import { LandingNavbar } from '@/components/landing/LandingNavbar'
-import { HeroSection } from '@/components/landing/HeroSection'
-import { TrustBar } from '@/components/landing/TrustBar'
-import { FeaturesSection } from '@/components/landing/FeaturesSection'
-import { HowItWorksSection } from '@/components/landing/HowItWorksSection'
-import { DemoSection } from '@/components/landing/DemoSection'
-import { StatsSection } from '@/components/landing/StatsSection'
-import { TestimonialsSection } from '@/components/landing/TestimonialsSection'
-import { PricingSection } from '@/components/landing/PricingSection'
-import { FAQSection } from '@/components/landing/FAQSection'
-import { CTASection } from '@/components/landing/CTASection'
-import { LandingFooter } from '@/components/landing/LandingFooter'
-import { ScrollReveal } from '@/components/landing/ScrollReveal'
+import { LandingNavbar } from '@/components/landing/LandingNavbar';
+import { HeroSection } from '@/components/landing/HeroSection';
+import { TrustBar } from '@/components/landing/TrustBar';
+import { FeaturesSection } from '@/components/landing/FeaturesSection';
+import { HowItWorksSection } from '@/components/landing/HowItWorksSection';
+import { DemoSection } from '@/components/landing/DemoSection';
+import { StatsSection } from '@/components/landing/StatsSection';
+import { TestimonialsSection } from '@/components/landing/TestimonialsSection';
+import { PricingSection } from '@/components/landing/PricingSection';
+import { FAQSection } from '@/components/landing/FAQSection';
+import { CTASection } from '@/components/landing/CTASection';
+import { LandingFooter } from '@/components/landing/LandingFooter';
+import { ScrollReveal } from '@/components/landing/ScrollReveal';
 
 export default function HomePage() {
   return (
@@ -44,5 +44,5 @@ export default function HomePage() {
         <LandingFooter />
       </ScrollReveal>
     </div>
-  )
+  );
 }

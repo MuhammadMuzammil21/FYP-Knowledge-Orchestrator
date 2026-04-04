@@ -17,30 +17,29 @@ interface KnowledgeGraphViewerProps {
 
 export function KnowledgeGraphViewer({ nodes, edges }: KnowledgeGraphViewerProps) {
   const interaction = useGraphInteraction();
-  const darkMode = typeof window !== 'undefined'
-    ? matchMedia('(prefers-color-scheme: dark)').matches
-    : false;
+  const darkMode =
+    typeof window !== 'undefined' ? matchMedia('(prefers-color-scheme: dark)').matches : false;
 
   const stylesheet = useMemo(() => buildStylesheet(darkMode), [darkMode]);
 
   // Apply type filters
   const visibleNodes = useMemo(() => {
     if (interaction.activeTypeFilters.size === 0) return nodes;
-    return nodes.filter(n => {
+    return nodes.filter((n) => {
       const type = n.labels?.[0] ?? '';
       return interaction.activeTypeFilters.has(type);
     });
   }, [nodes, interaction.activeTypeFilters]);
 
   const visibleNodeIds = useMemo(
-    () => new Set(visibleNodes.map(n => String(n.id))),
+    () => new Set(visibleNodes.map((n) => String(n.id))),
     [visibleNodes]
   );
 
   const visibleEdges = useMemo(() => {
     if (interaction.activeTypeFilters.size === 0) return edges;
-    return edges.filter(e =>
-      visibleNodeIds.has(String(e.start)) && visibleNodeIds.has(String(e.end))
+    return edges.filter(
+      (e) => visibleNodeIds.has(String(e.start)) && visibleNodeIds.has(String(e.end))
     );
   }, [edges, interaction.activeTypeFilters, visibleNodeIds]);
 
@@ -63,10 +62,13 @@ export function KnowledgeGraphViewer({ nodes, edges }: KnowledgeGraphViewerProps
     interaction.resetHighlight();
   }, [interaction]);
 
-  const handleNodeSelect = useCallback((info: SelectedNodeInfo | null) => {
-    interaction.selectNode(info);
-    if (info) interaction.highlightNeighborhood(info.cytoscapeId);
-  }, [interaction]);
+  const handleNodeSelect = useCallback(
+    (info: SelectedNodeInfo | null) => {
+      interaction.selectNode(info);
+      if (info) interaction.highlightNeighborhood(info.cytoscapeId);
+    },
+    [interaction]
+  );
 
   const handleFitGraph = useCallback(() => {
     const cy = interaction.cyRef.current;
@@ -76,7 +78,9 @@ export function KnowledgeGraphViewer({ nodes, edges }: KnowledgeGraphViewerProps
   // Derive available node types for filter UI
   const availableTypes = useMemo(() => {
     const types = new Set<string>();
-    nodes.forEach(n => { if (n.labels?.[0]) types.add(n.labels[0]); });
+    nodes.forEach((n) => {
+      if (n.labels?.[0]) types.add(n.labels[0]);
+    });
     return Array.from(types);
   }, [nodes]);
 
@@ -114,22 +118,33 @@ export function KnowledgeGraphViewer({ nodes, edges }: KnowledgeGraphViewerProps
         />
       </div>
       {/* Legend row */}
-      <div style={{
-        display: 'flex', gap: 12, padding: '8px 12px', flexWrap: 'wrap',
-        borderTop: '1px solid hsl(var(--border))',
-        fontSize: 11, color: 'hsl(var(--muted-foreground))',
-        background: 'hsl(var(--card))',
-        borderRadius: '0 0 12px 12px',
-      }}>
-        {availableTypes.map(type => {
-          const cfg = NODE_TYPE_CONFIG[type as keyof typeof NODE_TYPE_CONFIG] ?? NODE_TYPE_CONFIG.default;
+      <div
+        style={{
+          display: 'flex',
+          gap: 12,
+          padding: '8px 12px',
+          flexWrap: 'wrap',
+          borderTop: '1px solid hsl(var(--border))',
+          fontSize: 11,
+          color: 'hsl(var(--muted-foreground))',
+          background: 'hsl(var(--card))',
+          borderRadius: '0 0 12px 12px',
+        }}
+      >
+        {availableTypes.map((type) => {
+          const cfg =
+            NODE_TYPE_CONFIG[type as keyof typeof NODE_TYPE_CONFIG] ?? NODE_TYPE_CONFIG.default;
           return (
             <div key={type} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-              <div style={{
-                width: 10, height: 10, borderRadius: '50%',
-                background: darkMode ? cfg.darkColor : cfg.color,
-                flexShrink: 0,
-              }} />
+              <div
+                style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: '50%',
+                  background: darkMode ? cfg.darkColor : cfg.color,
+                  flexShrink: 0,
+                }}
+              />
               {type}
             </div>
           );

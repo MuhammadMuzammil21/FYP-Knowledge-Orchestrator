@@ -4,80 +4,86 @@
  */
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { getSpeakers, updateSpeaker, addSpeaker, linkSpeakerToUser, unlinkSpeakerFromUser } from '@/lib/api/speakers';
+import {
+  getSpeakers,
+  updateSpeaker,
+  addSpeaker,
+  linkSpeakerToUser,
+  unlinkSpeakerFromUser,
+} from '@/lib/api/speakers';
 
 /**
  * Hook to fetch meeting speakers
  */
 export function useSpeakers(meetingId: string) {
-    return useQuery({
-        queryKey: ['speakers', meetingId],
-        queryFn: async () => {
-            const response = await getSpeakers(meetingId);
-            return response.speakers; // Extract speakers array
-        },
-        enabled: !!meetingId,
-    });
+  return useQuery({
+    queryKey: ['speakers', meetingId],
+    queryFn: async () => {
+      const response = await getSpeakers(meetingId);
+      return response.speakers; // Extract speakers array
+    },
+    enabled: !!meetingId,
+  });
 }
 
 /**
  * Hook to update speaker display name
  */
 export function useUpdateSpeaker(meetingId: string) {
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: ({ speakerId, displayName }: { speakerId: number; displayName: string }) =>
-            updateSpeaker(meetingId, speakerId, displayName),
-        onSuccess: () => {
-            // Invalidate speakers query to refetch
-            queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
-        },
-    });
+  return useMutation({
+    mutationFn: ({ speakerId, displayName }: { speakerId: number; displayName: string }) =>
+      updateSpeaker(meetingId, speakerId, displayName),
+    onSuccess: () => {
+      // Invalidate speakers query to refetch
+      queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
+    },
+  });
 }
 
 /**
  * Hook to add speaker mapping
  */
 export function useAddSpeaker(meetingId: string) {
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: ({ originalLabel, displayName }: { originalLabel: string; displayName: string }) =>
-            addSpeaker(meetingId, { original_label: originalLabel, display_name: displayName }),
-        onSuccess: () => {
-            // Invalidate speakers query to refetch
-            queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
-        },
-    });
+  return useMutation({
+    mutationFn: ({ originalLabel, displayName }: { originalLabel: string; displayName: string }) =>
+      addSpeaker(meetingId, { original_label: originalLabel, display_name: displayName }),
+    onSuccess: () => {
+      // Invalidate speakers query to refetch
+      queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
+    },
+  });
 }
 
 /**
  * Hook to link speaker to user
  */
 export function useLinkSpeaker(meetingId: string) {
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: ({ speakerId, userId }: { speakerId: number; userId: string }) =>
-            linkSpeakerToUser(meetingId, speakerId, userId),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
-        },
-    });
+  return useMutation({
+    mutationFn: ({ speakerId, userId }: { speakerId: number; userId: string }) =>
+      linkSpeakerToUser(meetingId, speakerId, userId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
+    },
+  });
 }
 
 /**
  * Hook to unlink speaker from user
  */
 export function useUnlinkSpeaker(meetingId: string) {
-    const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-    return useMutation({
-        mutationFn: ({ speakerId }: { speakerId: number }) =>
-            unlinkSpeakerFromUser(meetingId, speakerId),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
-        },
-    });
+  return useMutation({
+    mutationFn: ({ speakerId }: { speakerId: number }) =>
+      unlinkSpeakerFromUser(meetingId, speakerId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
+    },
+  });
 }

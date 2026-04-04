@@ -1,49 +1,57 @@
-import { Star } from 'lucide-react'
+import { Star } from 'lucide-react';
 
 const testimonials = [
   {
-    quote: 'This saved our team 3 hours every week. We used to spend Monday mornings writing up meeting notes — now it\'s instant.',
+    quote:
+      "This saved our team 3 hours every week. We used to spend Monday mornings writing up meeting notes — now it's instant.",
     name: 'Sarah K.',
     role: 'Product Lead',
     initials: 'SK',
   },
   {
-    quote: 'The conflict detection feature caught a deadline that changed between two meetings that nobody noticed. Saved us from a client disaster.',
+    quote:
+      'The conflict detection feature caught a deadline that changed between two meetings that nobody noticed. Saved us from a client disaster.',
     name: 'Marcus T.',
     role: 'Project Manager',
     initials: 'MT',
   },
   {
-    quote: 'Being able to ask questions about a meeting I missed is genuinely magical. I feel like I was there.',
+    quote:
+      'Being able to ask questions about a meeting I missed is genuinely magical. I feel like I was there.',
     name: 'Priya S.',
     role: 'Engineering Manager',
     initials: 'PS',
   },
   {
-    quote: 'We run 20+ client calls a week. HarBaat replaced our entire note-taking workflow in a single day.',
+    quote:
+      'We run 20+ client calls a week. HarBaat replaced our entire note-taking workflow in a single day.',
     name: 'James W.',
     role: 'Agency Director',
     initials: 'JW',
   },
   {
-    quote: 'The speaker identification is surprisingly accurate. Even our CEO\'s voice was correctly labeled from the first meeting.',
+    quote:
+      "The speaker identification is surprisingly accurate. Even our CEO's voice was correctly labeled from the first meeting.",
     name: 'Amina R.',
     role: 'Operations Lead',
     initials: 'AR',
   },
   {
-    quote: 'Setup was instant. Upload audio, done. No training, no complex configuration. It just works.',
+    quote:
+      'Setup was instant. Upload audio, done. No training, no complex configuration. It just works.',
     name: 'David L.',
     role: 'Startup Founder',
     initials: 'DL',
   },
-]
+];
 
 export function TestimonialsSection() {
   return (
     <section className="py-20 sm:py-24 px-4">
       <div className="text-center max-w-2xl mx-auto mb-16">
-        <p className="text-xs font-semibold tracking-widest text-primary uppercase mb-3">Testimonials</p>
+        <p className="text-xs font-semibold tracking-widest text-primary uppercase mb-3">
+          Testimonials
+        </p>
         <h2 className="text-4xl font-bold tracking-tight">What teams are saying</h2>
         <p className="mt-4 text-muted-foreground text-lg">
           Hear from teams who are saving hours every week with HarBaat AI.
@@ -80,5 +88,5 @@ export function TestimonialsSection() {
         ))}
       </div>
     </section>
-  )
+  );
 }

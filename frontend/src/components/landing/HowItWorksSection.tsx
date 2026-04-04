@@ -1,4 +1,4 @@
-import { Upload, Cpu, Sparkles, ArrowRight } from 'lucide-react'
+import { Upload, Cpu, Sparkles, ArrowRight } from 'lucide-react';
 
 const steps = [
   {
@@ -11,15 +11,17 @@ const steps = [
     number: 2,
     icon: <Cpu className="h-5 w-5" />,
     title: 'AI processes everything',
-    description: 'Our pipeline transcribes, cleans, identifies speakers, extracts entities, and indexes for search — automatically.',
+    description:
+      'Our pipeline transcribes, cleans, identifies speakers, extracts entities, and indexes for search — automatically.',
   },
   {
     number: 3,
     icon: <Sparkles className="h-5 w-5" />,
     title: 'Explore your insights',
-    description: 'Browse the transcript, chat with your meeting, view the knowledge graph, and catch cross-meeting conflicts.',
+    description:
+      'Browse the transcript, chat with your meeting, view the knowledge graph, and catch cross-meeting conflicts.',
   },
-]
+];
 
 const pipeline = [
   'Audio upload',
@@ -28,7 +30,7 @@ const pipeline = [
   'Entity extraction',
   'RAG indexing',
   'Knowledge graph',
-]
+];
 
 export function HowItWorksSection() {
   return (
@@ -59,7 +61,10 @@ export function HowItWorksSection() {
           </div>
 
           {steps.map((step, i) => (
-            <div key={step.number} className="relative z-10 flex flex-col items-center text-center group">
+            <div
+              key={step.number}
+              className="relative z-10 flex flex-col items-center text-center group"
+            >
               {/* Card container */}
               <div className="flex flex-col items-center px-6 py-8 rounded-2xl transition-all duration-300 hover:bg-card/60 dark:hover:bg-card/40">
                 {/* Step number badge */}
@@ -77,7 +82,9 @@ export function HowItWorksSection() {
                 </div>
 
                 {/* Text */}
-                <h3 className="font-semibold text-lg mb-2 tracking-tight text-foreground">{step.title}</h3>
+                <h3 className="font-semibold text-lg mb-2 tracking-tight text-foreground">
+                  {step.title}
+                </h3>
                 <p className="text-sm text-muted-foreground dark:text-muted-foreground leading-relaxed max-w-[260px]">
                   {step.description}
                 </p>
@@ -115,5 +122,5 @@ export function HowItWorksSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }

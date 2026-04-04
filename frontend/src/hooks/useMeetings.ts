@@ -9,18 +9,18 @@ import { APP_CONFIG } from '@/lib/config/app.config';
 import type { PaginationParams } from '@/types/generics.types';
 
 export function useMeetings(
-    params?: PaginationParams & { project_id?: string; team_id?: string | null }
+  params?: PaginationParams & { project_id?: string; team_id?: string | null }
 ) {
-    // Normalise: undefined means "personal" (no team filter forwarded)
-    const { team_id, ...restParams } = params ?? {};
-    const queryParams = {
-        ...restParams,
-        ...(team_id ? { team_id } : {}),
-    };
+  // Normalise: undefined means "personal" (no team filter forwarded)
+  const { team_id, ...restParams } = params ?? {};
+  const queryParams = {
+    ...restParams,
+    ...(team_id ? { team_id } : {}),
+  };
 
-    return useQuery({
-        queryKey: ['meetings', queryParams],
-        queryFn: () => meetingService.getMeetings(queryParams as any),
-        staleTime: APP_CONFIG.cache.staleTime.meetings,
-    });
+  return useQuery({
+    queryKey: ['meetings', queryParams],
+    queryFn: () => meetingService.getMeetings(queryParams as any),
+    staleTime: APP_CONFIG.cache.staleTime.meetings,
+  });
 }

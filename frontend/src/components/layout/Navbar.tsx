@@ -1,60 +1,66 @@
-'use client'
+'use client';
 
-import { usePathname } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { ChevronRight, Search, HelpCircle, Menu } from 'lucide-react'
-import { useMobileMenu } from '@/contexts/MobileMenuContext'
-import { NotificationMenu } from './NotificationMenu'
-import Link from 'next/link'
+import { usePathname } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { ChevronRight, Search, HelpCircle, Menu } from 'lucide-react';
+import { useMobileMenu } from '@/contexts/MobileMenuContext';
+import { NotificationMenu } from './NotificationMenu';
+import Link from 'next/link';
 
 export function Navbar() {
-  const pathname = usePathname()
-  const { toggle } = useMobileMenu()
+  const pathname = usePathname();
+  const { toggle } = useMobileMenu();
 
   // Don't show navbar on auth pages
-  const isAuthPage = ['/login', '/signup', '/verify-email', '/forgot-password', '/reset-password'].some(
-    (route) => pathname?.startsWith(route)
-  )
-  if (isAuthPage) return null
+  const isAuthPage = [
+    '/login',
+    '/signup',
+    '/verify-email',
+    '/forgot-password',
+    '/reset-password',
+  ].some((route) => pathname?.startsWith(route));
+  if (isAuthPage) return null;
 
   // Breadcrumb builder
   const getBreadcrumbs = (): { label: string; href?: string }[] => {
-    if (pathname === '/dashboard') return [{ label: 'Dashboard' }]
-    if (pathname === '/meetings') return [{ label: 'Meetings' }]
-    if (pathname === '/projects') return [{ label: 'Projects' }]
-    if (pathname === '/settings') return [{ label: 'Settings' }]
-    if (pathname === '/profile') return [{ label: 'Profile' }]
+    if (pathname === '/dashboard') return [{ label: 'Dashboard' }];
+    if (pathname === '/meetings') return [{ label: 'Meetings' }];
+    if (pathname === '/projects') return [{ label: 'Projects' }];
+    if (pathname === '/settings') return [{ label: 'Settings' }];
+    if (pathname === '/profile') return [{ label: 'Profile' }];
     if (pathname?.startsWith('/meetings/') && pathname.endsWith('/graph'))
       return [
         { label: 'Meetings', href: '/meetings' },
         { label: 'Meeting', href: pathname.replace('/graph', '') },
         { label: 'Graph' },
-      ]
+      ];
     if (pathname?.startsWith('/meetings/'))
-      return [{ label: 'Meetings', href: '/meetings' }, { label: 'Meeting detail' }]
+      return [{ label: 'Meetings', href: '/meetings' }, { label: 'Meeting detail' }];
     if (pathname?.startsWith('/projects/') && pathname.endsWith('/graph'))
       return [
         { label: 'Projects', href: '/projects' },
         { label: 'Project', href: pathname.replace('/graph', '') },
         { label: 'Graph' },
-      ]
+      ];
     if (pathname?.startsWith('/projects/') && pathname.endsWith('/conflicts'))
       return [
         { label: 'Projects', href: '/projects' },
         { label: 'Project', href: pathname.replace('/conflicts', '') },
         { label: 'Conflicts' },
-      ]
+      ];
     if (pathname?.startsWith('/projects/'))
-      return [{ label: 'Projects', href: '/projects' }, { label: 'Project' }]
+      return [{ label: 'Projects', href: '/projects' }, { label: 'Project' }];
     if (pathname === '/teams') return [{ label: 'Teams' }];
-    if (pathname === '/teams/create') return [{ label: 'Teams', href: '/teams' }, { label: 'Create team' }];
-    if (pathname?.startsWith('/teams/')) return [{ label: 'Teams', href: '/teams' }, { label: 'Team' }];
+    if (pathname === '/teams/create')
+      return [{ label: 'Teams', href: '/teams' }, { label: 'Create team' }];
+    if (pathname?.startsWith('/teams/'))
+      return [{ label: 'Teams', href: '/teams' }, { label: 'Team' }];
     if (pathname?.startsWith('/settings/known-speakers'))
-      return [{ label: 'Settings', href: '/settings' }, { label: 'Known speakers' }]
-    return [{ label: 'HarBaat AI' }]
-  }
+      return [{ label: 'Settings', href: '/settings' }, { label: 'Known speakers' }];
+    return [{ label: 'HarBaat AI' }];
+  };
 
-  const breadcrumbs = getBreadcrumbs()
+  const breadcrumbs = getBreadcrumbs();
 
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center justify-between border-b border-border/80 bg-background/95 backdrop-blur-sm px-4 md:px-6 shrink-0 shadow-sm dark:shadow-none">
@@ -118,5 +124,5 @@ export function Navbar() {
         </Button>
       </div>
     </header>
-  )
+  );
 }

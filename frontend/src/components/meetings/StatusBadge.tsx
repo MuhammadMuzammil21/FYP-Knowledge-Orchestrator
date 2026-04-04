@@ -1,18 +1,18 @@
-import { cn } from '@/lib/utils'
-import type { MeetingStatus } from '@/types'
+import { cn } from '@/lib/utils';
+import type { MeetingStatus } from '@/types';
 
 interface StatusBadgeProps {
-  status: MeetingStatus
-  size?: 'sm' | 'default'
+  status: MeetingStatus;
+  size?: 'sm' | 'default';
 }
 
 const statusConfig: Record<
   MeetingStatus,
   {
-    dot: string
-    container: string
-    label: string
-    text: string
+    dot: string;
+    container: string;
+    label: string;
+    text: string;
   }
 > = {
   queued: {
@@ -35,14 +35,15 @@ const statusConfig: Record<
   },
   error: {
     dot: 'bg-destructive',
-    container: 'bg-destructive/15 border border-destructive/40 dark:bg-destructive/10 dark:border-destructive/20',
+    container:
+      'bg-destructive/15 border border-destructive/40 dark:bg-destructive/10 dark:border-destructive/20',
     label: 'Error',
     text: 'text-destructive dark:text-destructive',
   },
-}
+};
 
 export function StatusBadge({ status, size = 'default' }: StatusBadgeProps) {
-  const config = statusConfig[status] ?? statusConfig.error
+  const config = statusConfig[status] ?? statusConfig.error;
 
   return (
     <span
@@ -53,14 +54,8 @@ export function StatusBadge({ status, size = 'default' }: StatusBadgeProps) {
         size === 'sm' ? 'px-2 py-0.5 text-[10px]' : 'px-2.5 py-1 text-xs'
       )}
     >
-      <span
-        className={cn(
-          'rounded-full flex-shrink-0',
-          config.dot,
-          'h-1.5 w-1.5'
-        )}
-      />
+      <span className={cn('rounded-full flex-shrink-0', config.dot, 'h-1.5 w-1.5')} />
       {config.label}
     </span>
-  )
+  );
 }

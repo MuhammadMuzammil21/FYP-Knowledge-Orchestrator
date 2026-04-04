@@ -93,23 +93,18 @@ export function useVoiceRecorder(): UseVoiceRecorderReturn {
 
     try {
       // Attempt high-quality multi-speaker constraints first
-      mediaStream = await navigator.mediaDevices.getUserMedia(
-        MEETING_RECORDING_CONSTRAINTS
-      );
+      mediaStream = await navigator.mediaDevices.getUserMedia(MEETING_RECORDING_CONSTRAINTS);
     } catch {
       try {
         // Fallback: minimal constraints, still with processing disabled
-        mediaStream = await navigator.mediaDevices.getUserMedia(
-          FALLBACK_CONSTRAINTS
-        );
+        mediaStream = await navigator.mediaDevices.getUserMedia(FALLBACK_CONSTRAINTS);
       } catch (err: any) {
         let message = `Could not access microphone: ${err.message}`;
         if (err.name === 'NotAllowedError') {
           message =
             'Microphone access was denied. Please allow microphone access in your browser settings and try again.';
         } else if (err.name === 'NotFoundError') {
-          message =
-            'No microphone found. Please connect a microphone and try again.';
+          message = 'No microphone found. Please connect a microphone and try again.';
         } else if (err.name === 'NotReadableError') {
           message =
             'Microphone is in use by another application. Please close other apps using the microphone.';
@@ -124,10 +119,7 @@ export function useVoiceRecorder(): UseVoiceRecorderReturn {
     // We create a MediaStreamSource → AnalyserNode chain but deliberately
     // do NOT connect to audioCtx.destination to avoid speaker playback.
     try {
-      const audioCtx = new (
-        window.AudioContext ||
-        (window as any).webkitAudioContext
-      )();
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
       const source = audioCtx.createMediaStreamSource(mediaStream);
       const analyser = audioCtx.createAnalyser();
       analyser.fftSize = 2048;
@@ -180,16 +172,13 @@ export function useVoiceRecorder(): UseVoiceRecorderReturn {
           .replace(/[:.]/g, '-')
           .replace('T', '_')
           .substring(0, 19);
-        const wavFile = await convertBlobToWav(
-          rawBlob,
-          `meeting-recording_${timestamp}.wav`
-        );
+        const wavFile = await convertBlobToWav(rawBlob, `meeting-recording_${timestamp}.wav`);
         setAudioFile(wavFile);
         setState('done');
       } catch (err: any) {
         setError(
           `Failed to convert recording to WAV: ${err.message}. ` +
-          `Try recording again or upload a file instead.`
+            `Try recording again or upload a file instead.`
         );
         setState('error');
       }
@@ -234,10 +223,7 @@ export function useVoiceRecorder(): UseVoiceRecorderReturn {
 
   const stopRecording = useCallback(() => {
     clearTimer();
-    if (
-      recorderRef.current &&
-      recorderRef.current.state !== 'inactive'
-    ) {
+    if (recorderRef.current && recorderRef.current.state !== 'inactive') {
       recorderRef.current.stop();
     }
     releaseResources();
@@ -248,10 +234,7 @@ export function useVoiceRecorder(): UseVoiceRecorderReturn {
 
   const discardRecording = useCallback(() => {
     clearTimer();
-    if (
-      recorderRef.current &&
-      recorderRef.current.state !== 'inactive'
-    ) {
+    if (recorderRef.current && recorderRef.current.state !== 'inactive') {
       // Suppress onstop handler by replacing it before calling stop
       recorderRef.current.onstop = null;
       recorderRef.current.stop();

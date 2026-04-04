@@ -33,10 +33,7 @@ import { Button } from '@/components/ui/button';
 import { useVoiceRecorder } from '@/hooks/useVoiceRecorder';
 import { AudioWaveform } from './AudioWaveform';
 import { RecordingTimer } from './RecordingTimer';
-import {
-  estimateWavSizeMB,
-  formatDuration,
-} from '@/lib/audio/audioConverter';
+import { estimateWavSizeMB, formatDuration } from '@/lib/audio/audioConverter';
 import { cn } from '@/lib/utils';
 
 interface VoiceRecorderProps {
@@ -81,8 +78,7 @@ export function VoiceRecorder({
             'w-full relative flex flex-col items-center justify-center gap-3',
             'rounded-xl border-2 border-dashed border-border min-h-[140px]',
             'text-center transition-all duration-200',
-            !disabled &&
-              'cursor-pointer hover:border-destructive/50 hover:bg-destructive/[0.02]',
+            !disabled && 'cursor-pointer hover:border-destructive/50 hover:bg-destructive/[0.02]',
             disabled && 'opacity-60 cursor-not-allowed'
           )}
         >
@@ -95,12 +91,8 @@ export function VoiceRecorder({
             <Mic className="h-5 w-5 text-destructive/70" />
           </div>
           <div>
-            <p className="text-sm font-medium text-foreground">
-              Record your meeting live
-            </p>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Click to grant microphone access
-            </p>
+            <p className="text-sm font-medium text-foreground">Record your meeting live</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Click to grant microphone access</p>
           </div>
         </button>
       );
@@ -111,9 +103,7 @@ export function VoiceRecorder({
       return (
         <div className="flex items-center justify-center gap-3 rounded-xl border border-border bg-muted/30 min-h-[140px]">
           <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
-          <span className="text-sm text-muted-foreground">
-            Waiting for microphone access…
-          </span>
+          <span className="text-sm text-muted-foreground">Waiting for microphone access…</span>
         </div>
       );
     }
@@ -123,9 +113,7 @@ export function VoiceRecorder({
       return (
         <div className="flex items-center justify-center gap-3 rounded-xl border border-border bg-muted/30 min-h-[140px]">
           <Loader2 className="h-4 w-4 animate-spin text-primary" />
-          <span className="text-sm text-muted-foreground">
-            Converting to WAV — please wait…
-          </span>
+          <span className="text-sm text-muted-foreground">Converting to WAV — please wait…</span>
         </div>
       );
     }
@@ -135,15 +123,8 @@ export function VoiceRecorder({
       return (
         <div className="flex flex-col items-center gap-4 rounded-xl border border-destructive/40 bg-destructive/5 min-h-[140px] px-6 py-6 text-center">
           <AlertTriangle className="h-6 w-6 text-destructive" />
-          <p className="text-sm text-destructive leading-relaxed max-w-sm">
-            {recorder.error}
-          </p>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={handleDiscard}
-          >
+          <p className="text-sm text-destructive leading-relaxed max-w-sm">{recorder.error}</p>
+          <Button type="button" variant="outline" size="sm" onClick={handleDiscard}>
             Try again
           </Button>
         </div>
@@ -159,12 +140,9 @@ export function VoiceRecorder({
             <CheckCircle2 className="h-5 w-5 text-primary" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">
-              {recorder.audioFile.name}
-            </p>
+            <p className="text-sm font-medium truncate">{recorder.audioFile.name}</p>
             <p className="text-xs text-muted-foreground mt-0.5">
-              {formatDuration(recorder.durationSeconds)} &middot; {sizeMB} MB
-              &middot; WAV
+              {formatDuration(recorder.durationSeconds)} &middot; {sizeMB} MB &middot; WAV
             </p>
           </div>
           <Button
@@ -207,9 +185,7 @@ export function VoiceRecorder({
           )}
           {recorder.state === 'paused' && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <p className="text-xs text-muted-foreground italic">
-                Recording paused
-              </p>
+              <p className="text-xs text-muted-foreground italic">Recording paused</p>
             </div>
           )}
 
@@ -227,10 +203,7 @@ export function VoiceRecorder({
         {/* Controls bar */}
         <div className="flex items-center gap-2 px-4 py-3 border-t border-border bg-card">
           {/* Timer */}
-          <RecordingTimer
-            seconds={recorder.durationSeconds}
-            isRecording={isLive}
-          />
+          <RecordingTimer seconds={recorder.durationSeconds} isRecording={isLive} />
 
           {/* Size warning — shown when approaching 100MB limit */}
           {isNearSizeLimit && (
@@ -317,10 +290,12 @@ export function VoiceRecorder({
   return (
     <div className="space-y-3 w-full">
       {renderContent()}
-      
+
       {/* Legal disclaimer below the recorder */}
       <p className="text-[11px] text-muted-foreground/80 leading-relaxed text-center px-2">
-        <strong>Disclaimer:</strong> Please ensure you comply with all applicable local, state, and federal laws regarding audio recording. You must obtain explicit consent from all speakers before recording.
+        <strong>Disclaimer:</strong> Please ensure you comply with all applicable local, state, and
+        federal laws regarding audio recording. You must obtain explicit consent from all speakers
+        before recording.
       </p>
     </div>
   );

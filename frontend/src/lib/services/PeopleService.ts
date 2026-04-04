@@ -11,27 +11,27 @@ import type { PersonTasks } from '@/types/domain.types';
  * People Service Class
  */
 export class PeopleService extends BaseService {
-    constructor() {
-        super({
-            resourceName: 'people',
-            baseEndpoint: ENDPOINT_CONFIG.people.base,
-        });
-    }
+  constructor() {
+    super({
+      resourceName: 'people',
+      baseEndpoint: ENDPOINT_CONFIG.people.base,
+    });
+  }
 
-    /**
-     * Get tasks for a person
-     */
-    async getPersonTasks(personName: string, projectId?: string): Promise<PersonTasks> {
-        const { adaptPersonTasks } = await import('@/lib/api/adapters/ResponseAdapter');
+  /**
+   * Get tasks for a person
+   */
+  async getPersonTasks(personName: string, projectId?: string): Promise<PersonTasks> {
+    const { adaptPersonTasks } = await import('@/lib/api/adapters/ResponseAdapter');
 
-        const response = await this.request({
-            method: 'GET',
-            url: ENDPOINT_CONFIG.people.endpoints.tasks(personName),
-            params: projectId ? { project_id: projectId } as any : undefined,
-        });
+    const response = await this.request({
+      method: 'GET',
+      url: ENDPOINT_CONFIG.people.endpoints.tasks(personName),
+      params: projectId ? ({ project_id: projectId } as any) : undefined,
+    });
 
-        return adaptPersonTasks(response);
-    }
+    return adaptPersonTasks(response);
+  }
 }
 
 /**

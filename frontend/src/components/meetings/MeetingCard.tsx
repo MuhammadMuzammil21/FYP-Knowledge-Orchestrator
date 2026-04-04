@@ -1,19 +1,19 @@
-'use client'
+'use client';
 
-import Link from 'next/link'
-import { ChevronRight, Calendar, Clock } from 'lucide-react'
-import { StatusBadge } from './StatusBadge'
-import type { Meeting } from '@/types/domain.types'
-import { formatDate, formatTime } from '@/lib/utils/date'
-import { cn } from '@/lib/utils'
+import Link from 'next/link';
+import { ChevronRight, Calendar, Clock } from 'lucide-react';
+import { StatusBadge } from './StatusBadge';
+import type { Meeting } from '@/types/domain.types';
+import { formatDate, formatTime } from '@/lib/utils/date';
+import { cn } from '@/lib/utils';
 
 interface MeetingCardProps {
-  meeting: Meeting
+  meeting: Meeting;
 }
 
 export function MeetingCard({ meeting }: MeetingCardProps) {
-  const formattedDate = formatDate(meeting.createdAt)
-  const formattedTime = formatTime(meeting.createdAt)
+  const formattedDate = formatDate(meeting.createdAt);
+  const formattedTime = formatTime(meeting.createdAt);
 
   return (
     <Link href={`/meetings/${meeting.id}`}>
@@ -53,5 +53,5 @@ export function MeetingCard({ meeting }: MeetingCardProps) {
         <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-150 flex-shrink-0" />
       </div>
     </Link>
-  )
+  );
 }

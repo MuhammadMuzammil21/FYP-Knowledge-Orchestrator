@@ -1,6 +1,6 @@
 /**
  * Date Utility Functions
- * 
+ *
  * Handles conversion of UTC timestamps from the backend to the browser's local timezone.
  * All timestamps from the API are assumed to be in UTC.
  */
@@ -12,15 +12,15 @@
  * @returns Formatted date string in browser's local timezone
  */
 export function formatDate(
-    date: string | Date,
-    options: Intl.DateTimeFormatOptions = {
-        month: 'short',
-        day: 'numeric',
-        year: 'numeric',
-    }
+  date: string | Date,
+  options: Intl.DateTimeFormatOptions = {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  }
 ): string {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return dateObj.toLocaleDateString('en-US', options);
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  return dateObj.toLocaleDateString('en-US', options);
 }
 
 /**
@@ -30,14 +30,14 @@ export function formatDate(
  * @returns Formatted time string in browser's local timezone
  */
 export function formatTime(
-    date: string | Date,
-    options: Intl.DateTimeFormatOptions = {
-        hour: '2-digit',
-        minute: '2-digit',
-    }
+  date: string | Date,
+  options: Intl.DateTimeFormatOptions = {
+    hour: '2-digit',
+    minute: '2-digit',
+  }
 ): string {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return dateObj.toLocaleTimeString('en-US', options);
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  return dateObj.toLocaleTimeString('en-US', options);
 }
 
 /**
@@ -47,17 +47,17 @@ export function formatTime(
  * @returns Formatted date and time string in browser's local timezone
  */
 export function formatDateTime(
-    date: string | Date,
-    options: Intl.DateTimeFormatOptions = {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    }
+  date: string | Date,
+  options: Intl.DateTimeFormatOptions = {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }
 ): string {
-    const dateObj = typeof date === 'string' ? new Date(date) : date;
-    return dateObj.toLocaleDateString('en-US', options);
+  const dateObj = typeof date === 'string' ? new Date(date) : date;
+  return dateObj.toLocaleDateString('en-US', options);
 }
 
 /**
@@ -66,7 +66,7 @@ export function formatDateTime(
  * @returns Formatted time string in browser's local timezone
  */
 export function formatShortTime(date: string | Date): string {
-    return formatTime(date, { hour: '2-digit', minute: '2-digit' });
+  return formatTime(date, { hour: '2-digit', minute: '2-digit' });
 }
 
 /**
@@ -75,11 +75,11 @@ export function formatShortTime(date: string | Date): string {
  * @returns Formatted date string in browser's local timezone
  */
 export function formatLongDate(date: string | Date): string {
-    return formatDate(date, {
-        month: 'long',
-        day: 'numeric',
-        year: 'numeric',
-    });
+  return formatDate(date, {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
 }
 
 /**
@@ -89,5 +89,5 @@ export function formatLongDate(date: string | Date): string {
  * @returns Date object
  */
 export function parseUTCDate(utcDateString: string): Date {
-    return new Date(utcDateString);
+  return new Date(utcDateString);
 }

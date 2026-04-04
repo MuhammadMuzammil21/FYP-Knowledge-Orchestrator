@@ -1,14 +1,14 @@
-'use client'
+'use client';
 
-import { useSession, signOut } from 'next-auth/react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Separator } from '@/components/ui/separator'
-import { ThemeToggle } from '@/components/ui/theme-toggle'
-import { useMobileMenu } from '@/contexts/MobileMenuContext'
-import { WorkspaceSwitcher } from '@/components/layout/WorkspaceSwitcher'
-import { useWorkspace } from '@/contexts/WorkspaceContext'
+import { useSession, signOut } from 'next-auth/react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
+import { useMobileMenu } from '@/contexts/MobileMenuContext';
+import { WorkspaceSwitcher } from '@/components/layout/WorkspaceSwitcher';
+import { useWorkspace } from '@/contexts/WorkspaceContext';
 import {
   Plus,
   Settings,
@@ -21,7 +21,7 @@ import {
   FolderOpen,
   Users,
   MessageSquare,
-} from 'lucide-react'
+} from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,8 +29,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { cn } from '@/lib/utils'
+} from '@/components/ui/dropdown-menu';
+import { cn } from '@/lib/utils';
 
 function NavItem({
   href,
@@ -40,17 +40,17 @@ function NavItem({
   exact,
   onClick,
 }: {
-  href: string
-  icon: React.ElementType
-  label: string
-  badge?: string | number
-  exact?: boolean
-  onClick?: () => void
+  href: string;
+  icon: React.ElementType;
+  label: string;
+  badge?: string | number;
+  exact?: boolean;
+  onClick?: () => void;
 }) {
-  const pathname = usePathname()
+  const pathname = usePathname();
   const isActive = exact
     ? pathname === href
-    : pathname === href || (href !== '/dashboard' && pathname?.startsWith(href + '/'))
+    : pathname === href || (href !== '/dashboard' && pathname?.startsWith(href + '/'));
 
   return (
     <Link href={href} onClick={onClick}>
@@ -77,13 +77,13 @@ function NavItem({
         )}
       </div>
     </Link>
-  )
+  );
 }
 
 export function Sidebar() {
-  const { data: session } = useSession()
-  const { isOpen, close } = useMobileMenu()
-  const { can } = useWorkspace()
+  const { data: session } = useSession();
+  const { isOpen, close } = useMobileMenu();
+  const { can } = useWorkspace();
 
   return (
     <>
@@ -131,7 +131,10 @@ export function Sidebar() {
         {can('upload_meeting') && (
           <div className="p-3 shrink-0">
             <Link href="/dashboard" onClick={close}>
-              <Button className="w-full justify-start gap-2 h-9 shadow-sm shadow-[oklch(0.88_0.05_150/0.25)]" size="sm">
+              <Button
+                className="w-full justify-start gap-2 h-9 shadow-sm shadow-[oklch(0.88_0.05_150/0.25)]"
+                size="sm"
+              >
                 <Plus className="h-4 w-4" />
                 New meeting
               </Button>
@@ -155,7 +158,12 @@ export function Sidebar() {
             Account
           </p>
           <NavItem href="/settings" icon={Settings} label="Settings" exact onClick={close} />
-          <NavItem href="/settings/known-speakers" icon={Users} label="Known speakers" onClick={close} />
+          <NavItem
+            href="/settings/known-speakers"
+            icon={Users}
+            label="Known speakers"
+            onClick={close}
+          />
         </div>
 
         {/* User menu zone */}
@@ -216,5 +224,5 @@ export function Sidebar() {
         </div>
       </aside>
     </>
-  )
+  );
 }

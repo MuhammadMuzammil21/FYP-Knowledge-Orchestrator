@@ -15,10 +15,9 @@ export async function convertBlobToWav(
 ): Promise<File> {
   const arrayBuffer = await blob.arrayBuffer();
 
-  const audioContext = new (
-    window.AudioContext ||
-    (window as any).webkitAudioContext
-  )({ sampleRate: 48000 });
+  const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)({
+    sampleRate: 48000,
+  });
 
   let audioBuffer: AudioBuffer;
   try {
@@ -57,8 +56,8 @@ function audioBufferToWav(buffer: AudioBuffer): ArrayBuffer {
 
   // fmt sub-chunk
   writeString(view, 12, 'fmt ');
-  view.setUint32(16, 16, true);          // Sub-chunk size (16 for PCM)
-  view.setUint16(20, 1, true);           // Audio format (1 = PCM)
+  view.setUint32(16, 16, true); // Sub-chunk size (16 for PCM)
+  view.setUint16(20, 1, true); // Audio format (1 = PCM)
   view.setUint16(22, numChannels, true);
   view.setUint32(24, sampleRate, true);
   view.setUint32(28, byteRate, true);

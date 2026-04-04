@@ -20,17 +20,20 @@ AI-powered meeting transcription and analysis platform. Upload audio recordings 
 ### Setup
 
 1. **Install dependencies**:
+
    ```bash
    npm install
    ```
 
 2. **Create `.env.local`** in the project root:
+
    ```env
    AUTH_SECRET=<your-secret>          # Generate with: npx auth secret
    NEXT_PUBLIC_API_URL=https://asim-ai.duckdns.org
    ```
 
 3. **Run the development server**:
+
    ```bash
    npm run dev
    ```
@@ -80,24 +83,24 @@ The dashboard follows a **Linear / Vercel / Resend** inspired aesthetic:
 
 ### Key UI Components
 
-| Component | Description |
-|-----------|-------------|
-| **Sidebar** | Fixed 64-wide nav with logo, section labels, left-border active states, user avatar menu |
-| **Navbar** | Sticky breadcrumb navigation with Search, Notifications, Help icons |
-| **StatusBadge** | Colored dot + pill badge for meeting statuses (queued/processing/completed/error) |
-| **MeetingCard** | Row-based list item with status dot, metadata, hover chevron |
-| **ProjectCard** | Card with folder icon, hover glow, meeting count footer |
-| **Dashboard** | Two-column layout: "How it works" panel + drag-and-drop upload form |
+| Component       | Description                                                                              |
+| --------------- | ---------------------------------------------------------------------------------------- |
+| **Sidebar**     | Fixed 64-wide nav with logo, section labels, left-border active states, user avatar menu |
+| **Navbar**      | Sticky breadcrumb navigation with Search, Notifications, Help icons                      |
+| **StatusBadge** | Colored dot + pill badge for meeting statuses (queued/processing/completed/error)        |
+| **MeetingCard** | Row-based list item with status dot, metadata, hover chevron                             |
+| **ProjectCard** | Card with folder icon, hover glow, meeting count footer                                  |
+| **Dashboard**   | Two-column layout: "How it works" panel + drag-and-drop upload form                      |
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start dev server (Turbopack) |
-| `npm run build` | Production build |
-| `npm run start` | Start production server |
-| `npm run lint` | Run ESLint |
-| `npm run test` | Run Jest tests |
+| Command         | Description                  |
+| --------------- | ---------------------------- |
+| `npm run dev`   | Start dev server (Turbopack) |
+| `npm run build` | Production build             |
+| `npm run start` | Start production server      |
+| `npm run lint`  | Run ESLint                   |
+| `npm run test`  | Run Jest tests               |
 
 ## Deployment
 

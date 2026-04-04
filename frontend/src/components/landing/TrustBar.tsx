@@ -5,7 +5,7 @@ const companies = [
   'Agency HQ',
   'Dev Studio',
   'Remote Team',
-]
+];
 
 export function TrustBar() {
   return (
@@ -26,5 +26,5 @@ export function TrustBar() {
         </div>
       </div>
     </section>
-  )
+  );
 }

@@ -10,115 +10,122 @@ const mockedSignIn = signIn as jest.MockedFunction<typeof signIn>;
 const mockPush = jest.fn();
 const mockRefresh = jest.fn();
 jest.mock('next/navigation', () => ({
-    useRouter: () => ({
-        push: mockPush,
-        refresh: mockRefresh,
-    }),
-    useSearchParams: () => ({
-        get: jest.fn(() => null),
-    }),
+  useRouter: () => ({
+    push: mockPush,
+    refresh: mockRefresh,
+  }),
+  useSearchParams: () => ({
+    get: jest.fn(() => null),
+  }),
 }));
 
 describe('LoginPage', () => {
-    beforeEach(() => {
-        jest.clearAllMocks();
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should render login form', () => {
+    render(<LoginPage />);
+
+    expect(
+      screen.getByText('Enter your email and password to access your account')
+    ).toBeInTheDocument();
+    expect(screen.getByLabelText('Email')).toBeInTheDocument();
+    expect(screen.getByLabelText('Password')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
+  });
+
+  it('should show validation errors for empty fields', async () => {
+    render(<LoginPage />);
+
+    const submitButton = screen.getByRole('button', { name: /sign in/i });
+    fireEvent.click(submitButton);
+
+    // HTML5 validation will prevent submission
+    const emailInput = screen.getByLabelText('Email') as HTMLInputElement;
+    const passwordInput = screen.getByLabelText('Password') as HTMLInputElement;
+
+    expect(emailInput.validity.valid).toBe(false);
+    expect(passwordInput.validity.valid).toBe(false);
+  });
+
+  it('should call signIn with credentials on submit', async () => {
+    mockedSignIn.mockResolvedValue({ error: null, ok: true, status: 200, url: null } as any);
+
+    render(<LoginPage />);
+
+    const emailInput = screen.getByLabelText('Email');
+    const passwordInput = screen.getByLabelText('Password');
+    const submitButton = screen.getByRole('button', { name: /sign in/i });
+
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(mockedSignIn).toHaveBeenCalledWith('credentials', {
+        email: 'test@example.com',
+        password: 'password123',
+        redirect: false,
+      });
     });
+  });
 
-    it('should render login form', () => {
-        render(<LoginPage />);
+  it('should redirect to dashboard on successful login', async () => {
+    mockedSignIn.mockResolvedValue({ error: null, ok: true, status: 200, url: null } as any);
 
-        expect(screen.getByText('Enter your email and password to access your account')).toBeInTheDocument();
-        expect(screen.getByLabelText('Email')).toBeInTheDocument();
-        expect(screen.getByLabelText('Password')).toBeInTheDocument();
-        expect(screen.getByRole('button', { name: /sign in/i })).toBeInTheDocument();
+    render(<LoginPage />);
+
+    const emailInput = screen.getByLabelText('Email');
+    const passwordInput = screen.getByLabelText('Password');
+    const submitButton = screen.getByRole('button', { name: /sign in/i });
+
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'password123' } });
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(mockPush).toHaveBeenCalledWith('/dashboard');
+      expect(mockRefresh).toHaveBeenCalled();
     });
+  });
 
-    it('should show validation errors for empty fields', async () => {
-        render(<LoginPage />);
+  it('should show error message on failed login', async () => {
+    mockedSignIn.mockResolvedValue({
+      error: 'Invalid credentials',
+      ok: false,
+      status: 401,
+      url: null,
+    } as any);
 
-        const submitButton = screen.getByRole('button', { name: /sign in/i });
-        fireEvent.click(submitButton);
+    render(<LoginPage />);
 
-        // HTML5 validation will prevent submission
-        const emailInput = screen.getByLabelText('Email') as HTMLInputElement;
-        const passwordInput = screen.getByLabelText('Password') as HTMLInputElement;
+    const emailInput = screen.getByLabelText('Email');
+    const passwordInput = screen.getByLabelText('Password');
+    const submitButton = screen.getByRole('button', { name: /sign in/i });
 
-        expect(emailInput.validity.valid).toBe(false);
-        expect(passwordInput.validity.valid).toBe(false);
+    fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'wrongpassword' } });
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(mockedSignIn).toHaveBeenCalled();
     });
+  });
 
-    it('should call signIn with credentials on submit', async () => {
-        mockedSignIn.mockResolvedValue({ error: null, ok: true, status: 200, url: null } as any);
+  it('should have link to signup page', () => {
+    render(<LoginPage />);
 
-        render(<LoginPage />);
+    const signupLink = screen.getByText('Sign up');
+    expect(signupLink).toBeInTheDocument();
+    expect(signupLink.closest('a')).toHaveAttribute('href', '/signup');
+  });
 
-        const emailInput = screen.getByLabelText('Email');
-        const passwordInput = screen.getByLabelText('Password');
-        const submitButton = screen.getByRole('button', { name: /sign in/i });
+  it('should have link to forgot password page', () => {
+    render(<LoginPage />);
 
-        fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-        fireEvent.change(passwordInput, { target: { value: 'password123' } });
-        fireEvent.click(submitButton);
-
-        await waitFor(() => {
-            expect(mockedSignIn).toHaveBeenCalledWith('credentials', {
-                email: 'test@example.com',
-                password: 'password123',
-                redirect: false,
-            });
-        });
-    });
-
-    it('should redirect to dashboard on successful login', async () => {
-        mockedSignIn.mockResolvedValue({ error: null, ok: true, status: 200, url: null } as any);
-
-        render(<LoginPage />);
-
-        const emailInput = screen.getByLabelText('Email');
-        const passwordInput = screen.getByLabelText('Password');
-        const submitButton = screen.getByRole('button', { name: /sign in/i });
-
-        fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-        fireEvent.change(passwordInput, { target: { value: 'password123' } });
-        fireEvent.click(submitButton);
-
-        await waitFor(() => {
-            expect(mockPush).toHaveBeenCalledWith('/dashboard');
-            expect(mockRefresh).toHaveBeenCalled();
-        });
-    });
-
-    it('should show error message on failed login', async () => {
-        mockedSignIn.mockResolvedValue({ error: 'Invalid credentials', ok: false, status: 401, url: null } as any);
-
-        render(<LoginPage />);
-
-        const emailInput = screen.getByLabelText('Email');
-        const passwordInput = screen.getByLabelText('Password');
-        const submitButton = screen.getByRole('button', { name: /sign in/i });
-
-        fireEvent.change(emailInput, { target: { value: 'test@example.com' } });
-        fireEvent.change(passwordInput, { target: { value: 'wrongpassword' } });
-        fireEvent.click(submitButton);
-
-        await waitFor(() => {
-            expect(mockedSignIn).toHaveBeenCalled();
-        });
-    });
-
-    it('should have link to signup page', () => {
-        render(<LoginPage />);
-
-        const signupLink = screen.getByText('Sign up');
-        expect(signupLink).toBeInTheDocument();
-        expect(signupLink.closest('a')).toHaveAttribute('href', '/signup');
-    });
-
-    it('should have link to forgot password page', () => {
-        render(<LoginPage />);
-
-        const forgotPasswordLink = screen.getByText('Forgot password?');
-        expect(forgotPasswordLink).toBeInTheDocument();
-        expect(forgotPasswordLink.closest('a')).toHaveAttribute('href', '/forgot-password');
-    });
+    const forgotPasswordLink = screen.getByText('Forgot password?');
+    expect(forgotPasswordLink).toBeInTheDocument();
+    expect(forgotPasswordLink.closest('a')).toHaveAttribute('href', '/forgot-password');
+  });
 });

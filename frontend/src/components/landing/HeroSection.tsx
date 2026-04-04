@@ -1,7 +1,7 @@
-import Link from 'next/link'
-import { ArrowRight, Play } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import Link from 'next/link';
+import { ArrowRight, Play } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 export function HeroSection() {
   return (
@@ -29,7 +29,8 @@ export function HeroSection() {
 
         {/* Subheadline */}
         <p className="animate-hero-sub mt-5 max-w-xl text-lg text-muted-foreground sm:text-xl leading-relaxed">
-          Upload any recording. Get transcripts, decisions, action items, and AI-powered answers — automatically, in minutes.
+          Upload any recording. Get transcripts, decisions, action items, and AI-powered answers —
+          automatically, in minutes.
         </p>
 
         {/* CTA buttons */}
@@ -74,7 +75,9 @@ export function HeroSection() {
             <div className="border-b border-border px-6 py-4 flex items-center justify-between">
               <div className="text-left">
                 <h3 className="font-semibold text-sm">Q4 product review</h3>
-                <p className="text-xs text-muted-foreground mt-0.5">December 10, 2025 · 2 speakers detected</p>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  December 10, 2025 · 2 speakers detected
+                </p>
               </div>
               <Badge className="bg-accent/15 text-accent dark:bg-accent/20 border-transparent">
                 Completed
@@ -84,15 +87,23 @@ export function HeroSection() {
             <div className="px-6 py-4 space-y-3 text-sm max-h-48 overflow-hidden text-left">
               <div>
                 <span className="font-medium text-primary">Sarah:</span>{' '}
-                <span className="text-muted-foreground">The Q4 numbers are looking strong. We need to decide on the launch date before end of week.</span>
+                <span className="text-muted-foreground">
+                  The Q4 numbers are looking strong. We need to decide on the launch date before end
+                  of week.
+                </span>
               </div>
               <div>
                 <span className="font-medium text-primary">James:</span>{' '}
-                <span className="text-muted-foreground">Agreed. I&apos;ll own the go-to-market checklist and have it ready by Thursday.</span>
+                <span className="text-muted-foreground">
+                  Agreed. I&apos;ll own the go-to-market checklist and have it ready by Thursday.
+                </span>
               </div>
               <div>
                 <span className="font-medium text-primary">Sarah:</span>{' '}
-                <span className="text-muted-foreground">Perfect. Let&apos;s also loop in the design team — the landing page needs a refresh before we go live.</span>
+                <span className="text-muted-foreground">
+                  Perfect. Let&apos;s also loop in the design team — the landing page needs a
+                  refresh before we go live.
+                </span>
               </div>
             </div>
             {/* Entity pills row */}
@@ -105,5 +116,5 @@ export function HeroSection() {
         </div>
       </div>
     </section>
-  )
+  );
 }

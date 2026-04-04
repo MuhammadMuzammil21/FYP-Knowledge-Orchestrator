@@ -1,27 +1,27 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { MeetingCard } from '@/components/meetings/MeetingCard'
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
-import { useMeetings } from '@/hooks/useMeetings'
-import { ChevronLeft, ChevronRight, Mic, Plus, SlidersHorizontal } from 'lucide-react'
-import { PAGINATION_DEFAULTS } from '@/lib/constants'
-import Link from 'next/link'
-import { useWorkspace } from '@/contexts/WorkspaceContext'
+import { useState } from 'react';
+import { MeetingCard } from '@/components/meetings/MeetingCard';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useMeetings } from '@/hooks/useMeetings';
+import { ChevronLeft, ChevronRight, Mic, Plus, SlidersHorizontal } from 'lucide-react';
+import { PAGINATION_DEFAULTS } from '@/lib/constants';
+import Link from 'next/link';
+import { useWorkspace } from '@/contexts/WorkspaceContext';
 
 export default function MeetingsPage() {
-  const [offset, setOffset] = useState(0)
-  const limit = PAGINATION_DEFAULTS.LIMIT
-  const { can, activeTeamId, isTeamWorkspace, workspace } = useWorkspace()
+  const [offset, setOffset] = useState(0);
+  const limit = PAGINATION_DEFAULTS.LIMIT;
+  const { can, activeTeamId, isTeamWorkspace, workspace } = useWorkspace();
 
-  const { data, isLoading, error } = useMeetings({ limit, offset, team_id: activeTeamId })
+  const { data, isLoading, error } = useMeetings({ limit, offset, team_id: activeTeamId });
 
-  const handlePrevious = () => setOffset(Math.max(0, offset - limit))
-  const handleNext = () => setOffset(offset + limit)
+  const handlePrevious = () => setOffset(Math.max(0, offset - limit));
+  const handleNext = () => setOffset(offset + limit);
 
-  const hasPrevious = offset > 0
-  const hasNext = data && data.length === limit
+  const hasPrevious = offset > 0;
+  const hasNext = data && data.length === limit;
 
   if (error) {
     return (
@@ -34,7 +34,7 @@ export default function MeetingsPage() {
           <p className="text-sm text-muted-foreground">Please try refreshing the page.</p>
         </div>
       </div>
-    )
+    );
   }
 
   return (
@@ -43,7 +43,9 @@ export default function MeetingsPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-xl font-bold tracking-tight">
-            {isTeamWorkspace && typeof workspace !== 'string' ? `${workspace.name} — Meetings` : 'All meetings'}
+            {isTeamWorkspace && typeof workspace !== 'string'
+              ? `${workspace.name} — Meetings`
+              : 'All meetings'}
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             {!isLoading && data
@@ -151,5 +153,5 @@ export default function MeetingsPage() {
         </div>
       )}
     </div>
-  )
+  );
 }

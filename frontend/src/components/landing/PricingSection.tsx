@@ -1,14 +1,14 @@
-import Link from 'next/link'
-import { Check } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
+import Link from 'next/link';
+import { Check } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 
 interface PricingTier {
-  name: string
-  price: string
-  subtitle: string
-  features: string[]
-  featured: boolean
+  name: string;
+  price: string;
+  subtitle: string;
+  features: string[];
+  featured: boolean;
 }
 
 const tiers: PricingTier[] = [
@@ -17,12 +17,7 @@ const tiers: PricingTier[] = [
     price: '$0',
     subtitle: '5 meetings per month · 30 min max duration',
     featured: false,
-    features: [
-      'Basic transcription',
-      'Speaker labels',
-      'Entity extraction',
-      '7-day history',
-    ],
+    features: ['Basic transcription', 'Speaker labels', 'Entity extraction', '7-day history'],
   },
   {
     name: 'Pro',
@@ -52,7 +47,7 @@ const tiers: PricingTier[] = [
       'Dedicated support',
     ],
   },
-]
+];
 
 export function PricingSection() {
   return (
@@ -107,5 +102,5 @@ export function PricingSection() {
         ))}
       </div>
     </section>
-  )
+  );
 }

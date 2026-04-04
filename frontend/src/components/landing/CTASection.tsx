@@ -1,6 +1,6 @@
-import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export function CTASection() {
   return (
@@ -38,5 +38,5 @@ export function CTASection() {
         </p>
       </div>
     </section>
-  )
+  );
 }

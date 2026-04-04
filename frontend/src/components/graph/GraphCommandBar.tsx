@@ -3,7 +3,13 @@
 import { useRef, useCallback, useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Search, Maximize2 } from 'lucide-react';
 import type { LayoutPreset } from './graphLayouts';
 import { LAYOUT_LABELS } from './graphLayouts';
@@ -39,13 +45,16 @@ export function GraphCommandBar({
   const [localSearch, setLocalSearch] = useState(searchQuery);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const handleSearchInput = useCallback((value: string) => {
-    setLocalSearch(value);
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      onSearchChange(value);
-    }, 200);
-  }, [onSearchChange]);
+  const handleSearchInput = useCallback(
+    (value: string) => {
+      setLocalSearch(value);
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+      debounceRef.current = setTimeout(() => {
+        onSearchChange(value);
+      }, 200);
+    },
+    [onSearchChange]
+  );
 
   // Sync external changes
   useEffect(() => {
@@ -59,21 +68,22 @@ export function GraphCommandBar({
     };
   }, []);
 
-  const darkMode = typeof window !== 'undefined'
-    ? matchMedia('(prefers-color-scheme: dark)').matches
-    : false;
+  const darkMode =
+    typeof window !== 'undefined' ? matchMedia('(prefers-color-scheme: dark)').matches : false;
 
   return (
-    <div style={{
-      display: 'flex',
-      flexWrap: 'wrap',
-      alignItems: 'center',
-      gap: 8,
-      padding: '8px 12px',
-      borderBottom: '1px solid hsl(var(--border))',
-      background: 'hsl(var(--card))',
-      borderRadius: '12px 12px 0 0',
-    }}>
+    <div
+      style={{
+        display: 'flex',
+        flexWrap: 'wrap',
+        alignItems: 'center',
+        gap: 8,
+        padding: '8px 12px',
+        borderBottom: '1px solid hsl(var(--border))',
+        background: 'hsl(var(--card))',
+        borderRadius: '12px 12px 0 0',
+      }}
+    >
       {/* Search */}
       <div style={{ position: 'relative', minWidth: 180, maxWidth: 240, flex: '1 1 180px' }}>
         <Search
@@ -117,8 +127,10 @@ export function GraphCommandBar({
             <SelectValue placeholder="Layout presets" />
           </SelectTrigger>
           <SelectContent>
-            {ALL_LAYOUTS.map(preset => (
-              <SelectItem key={preset} value={preset} className="text-[11px]">{LAYOUT_LABELS[preset]}</SelectItem>
+            {ALL_LAYOUTS.map((preset) => (
+              <SelectItem key={preset} value={preset} className="text-[11px]">
+                {LAYOUT_LABELS[preset]}
+              </SelectItem>
             ))}
           </SelectContent>
         </Select>
@@ -136,12 +148,14 @@ export function GraphCommandBar({
       </Button>
 
       {/* Counts */}
-      <span style={{
-        marginLeft: 'auto',
-        fontSize: 11,
-        color: 'hsl(var(--muted-foreground))',
-        whiteSpace: 'nowrap',
-      }}>
+      <span
+        style={{
+          marginLeft: 'auto',
+          fontSize: 11,
+          color: 'hsl(var(--muted-foreground))',
+          whiteSpace: 'nowrap',
+        }}
+      >
         {nodeCount} nodes · {edgeCount} edges
       </span>
     </div>

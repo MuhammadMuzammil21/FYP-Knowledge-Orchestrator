@@ -1,11 +1,11 @@
 import type { LayoutOptions } from 'cytoscape';
 
 export type LayoutPreset =
-  | 'overview'      // cose — best for seeing all nodes, default
-  | 'hierarchy'     // breadthfirst — directed, top-down
-  | 'concentric'    // concentric — high-degree nodes at center
-  | 'circle'        // circle — equal spacing
-  | 'grid';         // grid — structured rows
+  | 'overview' // cose — best for seeing all nodes, default
+  | 'hierarchy' // breadthfirst — directed, top-down
+  | 'concentric' // concentric — high-degree nodes at center
+  | 'circle' // circle — equal spacing
+  | 'grid'; // grid — structured rows
 
 export const LAYOUT_PRESETS: Record<LayoutPreset, LayoutOptions> = {
   overview: {
@@ -55,9 +55,9 @@ export const LAYOUT_PRESETS: Record<LayoutPreset, LayoutOptions> = {
 };
 
 export const LAYOUT_LABELS: Record<LayoutPreset, string> = {
-  overview:   'Auto layout',
-  hierarchy:  'Hierarchy',
+  overview: 'Auto layout',
+  hierarchy: 'Hierarchy',
   concentric: 'Concentric',
-  circle:     'Circle',
-  grid:       'Grid',
+  circle: 'Circle',
+  grid: 'Grid',
 };

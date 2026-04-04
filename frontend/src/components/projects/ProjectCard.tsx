@@ -1,14 +1,14 @@
-import Link from 'next/link'
-import { Folder, FileText, Calendar, ChevronRight } from 'lucide-react'
-import type { Project } from '@/types'
-import { formatDate } from '@/lib/utils/date'
+import Link from 'next/link';
+import { Folder, FileText, Calendar, ChevronRight } from 'lucide-react';
+import type { Project } from '@/types';
+import { formatDate } from '@/lib/utils/date';
 
 interface ProjectCardProps {
-  project: Project
+  project: Project;
 }
 
 export function ProjectCard({ project }: ProjectCardProps) {
-  const formattedDate = formatDate(project.created_at)
+  const formattedDate = formatDate(project.created_at);
 
   return (
     <Link href={`/projects/${project.id}`}>
@@ -51,5 +51,5 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </div>
       </div>
     </Link>
-  )
+  );
 }

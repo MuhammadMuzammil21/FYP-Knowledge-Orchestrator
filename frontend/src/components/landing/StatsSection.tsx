@@ -3,7 +3,7 @@ const stats = [
   { number: '98%', label: 'Accuracy rate' },
   { number: '<5 min', label: 'Process time' },
   { number: '9', label: 'Languages supported' },
-]
+];
 
 export function StatsSection() {
   return (
@@ -17,5 +17,5 @@ export function StatsSection() {
         ))}
       </div>
     </section>
-  )
+  );
 }

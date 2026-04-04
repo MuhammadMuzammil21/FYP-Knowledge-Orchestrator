@@ -15,11 +15,7 @@ interface AudioWaveformProps {
   className?: string;
 }
 
-export function AudioWaveform({
-  analyserNode,
-  isActive,
-  className,
-}: AudioWaveformProps) {
+export function AudioWaveform({ analyserNode, isActive, className }: AudioWaveformProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useAudioVisualizer(analyserNode, canvasRef as React.RefObject<HTMLCanvasElement>, isActive);
 

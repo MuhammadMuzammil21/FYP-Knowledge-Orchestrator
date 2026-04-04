@@ -33,15 +33,19 @@ function getNodeDisplayName(node: GraphNode): string {
 function normalizeNodeType(labels: string[]): string {
   const raw = labels?.[0]?.toLowerCase() ?? 'default';
   const map: Record<string, string> = {
-    person: 'Person', task: 'Task', decision: 'Decision',
-    topic: 'Topic', action_item: 'ActionItem', question: 'Question',
+    person: 'Person',
+    task: 'Task',
+    decision: 'Decision',
+    topic: 'Topic',
+    action_item: 'ActionItem',
+    question: 'Question',
     actionitem: 'ActionItem',
   };
   return map[raw] ?? 'default';
 }
 
 function buildElements(nodes: GraphNode[], edges: GraphEdge[]) {
-  const cyNodes = nodes.map(node => ({
+  const cyNodes = nodes.map((node) => ({
     data: {
       id: String(node.id),
       displayName: getNodeDisplayName(node),
@@ -94,7 +98,10 @@ export function CytoscapeGraph({
 
     cyRef.current = cy;
     initializedRef.current = true;
-    prevElementsRef.current = JSON.stringify({ n: nodes.map(n => n.id), e: edges.map((e, i) => `${e.start}-${e.end}`) });
+    prevElementsRef.current = JSON.stringify({
+      n: nodes.map((n) => n.id),
+      e: edges.map((e, i) => `${e.start}-${e.end}`),
+    });
 
     // Event wiring
     cy.on('tap', 'node', (e) => {
@@ -105,7 +112,7 @@ export function CytoscapeGraph({
         const other = isSource ? edge.target() : edge.source();
         return {
           edgeType: edge.data('edgeType'),
-          direction: isSource ? 'out' as const : 'in' as const,
+          direction: isSource ? ('out' as const) : ('in' as const),
           targetId: other.id(),
           targetName: other.data('displayName'),
         };
@@ -136,7 +143,10 @@ export function CytoscapeGraph({
     const cy = cyRef.current;
     if (!cy || !initializedRef.current) return;
 
-    const newKey = JSON.stringify({ n: nodes.map(n => n.id), e: edges.map((e, i) => `${e.start}-${e.end}`) });
+    const newKey = JSON.stringify({
+      n: nodes.map((n) => n.id),
+      e: edges.map((e, i) => `${e.start}-${e.end}`),
+    });
     if (newKey === prevElementsRef.current) return;
     prevElementsRef.current = newKey;
 
@@ -164,16 +174,23 @@ export function CytoscapeGraph({
 
   if (nodes.length === 0) {
     return (
-      <div style={{
-        height,
-        minHeight: 400,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: '12px',
-        border: '0.5px solid var(--color-border-tertiary, hsl(var(--border)))',
-      }}>
-        <p style={{ color: 'var(--color-text-secondary, hsl(var(--muted-foreground)))', fontSize: 14 }}>
+      <div
+        style={{
+          height,
+          minHeight: 400,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderRadius: '12px',
+          border: '0.5px solid var(--color-border-tertiary, hsl(var(--border)))',
+        }}
+      >
+        <p
+          style={{
+            color: 'var(--color-text-secondary, hsl(var(--muted-foreground)))',
+            fontSize: 14,
+          }}
+        >
           No graph data available
         </p>
       </div>
