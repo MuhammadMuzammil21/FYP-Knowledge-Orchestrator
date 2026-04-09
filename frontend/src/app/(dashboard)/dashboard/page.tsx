@@ -136,19 +136,9 @@ export default function DashboardPage() {
 
       let projectId = selectedProjectId;
 
-      // Create new project if needed
       if (isCreatingProject && newProjectName.trim()) {
         const newProject = await createProject({ name: newProjectName });
         projectId = newProject.id;
-      } else if (!projectId && !isCreatingProject) {
-        // Should not happen if validations work, but fallback
-
-        // If no project selected and not creating one, handle error
-        if (projects.length === 0) {
-          // Create a default project if none exist
-          const defaultProject = await createProject({ name: 'My First Project' });
-          projectId = defaultProject.id;
-        }
       }
 
       if (!projectId) {
@@ -306,7 +296,19 @@ export default function DashboardPage() {
               {/* Project selector */}
               <div className="space-y-1.5">
                 <Label className="text-sm font-medium">Project</Label>
-                {!isCreatingProject ? (
+                {projects.length === 0 && !isCreatingProject ? (
+                  <div className="rounded-lg border border-dashed border-border p-5 text-center bg-muted/20">
+                     <p className="text-sm text-foreground mb-3 font-medium">You don't have any projects yet.</p>
+                     <Button 
+                       variant="default" 
+                       size="sm" 
+                       onClick={() => setIsCreatingProject(true)}
+                       className="w-full sm:w-auto"
+                     >
+                       Create a Project First
+                     </Button>
+                  </div>
+                ) : !isCreatingProject ? (
                   <Select
                     value={selectedProjectId}
                     onValueChange={(val) => {
@@ -324,7 +326,12 @@ export default function DashboardPage() {
                     <SelectContent>
                       {projects.map((p) => (
                         <SelectItem key={p.id} value={p.id}>
-                          {p.name}
+                          <div className="flex items-center gap-2">
+                            <span>{p.name}</span>
+                            <span className="text-[10px] uppercase tracking-wide font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
+                              {p.team_id ? 'Team Project' : 'Personal Project'}
+                            </span>
+                          </div>
                         </SelectItem>
                       ))}
                       <SelectItem value="new" className="font-medium text-primary">
@@ -661,7 +668,7 @@ export default function DashboardPage() {
               ) : (
                 <Button
                   onClick={handleUpload}
-                  disabled={!file || isUploading}
+                  disabled={!file || isUploading || (!selectedProjectId && !isCreatingProject) || (isCreatingProject && !newProjectName.trim())}
                   className="gap-2 min-w-[148px] w-full sm:w-auto sm:ml-auto"
                   size="default"
                 >

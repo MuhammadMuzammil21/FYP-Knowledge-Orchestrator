@@ -33,10 +33,10 @@ export function useProjectGraph(projectId: string) {
 /**
  * Hook to fetch project conflicts
  */
-export function useProjectConflicts(projectId: string) {
+export function useProjectConflicts(projectId: string, meetingId?: string) {
   return useQuery({
-    queryKey: ['project-conflicts', projectId],
-    queryFn: () => projectService.getProjectConflicts(projectId),
+    queryKey: ['project-conflicts', projectId, meetingId],
+    queryFn: () => projectService.getProjectConflicts(projectId, meetingId),
     enabled: !!projectId,
     staleTime: 60000, // 1 minute
   });

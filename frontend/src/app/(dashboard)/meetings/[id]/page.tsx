@@ -30,7 +30,9 @@ import {
 import { useMeetingStatus } from '@/hooks/useMeetingStatus';
 import { useProjectConflicts } from '@/hooks/useKnowledgeGraph';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
-import { ArrowLeft, Network, Trash2, Loader2, AudioWaveform, ShieldAlert } from 'lucide-react';
+import { useProject } from '@/hooks/useProjects';
+import { useTeams } from '@/hooks/useTeams';
+import { ArrowLeft, Network, Trash2, Loader2, AudioWaveform, ShieldAlert, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { formatDateTime } from '@/lib/utils/date';
@@ -63,6 +65,10 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
   );
   const { audioUrl, isLoading: audioLoading } = useMeetingAudio(id);
   const deleteMeeting = useDeleteMeeting();
+
+  const { data: project } = useProject(meeting?.projectId || '');
+  const { data: teams } = useTeams();
+  const team = teams?.find(t => t.id === meeting?.teamId);
 
   const handleSegmentSeek = useCallback((seconds: number) => {
     audioPlayerRef.current?.seekTo(seconds);
@@ -124,6 +130,33 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
           <ArrowLeft className="mr-1 h-4 w-4" />
           Back to meetings
         </Link>
+        
+        {/* Breadcrumbs */}
+        {(project || team) && (
+          <div className="flex items-center gap-1.5 text-sm text-muted-foreground mb-3 font-medium">
+            {team ? (
+              <>
+                <div className="flex items-center gap-1.5 hover:text-foreground transition-colors cursor-pointer" title="Team Workspace">
+                  {team.name}
+                </div>
+                <ChevronRight className="h-3.5 w-3.5 opacity-50" />
+              </>
+            ) : (
+              <>
+                <div className="flex items-center gap-1.5 hover:text-foreground transition-colors cursor-pointer" title="Personal Workspace">
+                  Personal Project
+                </div>
+                <ChevronRight className="h-3.5 w-3.5 opacity-50" />
+              </>
+            )}
+            {project && (
+              <span className="text-foreground flex items-center gap-1.5" title="Project">
+                {project.name}
+              </span>
+            )}
+          </div>
+        )}
+
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
           <div>
             <h1 className="mb-2 text-2xl md:text-3xl font-bold">
@@ -270,7 +303,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
         {/* Speakers Tab */}
         <TabsContent value="speakers" className="min-h-[300px] overflow-y-auto">
           {isCompleted ? (
-            <SpeakersPanel meetingId={id} />
+            <SpeakersPanel meetingId={id} onSeek={audioUrl ? handleSegmentSeek : undefined} />
           ) : (
             <Card className="flex h-full items-center justify-center">
               <p className="text-muted-foreground/70">

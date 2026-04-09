@@ -10,6 +10,10 @@ import {
   addSpeaker,
   linkSpeakerToUser,
   unlinkSpeakerFromUser,
+  forceLinkEmailSpeaker,
+  rematchSpeaker,
+  getReviewQueue,
+  processReviewProposal,
 } from '@/lib/api/speakers';
 
 /**
@@ -84,6 +88,67 @@ export function useUnlinkSpeaker(meetingId: string) {
       unlinkSpeakerFromUser(meetingId, speakerId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
+    },
+  });
+}
+
+/**
+ * Hook to force link speaker to user by email
+ */
+export function useForceLinkEmailSpeaker(meetingId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ speakerId, email }: { speakerId: number; email: string }) =>
+      forceLinkEmailSpeaker(meetingId, speakerId, { email }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
+      queryClient.invalidateQueries({ queryKey: ['knownSpeakers'] });
+    },
+  });
+}
+
+/**
+ * Hook to rematch a speaker
+ */
+export function useRematchSpeaker(meetingId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ speakerId }: { speakerId: number }) =>
+      rematchSpeaker(meetingId, speakerId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
+    },
+  });
+}
+
+/**
+ * Hook to fetch speaker review queue
+ */
+export function useReviewQueue(meetingId: string) {
+  return useQuery({
+    queryKey: ['speakers', meetingId, 'reviewQueue'],
+    queryFn: async () => {
+      const response = await getReviewQueue(meetingId);
+      return response.proposals || []; // Extract proposals array
+    },
+    enabled: !!meetingId,
+  });
+}
+
+/**
+ * Hook to process a review proposal
+ */
+export function useProcessReviewProposal(meetingId: string) {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ speakerId, proposalId, action }: { speakerId: number; proposalId: number; action: 'confirm' | 'correct' | 'dismiss' }) =>
+      processReviewProposal(meetingId, speakerId, proposalId, action),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
+      queryClient.invalidateQueries({ queryKey: ['speakers', meetingId, 'reviewQueue'] });
     },
   });
 }

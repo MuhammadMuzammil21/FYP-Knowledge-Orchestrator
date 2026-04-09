@@ -43,3 +43,44 @@ export async function deleteKnownSpeaker(id: number): Promise<{ message: string 
   );
   return response.data;
 }
+
+/**
+ * Get unlinked known speaker prompts
+ */
+export async function getUnlinkedPrompts(): Promise<any> {
+  try {
+    const response = await apiClient.get<any>(
+      API_ENDPOINTS.KNOWN_SPEAKERS_UNLINKED_PROMPTS
+    );
+    return response.data;
+  } catch (err: any) {
+    if (err.response?.status === 404) {
+      return { unlinked_speakers: [] };
+    }
+    throw err;
+  }
+}
+
+/**
+ * Mark a known speaker as external
+ */
+export async function markKnownSpeakerExternal(id: number): Promise<any> {
+  const response = await apiClient.post<any>(
+    API_ENDPOINTS.KNOWN_SPEAKER_MARK_EXTERNAL(id)
+  );
+  return response.data;
+}
+
+/**
+ * Link a known speaker to a user account
+ */
+export async function linkKnownSpeakerAccount(
+  id: number,
+  data: { email?: string; user_id?: string; dry_run?: boolean }
+): Promise<any> {
+  const response = await apiClient.post<any>(
+    API_ENDPOINTS.KNOWN_SPEAKER_LINK_ACCOUNT(id),
+    data
+  );
+  return response.data;
+}

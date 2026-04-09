@@ -31,6 +31,7 @@ export interface Meeting {
 export interface MeetingDetail {
   id: string;
   projectId: string;
+  teamId?: string | null;
   status: MeetingStatus;
   stage: ProcessingStage;
   durationSeconds: number | null;

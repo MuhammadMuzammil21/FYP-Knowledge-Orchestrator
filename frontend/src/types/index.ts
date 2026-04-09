@@ -45,6 +45,7 @@ export interface Meeting {
 export interface MeetingDetail {
   meeting_id: string;
   project_id: string;
+  team_id?: string | null;
   status: MeetingStatus;
   stage: ProcessingStage;
   duration_seconds: number | null;
@@ -56,6 +57,7 @@ export interface MeetingDetail {
 export interface MeetingUploadResponse {
   meeting_id: string;
   project_id: string;
+  team_id?: string | null;
   status: MeetingStatus;
   stage: ProcessingStage;
   message: string;
@@ -159,10 +161,15 @@ export interface RAGResponse {
 
 // Conflict Types
 export interface Conflict {
+  id?: number;
   type: string;
   description: string;
   severity: string;
   related_meeting_id?: string;
+  source_meeting_id?: string;
+  target_meeting_id?: string;
+  resolved?: boolean;
+  resolution_note?: string;
   [key: string]: any;
 }
 
@@ -197,6 +204,7 @@ export interface Project {
   id: string;
   name: string;
   description: string | null;
+  team_id?: string | null;
   created_at: string;
   meeting_count: number;
 }
@@ -225,7 +233,7 @@ export interface ConflictDetail {
   id: number;
   source_meeting_id: string;
   target_meeting_id: string;
-  conflict_type: 'task_reassignment' | 'deadline_change' | 'decision_reversal' | 'general';
+  conflict_type: 'task_reassignment' | 'deadline_change' | 'decision_reversal' | 'general' | 'assignment_conflict' | 'dependency_conflict';
   description: string;
   severity: 'low' | 'medium' | 'high';
   resolved: boolean;
@@ -262,6 +270,34 @@ export interface SpeakersResponse {
 export interface AddSpeakerRequest {
   original_label: string;
   display_name: string;
+}
+
+export interface SpeakerReviewProposal {
+  id: number;
+  meeting_id: string;
+  speaker_mapping_id: number;
+  proposed_name: string;
+  evidence_snippet: string | null;
+  evidence_timestamp: number | null;
+  source: 'rag_scan' | 'manual';
+  status: 'pending' | 'confirmed' | 'rejected';
+  created_at: string;
+}
+
+export interface ForceLinkEmailRequest {
+  email: string;
+}
+
+export interface ForceLinkEmailResponse {
+  linked_user_id?: string;
+  linked_user_name?: string;
+  affected_meetings: number;
+  dry_run: boolean;
+}
+
+export interface GlobalSpeakerUserLinkRequest {
+  user_id?: string;
+  email?: string;
 }
 
 // Knowledge Graph Types
@@ -323,8 +359,22 @@ export interface PersonTasksResponse {
 export interface KnownSpeaker {
   id: number;
   name: string;
+  status: 'unlinked' | 'named' | 'account_linked';
+  is_external?: boolean;
   meeting_count: number;
   created_at: string;
+}
+
+export interface UnlinkedSpeakerPrompt {
+  id: number;
+  name: string;
+  meeting_count: number;
+  status?: string;
+  created_at: string;
+}
+
+export interface UnlinkedSpeakerPromptsResponse {
+  unlinked_speakers: UnlinkedSpeakerPrompt[];
 }
 
 export interface KnownSpeakersResponse {

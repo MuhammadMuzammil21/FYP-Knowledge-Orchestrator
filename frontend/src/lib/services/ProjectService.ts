@@ -35,12 +35,13 @@ export class ProjectService extends BaseService {
   /**
    * Get project conflicts
    */
-  async getProjectConflicts(projectId: string): Promise<Conflict[]> {
+  async getProjectConflicts(projectId: string, meetingId?: string): Promise<Conflict[]> {
     const { adaptConflicts } = await import('@/lib/api/adapters/ResponseAdapter');
 
     const response = await this.request({
       method: 'GET',
       url: ENDPOINT_CONFIG.projects.endpoints.conflicts(projectId),
+      params: meetingId ? { meeting_id: meetingId } : undefined,
     });
 
     return adaptConflicts(response);

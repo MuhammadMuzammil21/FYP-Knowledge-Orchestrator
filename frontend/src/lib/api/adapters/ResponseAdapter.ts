@@ -60,6 +60,7 @@ export const adaptMeetingDetail = (apiDetail: any): MeetingDetail => {
   return {
     id: apiDetail.meeting_id,
     projectId: apiDetail.project_id,
+    teamId: apiDetail.team_id,
     status: apiDetail.status,
     stage: apiDetail.stage,
     durationSeconds: apiDetail.duration_seconds,

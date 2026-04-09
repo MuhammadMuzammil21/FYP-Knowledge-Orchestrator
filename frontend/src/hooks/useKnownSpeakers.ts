@@ -4,8 +4,11 @@ import {
   createKnownSpeaker,
   updateKnownSpeaker,
   deleteKnownSpeaker,
+  getUnlinkedPrompts,
+  markKnownSpeakerExternal,
+  linkKnownSpeakerAccount,
 } from '@/lib/api/knownSpeakers';
-import type { CreateKnownSpeakerRequest, UpdateKnownSpeakerRequest } from '@/types';
+import type { CreateKnownSpeakerRequest, UpdateKnownSpeakerRequest, UnlinkedSpeakerPrompt } from '@/types';
 import { toast } from 'sonner';
 import { getErrorMessage } from '@/lib/api/client';
 
@@ -71,6 +74,61 @@ export function useDeleteKnownSpeaker() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['known-speakers'] });
       toast.success('Known speaker deleted successfully');
+    },
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
+    },
+  });
+}
+
+/**
+ * Hook to fetch unlinked known speakers prompts
+ */
+export function useUnlinkedPrompts() {
+  return useQuery({
+    queryKey: ['unlinked-prompts'],
+    queryFn: async () => {
+      const response = await getUnlinkedPrompts();
+      return (response.unlinked_speakers || []) as UnlinkedSpeakerPrompt[];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
+/**
+ * Hook to mark a known speaker as external
+ */
+export function useMarkExternalSpeaker() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (id: number) => markKnownSpeakerExternal(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['known-speakers'] });
+      queryClient.invalidateQueries({ queryKey: ['unlinked-prompts'] });
+      toast.success('Speaker marked as external');
+    },
+    onError: (error) => {
+      toast.error(getErrorMessage(error));
+    },
+  });
+}
+
+/**
+ * Hook to link known speaker to an account
+ */
+export function useLinkKnownSpeakerAccount() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, data }: { id: number; data: { email?: string; user_id?: string; dry_run?: boolean } }) => 
+      linkKnownSpeakerAccount(id, data),
+    onSuccess: (_, variables) => {
+      if (!variables.data.dry_run) {
+        queryClient.invalidateQueries({ queryKey: ['known-speakers'] });
+        queryClient.invalidateQueries({ queryKey: ['unlinked-prompts'] });
+        toast.success('Account linked successfully');
+      }
     },
     onError: (error) => {
       toast.error(getErrorMessage(error));

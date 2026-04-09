@@ -52,6 +52,13 @@ export const ENDPOINT_CONFIG = {
         `/${meetingId}/speakers/${speakerId}`,
       speakerLinkUser: (meetingId: string, speakerId: number) =>
         `/${meetingId}/speakers/${speakerId}/link-user`,
+      speakerForceLink: (meetingId: string, speakerId: number) =>
+        `/${meetingId}/speakers/${speakerId}/force-link`,
+      speakerRematch: (meetingId: string, speakerId: number) =>
+        `/${meetingId}/speakers/${speakerId}/rematch`,
+      reviewQueue: (id: string) => `/${id}/speakers/review-queue`,
+      speakerProposalAction: (meetingId: string, speakerId: number, proposalId: number, action: 'confirm' | 'correct' | 'dismiss') =>
+        `/${meetingId}/speakers/${speakerId}/proposals/${proposalId}/${action}`,
       // NEW: Meeting graph endpoint
       graph: (id: string) => `/${id}/graph`,
       // Audio streaming
@@ -99,6 +106,9 @@ export const ENDPOINT_CONFIG = {
       create: '',
       update: (id: number) => `/${id}`,
       delete: (id: number) => `/${id}`,
+      unlinkedPrompts: '/unlinked-prompts',
+      markExternal: (id: number) => `/${id}/mark-external`,
+      linkAccount: (id: number) => `/${id}/link-account`,
     },
   },
 

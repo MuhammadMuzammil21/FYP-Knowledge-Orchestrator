@@ -57,6 +57,14 @@ export const API_ENDPOINTS = {
     `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.speakerDetail(meetingId, speakerId)}`,
   MEETING_SPEAKER_LINK_USER: (meetingId: string, speakerId: number) =>
     `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.speakerLinkUser(meetingId, speakerId)}`,
+  MEETING_SPEAKER_FORCE_LINK: (meetingId: string, speakerId: number) =>
+    `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.speakerForceLink(meetingId, speakerId)}`,
+  MEETING_SPEAKER_REMATCH: (meetingId: string, speakerId: number) =>
+    `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.speakerRematch(meetingId, speakerId)}`,
+  MEETING_SPEAKER_REVIEW_QUEUE: (id: string) =>
+    `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.reviewQueue(id)}`,
+  MEETING_SPEAKER_PROPOSAL_ACTION: (meetingId: string, speakerId: number, proposalId: number, action: 'confirm' | 'correct' | 'dismiss') =>
+    `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.speakerProposalAction(meetingId, speakerId, proposalId, action)}`,
   MEETING_GRAPH: (id: string) =>
     `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.graph(id)}`,
 
@@ -84,6 +92,11 @@ export const API_ENDPOINTS = {
     `${ENDPOINT_CONFIG.knownSpeakers.base}${ENDPOINT_CONFIG.knownSpeakers.endpoints.update(id)}`,
   KNOWN_SPEAKER_DELETE: (id: number) =>
     `${ENDPOINT_CONFIG.knownSpeakers.base}${ENDPOINT_CONFIG.knownSpeakers.endpoints.delete(id)}`,
+  KNOWN_SPEAKERS_UNLINKED_PROMPTS: `${ENDPOINT_CONFIG.knownSpeakers.base}${ENDPOINT_CONFIG.knownSpeakers.endpoints.unlinkedPrompts}`,
+  KNOWN_SPEAKER_MARK_EXTERNAL: (id: number) =>
+    `${ENDPOINT_CONFIG.knownSpeakers.base}${ENDPOINT_CONFIG.knownSpeakers.endpoints.markExternal(id)}`,
+  KNOWN_SPEAKER_LINK_ACCOUNT: (id: number) =>
+    `${ENDPOINT_CONFIG.knownSpeakers.base}${ENDPOINT_CONFIG.knownSpeakers.endpoints.linkAccount(id)}`,
 
   // Users
   USER_ME: `${ENDPOINT_CONFIG.users.base}${ENDPOINT_CONFIG.users.endpoints.me}`,
