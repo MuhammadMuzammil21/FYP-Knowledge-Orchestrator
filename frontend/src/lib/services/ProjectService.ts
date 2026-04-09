@@ -26,7 +26,7 @@ export class ProjectService extends BaseService {
 
     const response = await this.request({
       method: 'GET',
-      url: ENDPOINT_CONFIG.projects.endpoints.graph(projectId),
+      url: `${this.baseEndpoint}${ENDPOINT_CONFIG.projects.endpoints.graph(projectId)}`,
     });
 
     return adaptKnowledgeGraph(response);
@@ -40,7 +40,7 @@ export class ProjectService extends BaseService {
 
     const response = await this.request({
       method: 'GET',
-      url: ENDPOINT_CONFIG.projects.endpoints.conflicts(projectId),
+      url: `${this.baseEndpoint}${ENDPOINT_CONFIG.projects.endpoints.conflicts(projectId)}`,
       params: meetingId ? { meeting_id: meetingId } : undefined,
     });
 

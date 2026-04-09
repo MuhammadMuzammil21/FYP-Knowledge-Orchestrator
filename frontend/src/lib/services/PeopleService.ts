@@ -26,7 +26,7 @@ export class PeopleService extends BaseService {
 
     const response = await this.request({
       method: 'GET',
-      url: ENDPOINT_CONFIG.people.endpoints.tasks(personName),
+      url: `${this.baseEndpoint}${ENDPOINT_CONFIG.people.endpoints.tasks(personName)}`,
       params: projectId ? ({ project_id: projectId } as any) : undefined,
     });
 
