@@ -32,11 +32,11 @@ export function useMeeting(meetingId: string) {
 /**
  * Hook to fetch meeting transcript
  */
-export function useTranscript(meetingId: string, type: 'raw' | 'final' = 'final') {
+export function useTranscript(meetingId: string, type: 'raw' | 'final' = 'final', enabled: boolean = true) {
   return useQuery({
     queryKey: ['transcript', meetingId, type],
     queryFn: () => meetingService.getTranscript(meetingId, type),
-    enabled: !!meetingId,
+    enabled: !!meetingId && enabled,
     staleTime: APP_CONFIG.cache.staleTime.transcript,
   });
 }
@@ -44,11 +44,11 @@ export function useTranscript(meetingId: string, type: 'raw' | 'final' = 'final'
 /**
  * Hook to fetch meeting entities
  */
-export function useEntities(meetingId: string) {
+export function useEntities(meetingId: string, enabled: boolean = true) {
   return useQuery({
     queryKey: ['entities', meetingId],
     queryFn: () => meetingService.getEntities(meetingId),
-    enabled: !!meetingId,
+    enabled: !!meetingId && enabled,
     staleTime: APP_CONFIG.cache.staleTime.entities,
   });
 }
