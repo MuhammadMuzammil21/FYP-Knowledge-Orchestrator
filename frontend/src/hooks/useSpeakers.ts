@@ -42,6 +42,7 @@ export function useUpdateSpeaker(meetingId: string) {
     onSuccess: () => {
       // Invalidate speakers query to refetch
       queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
+      queryClient.invalidateQueries({ queryKey: ['transcript', meetingId] });
     },
   });
 }
@@ -58,6 +59,7 @@ export function useAddSpeaker(meetingId: string) {
     onSuccess: () => {
       // Invalidate speakers query to refetch
       queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
+      queryClient.invalidateQueries({ queryKey: ['transcript', meetingId] });
     },
   });
 }
@@ -73,6 +75,7 @@ export function useLinkSpeaker(meetingId: string) {
       linkSpeakerToUser(meetingId, speakerId, userId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
+      queryClient.invalidateQueries({ queryKey: ['transcript', meetingId] });
     },
   });
 }
@@ -88,6 +91,7 @@ export function useUnlinkSpeaker(meetingId: string) {
       unlinkSpeakerFromUser(meetingId, speakerId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
+      queryClient.invalidateQueries({ queryKey: ['transcript', meetingId] });
     },
   });
 }
@@ -103,6 +107,7 @@ export function useForceLinkEmailSpeaker(meetingId: string) {
       forceLinkEmailSpeaker(meetingId, speakerId, { email }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
+      queryClient.invalidateQueries({ queryKey: ['transcript', meetingId] });
       queryClient.invalidateQueries({ queryKey: ['knownSpeakers'] });
     },
   });
@@ -119,6 +124,7 @@ export function useRematchSpeaker(meetingId: string) {
       rematchSpeaker(meetingId, speakerId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
+      queryClient.invalidateQueries({ queryKey: ['transcript', meetingId] });
     },
   });
 }
@@ -148,6 +154,7 @@ export function useProcessReviewProposal(meetingId: string) {
       processReviewProposal(meetingId, speakerId, proposalId, action),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
+      queryClient.invalidateQueries({ queryKey: ['transcript', meetingId] });
       queryClient.invalidateQueries({ queryKey: ['speakers', meetingId, 'reviewQueue'] });
     },
   });
