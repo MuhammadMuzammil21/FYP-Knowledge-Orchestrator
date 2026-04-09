@@ -58,8 +58,8 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
 
   const { data: meeting, isLoading: meetingLoading } = useMeeting(id);
   const { data: status } = useMeetingStatus(id, true);
-  const isTranscriptReady = status?.asr?.transcript_raw_available || status?.final_transcript_ready || meeting?.status === 'completed';
-  const isEntitiesReady = status?.insights_ready || meeting?.status === 'completed';
+  const isTranscriptReady = status?.asr?.transcriptRawAvailable || status?.finalTranscriptReady || meeting?.status === 'completed';
+  const isEntitiesReady = status?.insightsReady || meeting?.status === 'completed';
 
   const { data: transcriptData, isLoading: transcriptLoading } = useTranscript(id, 'final', isTranscriptReady);
   const { data: entitiesData, isLoading: entitiesLoading } = useEntities(id, isEntitiesReady);
