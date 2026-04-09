@@ -27,7 +27,7 @@ export function EntitiesPanel({ entities }: EntitiesPanelProps) {
               {speakers.map((speaker, index) => (
                 <Badge
                   key={index}
-                  className="bg-primary/10 text-primary border border-primary/30 dark:bg-primary/10 dark:text-primary dark:border-primary/20"
+                  className="bg-primary/10 text-primary border border-primary/30 dark:bg-primary/10 dark:text-primary dark:border-primary/20 whitespace-normal text-left h-auto py-1 px-3"
                 >
                   {speaker}
                 </Badge>
@@ -51,7 +51,7 @@ export function EntitiesPanel({ entities }: EntitiesPanelProps) {
               {topics.map((topic, index) => (
                 <Badge
                   key={index}
-                  className="bg-accent/10 text-accent border border-accent/40 dark:bg-accent/10 dark:text-accent dark:border-accent/20"
+                  className="bg-accent/10 text-accent border border-accent/40 dark:bg-accent/10 dark:text-accent dark:border-accent/20 whitespace-normal text-left h-auto py-1 px-3"
                 >
                   {topic}
                 </Badge>
@@ -78,14 +78,14 @@ export function EntitiesPanel({ entities }: EntitiesPanelProps) {
                   className="rounded-lg border border-border bg-muted/40 dark:bg-muted/20 p-3 hover:bg-muted transition-colors"
                 >
                   <div className="mb-1 font-medium">{task.task}</div>
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
                     {task.assignee && (
-                      <span>
+                      <span className="shrink-0">
                         <strong>Assignee:</strong> {task.assignee}
                       </span>
                     )}
                     {task.due && (
-                      <span>
+                      <span className="shrink-0">
                         <strong>Due:</strong> {task.due}
                       </span>
                     )}
