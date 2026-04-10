@@ -141,6 +141,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       const isNearingExpiry = Date.now() > (token.accessTokenExpires as number) - REFRESH_THRESHOLD;
       const shouldForceRefresh = (trigger === 'update' && session?.forceRefresh) || isNearingExpiry;
 
+      // Sync user data selectively without forcing a token refresh on trigger='update'
+      if (trigger === 'update') {
+        try {
+          const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+          const meRes = await fetch(`${baseUrl}/api/auth/me`, {
+            headers: { Authorization: `Bearer ${token.accessToken}` },
+          });
+          if (meRes.ok) {
+            const meData = await meRes.json();
+            token.user = { ...(token.user as object), ...meData } as any;
+          }
+        } catch (error) {
+          console.error('[NextAuth] Error syncing profile on update:', error);
+        }
+      }
+
       // Return previous token if the access token has not expired yet and not manual update
       if (!shouldForceRefresh && Date.now() < (token.accessTokenExpires as number)) {
         return token;
