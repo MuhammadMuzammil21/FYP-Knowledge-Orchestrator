@@ -30,9 +30,9 @@ export default function HomePage() {
         </ScrollReveal>
         {/* <StatsSection /> */}
         {/* <TestimonialsSection /> */}
-        <ScrollReveal variant="fade-up">
+        {/* <ScrollReveal variant="fade-up">
           <PricingSection />
-        </ScrollReveal>
+        </ScrollReveal> */}
         <ScrollReveal variant="fade-up">
           <FAQSection />
         </ScrollReveal>
