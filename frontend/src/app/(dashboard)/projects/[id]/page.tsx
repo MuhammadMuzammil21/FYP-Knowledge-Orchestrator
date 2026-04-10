@@ -78,7 +78,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
       <div className="mt-6 grid gap-4 grid-cols-1 md:grid-cols-3">
         <div className="rounded-lg border bg-card p-4">
           <div className="text-sm text-muted-foreground">Total Meetings</div>
-          <div className="mt-1 text-3xl font-bold">{project.meeting_count}</div>
+          <div className="mt-1 text-3xl font-bold">{project.meetings?.length ?? project.meeting_count ?? 0}</div>
         </div>
         <div className="rounded-lg border bg-card p-4">
           <div className="text-sm text-muted-foreground">Created</div>
