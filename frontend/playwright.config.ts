@@ -1,7 +1,11 @@
 import { defineConfig, devices } from '@playwright/test';
 import path from 'path';
+import os from 'os';
 
 const AUTH_FILE = path.join(__dirname, 'tests', '.auth', 'user.json');
+
+// WebKit is not supported on Windows — only include it on macOS/Linux
+const isWindows = os.platform() === 'win32';
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -83,7 +87,8 @@ export default defineConfig({
       },
     },
 
-    {
+    // WebKit (Safari) is only supported on macOS and Linux — skip on Windows
+    ...(!isWindows ? [{
       name: 'webkit',
       use: {
         ...devices['Desktop Safari'],
@@ -93,6 +98,6 @@ export default defineConfig({
           ignoreHTTPSErrors: true,
         },
       },
-    },
+    }] : []),
   ],
 });
