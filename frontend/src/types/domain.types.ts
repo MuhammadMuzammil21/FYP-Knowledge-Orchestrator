@@ -26,6 +26,14 @@ export interface Meeting {
 }
 
 /**
+ * Meeting list with metadata
+ */
+export interface MeetingList {
+  meetings: Meeting[];
+  totalCount: number;
+}
+
+/**
  * Meeting detail domain model
  */
 export interface MeetingDetail {

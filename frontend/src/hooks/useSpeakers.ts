@@ -40,9 +40,9 @@ export function useUpdateSpeaker(meetingId: string) {
     mutationFn: ({ speakerId, displayName }: { speakerId: number; displayName: string }) =>
       updateSpeaker(meetingId, speakerId, displayName),
     onSuccess: () => {
-      // Invalidate speakers query to refetch
       queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
       queryClient.invalidateQueries({ queryKey: ['transcript', meetingId] });
+      queryClient.invalidateQueries({ queryKey: ['entities', meetingId] });
     },
   });
 }
@@ -57,9 +57,9 @@ export function useAddSpeaker(meetingId: string) {
     mutationFn: ({ originalLabel, displayName }: { originalLabel: string; displayName: string }) =>
       addSpeaker(meetingId, { original_label: originalLabel, display_name: displayName }),
     onSuccess: () => {
-      // Invalidate speakers query to refetch
       queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
       queryClient.invalidateQueries({ queryKey: ['transcript', meetingId] });
+      queryClient.invalidateQueries({ queryKey: ['entities', meetingId] });
     },
   });
 }
@@ -76,6 +76,7 @@ export function useLinkSpeaker(meetingId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
       queryClient.invalidateQueries({ queryKey: ['transcript', meetingId] });
+      queryClient.invalidateQueries({ queryKey: ['entities', meetingId] });
     },
   });
 }
@@ -92,6 +93,7 @@ export function useUnlinkSpeaker(meetingId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
       queryClient.invalidateQueries({ queryKey: ['transcript', meetingId] });
+      queryClient.invalidateQueries({ queryKey: ['entities', meetingId] });
     },
   });
 }
@@ -108,6 +110,7 @@ export function useForceLinkEmailSpeaker(meetingId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
       queryClient.invalidateQueries({ queryKey: ['transcript', meetingId] });
+      queryClient.invalidateQueries({ queryKey: ['entities', meetingId] });
       queryClient.invalidateQueries({ queryKey: ['knownSpeakers'] });
     },
   });
@@ -125,6 +128,7 @@ export function useRematchSpeaker(meetingId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
       queryClient.invalidateQueries({ queryKey: ['transcript', meetingId] });
+      queryClient.invalidateQueries({ queryKey: ['entities', meetingId] });
     },
   });
 }
@@ -155,6 +159,7 @@ export function useProcessReviewProposal(meetingId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
       queryClient.invalidateQueries({ queryKey: ['transcript', meetingId] });
+      queryClient.invalidateQueries({ queryKey: ['entities', meetingId] });
       queryClient.invalidateQueries({ queryKey: ['speakers', meetingId, 'reviewQueue'] });
     },
   });

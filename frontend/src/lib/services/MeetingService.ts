@@ -23,6 +23,7 @@ import {
 import { adaptMeetingUploadRequest } from '@/lib/api/adapters/RequestAdapter';
 import type {
   Meeting,
+  MeetingList,
   MeetingDetail,
   MeetingStatusDetail,
   Transcript,
@@ -48,7 +49,7 @@ export class MeetingService extends BaseService<Meeting> {
   /**
    * Get all meetings with pagination
    */
-  async getMeetings(params?: PaginationParams & { project_id?: string }): Promise<Meeting[]> {
+  async getMeetings(params?: PaginationParams & { project_id?: string; team_id?: string | null; personal?: boolean }): Promise<MeetingList> {
     const response = await this.request({
       method: 'GET',
       url: this.baseEndpoint,

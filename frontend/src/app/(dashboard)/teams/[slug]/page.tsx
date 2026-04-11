@@ -117,7 +117,7 @@ export default function TeamDetailsPage({ params }: { params: Promise<{ slug: st
 
   if (isTeamLoading)
     return (
-      <div className="p-4 md:p-6 lg:p-8 max-w-[1200px] mx-auto w-full">
+      <div className="p-4 md:p-6 lg:p-8 max-w-300 mx-auto w-full">
         <Skeleton className="h-4 w-32 mb-6" />
         <Skeleton className="h-8 w-48 mb-8" />
         <div className="space-y-4">
@@ -136,7 +136,7 @@ export default function TeamDetailsPage({ params }: { params: Promise<{ slug: st
     );
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 max-w-[1200px] mx-auto w-full space-y-6 md:space-y-8">
+    <div className="p-4 md:p-6 lg:p-8 max-w-300 mx-auto w-full space-y-6 md:space-y-8">
       <div>
         <Link
           href="/teams"
@@ -157,7 +157,7 @@ export default function TeamDetailsPage({ params }: { params: Promise<{ slug: st
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 max-w-[520px]">
+        <TabsList className="grid w-full grid-cols-4 max-w-130">
           <TabsTrigger value="overview">
             <LayoutDashboard className="w-4 h-4 mr-2" />
             Overview
@@ -182,7 +182,7 @@ export default function TeamDetailsPage({ params }: { params: Promise<{ slug: st
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Projects card */}
               <div className="rounded-xl border border-border bg-card p-5 flex items-center gap-4">
-                <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                   <FolderOpen className="h-5 w-5 text-primary" />
                 </div>
                 <div>
@@ -194,7 +194,7 @@ export default function TeamDetailsPage({ params }: { params: Promise<{ slug: st
               </div>
               {/* Meetings card */}
               <div className="rounded-xl border border-border bg-card p-5 flex items-center gap-4">
-                <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                   <Mic className="h-5 w-5 text-primary" />
                 </div>
                 <div>
@@ -206,7 +206,7 @@ export default function TeamDetailsPage({ params }: { params: Promise<{ slug: st
               </div>
               {/* Members card */}
               <div className="rounded-xl border border-border bg-card p-5 flex items-center gap-4">
-                <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                   <Users className="h-5 w-5 text-primary" />
                 </div>
                 <div>
@@ -257,7 +257,7 @@ export default function TeamDetailsPage({ params }: { params: Promise<{ slug: st
                         }
                         disabled={updateRole.isPending}
                       >
-                        <SelectTrigger className="w-[110px] h-8 text-xs">
+                        <SelectTrigger className="w-27.5 h-8 text-xs">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -307,7 +307,7 @@ export default function TeamDetailsPage({ params }: { params: Promise<{ slug: st
                     required
                   />
                 </div>
-                <div className="w-full sm:w-[150px]">
+                <div className="w-full sm:w-37.5">
                   <Select value={inviteRole} onValueChange={(val: TeamRole) => setInviteRole(val)}>
                     <SelectTrigger>
                       <SelectValue />
@@ -349,9 +349,20 @@ export default function TeamDetailsPage({ params }: { params: Promise<{ slug: st
                       </p>
                     </div>
                     <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-2">
+                      {invite.is_registered ? (
+                        <Badge variant="outline" className="text-[10px] bg-green-500/10 text-green-600 border-green-500/20">
+                          Account Found
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">
+                          Pending Signup
+                        </Badge>
+                      )}
                       <Badge variant="outline" className="capitalize text-xs font-normal">
                         {invite.role}
                       </Badge>
+                    </div>
                       {can('manage_members') && (
                         <Button
                           variant="ghost"
