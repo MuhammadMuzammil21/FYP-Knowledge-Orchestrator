@@ -186,6 +186,7 @@ export interface PaginationParams {
 
 export interface MeetingListResponse {
   meetings: Meeting[];
+  total_count: number;
 }
 
 // API Error
@@ -211,6 +212,7 @@ export interface Project {
 
 export interface ProjectDetail extends Project {
   updated_at: string;
+  meeting_count: number;
   meetings: Meeting[];
 }
 
@@ -424,6 +426,7 @@ export interface TeamInvite {
   invited_by: string;
   created_at: string;
   expires_at: string;
+  is_registered: boolean;
 }
 
 export interface CreateTeamRequest {

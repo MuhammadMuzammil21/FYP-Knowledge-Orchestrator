@@ -19,6 +19,7 @@ import type {
   RAGResponse,
   Conflict,
   TokenResponse,
+  MeetingList,
 } from '@/types/domain.types';
 
 /**
@@ -49,8 +50,11 @@ export const adaptMeeting = (apiMeeting: any): Meeting => {
 /**
  * Adapt meeting list response from API
  */
-export const adaptMeetingList = (apiResponse: any): Meeting[] => {
-  return apiResponse.meetings?.map(adaptMeeting) ?? [];
+export const adaptMeetingList = (apiResponse: any): MeetingList => {
+  return {
+    meetings: apiResponse.meetings?.map(adaptMeeting) ?? [],
+    totalCount: apiResponse.total_count ?? 0,
+  };
 };
 
 /**

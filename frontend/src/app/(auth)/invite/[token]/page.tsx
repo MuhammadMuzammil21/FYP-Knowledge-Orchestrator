@@ -6,7 +6,8 @@ import { useSearchParams } from 'next/navigation';
 import { acceptInvite } from '@/lib/api/teams';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Loader2, CheckCircle2, XCircle, ArrowRight } from 'lucide-react';
+import { Loader2, CheckCircle2, XCircle, ArrowRight, UserPlus, LogIn } from 'lucide-react';
+import { useSession } from 'next-auth/react';
 import type { Team } from '@/types';
 
 // The inner component reads params and search params
@@ -17,11 +18,19 @@ function InviteContent({ params }: { params: Promise<{ token: string }> }) {
   // In case the token is passed as a query param instead of path param
   const token = decodeURIComponent(pathToken) || searchParams.get('token');
 
-  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
+  const { data: session, status: sessionStatus } = useSession();
+  const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'unauthenticated'>('loading');
   const [team, setTeam] = useState<Team | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
+    if (sessionStatus === 'loading') return;
+
+    if (!session) {
+      setStatus('unauthenticated');
+      return;
+    }
+
     if (!token) {
       setStatus('error');
       setErrorMessage('No invite token found in URL.');
@@ -52,7 +61,7 @@ function InviteContent({ params }: { params: Promise<{ token: string }> }) {
     <Card className="w-full max-w-md shadow-lg border-border/50 backdrop-blur-sm bg-card/95">
       <CardHeader className="space-y-2 pb-4 pt-8 px-8 text-center border-b border-border/50 bg-muted/20">
         <div className="flex justify-center mb-2">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-[oklch(0.88_0.05_150)] to-[oklch(0.65_0.12_195)] shadow-sm">
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-linear-to-br from-[oklch(0.88_0.05_150)] to-[oklch(0.65_0.12_195)] shadow-sm">
             <Users className="h-6 w-6 text-primary-foreground" strokeWidth={2} />
           </div>
         </div>
@@ -88,6 +97,34 @@ function InviteContent({ params }: { params: Promise<{ token: string }> }) {
           </div>
         )}
 
+        {status === 'unauthenticated' && (
+          <div className="flex flex-col items-center justify-center py-2 text-center space-y-6">
+            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <LogIn className="h-6 w-6 text-primary" />
+            </div>
+            <div className="space-y-1">
+              <h2 className="text-lg font-medium">Authentication Required</h2>
+              <p className="text-sm text-muted-foreground px-4">
+                You must be logged in to accept this team invitation.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 gap-3 w-full">
+              <Link href={`/login?callbackUrl=/invite/${token}`} className="w-full">
+                <Button className="w-full gap-2 font-medium">
+                  <LogIn className="h-4 w-4" />
+                  Log In
+                </Button>
+              </Link>
+              <Link href={`/signup?callbackUrl=/invite/${token}`} className="w-full">
+                <Button variant="outline" className="w-full gap-2">
+                  <UserPlus className="h-4 w-4" />
+                  Create Account
+                </Button>
+              </Link>
+            </div>
+          </div>
+        )}
+
         {status === 'error' && (
           <div className="flex flex-col items-center justify-center py-2 text-center space-y-6">
             <div className="h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center">
@@ -116,12 +153,12 @@ export default function AcceptInvitePage({ params }: { params: Promise<{ token: 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background p-4 relative overflow-hidden">
       {/* Background elements */}
-      <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-[800px] h-[800px] bg-[radial-gradient(ellipse_at_center,oklch(0.88_0.05_150/0.1),transparent_70%)] rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-0 right-0 -translate-y-1/4 translate-x-1/4 w-200 h-200 bg-[radial-gradient(ellipse_at_center,oklch(0.88_0.05_150/0.1),transparent_70%)] rounded-full blur-3xl pointer-events-none" />
 
       <div className="relative z-10 w-full max-w-md">
         <Suspense
           fallback={
-            <Card className="w-full h-[400px] flex items-center justify-center border-border/50 bg-card/95">
+            <Card className="w-full h-100 flex items-center justify-center border-border/50 bg-card/95">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
             </Card>
           }

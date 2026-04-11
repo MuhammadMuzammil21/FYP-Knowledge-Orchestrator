@@ -21,7 +21,7 @@ export default function MeetingsPage() {
   const handleNext = () => setOffset(offset + limit);
 
   const hasPrevious = offset > 0;
-  const hasNext = data && data.length === limit;
+  const hasNext = data && data.meetings.length === limit && (offset + limit < data.totalCount);
 
   if (error) {
     return (
@@ -49,7 +49,7 @@ export default function MeetingsPage() {
           </h1>
           <p className="text-sm text-muted-foreground mt-0.5">
             {!isLoading && data
-              ? `${data.length + offset} recording${data.length !== 1 ? 's' : ''}`
+              ? `${data.totalCount} recording${data.totalCount !== 1 ? 's' : ''}`
               : 'Your recorded meetings'}
           </p>
         </div>
@@ -83,7 +83,7 @@ export default function MeetingsPage() {
               key={i}
               className="flex items-center gap-4 px-4 py-3.5 border-b border-border/50 last:border-0"
             >
-              <Skeleton className="h-2 w-2 rounded-full flex-shrink-0" />
+              <Skeleton className="h-2 w-2 rounded-full shrink-0" />
               <div className="flex-1 space-y-1.5">
                 <Skeleton className="h-3.5 w-52" />
                 <Skeleton className="h-3 w-32" />
@@ -93,11 +93,11 @@ export default function MeetingsPage() {
             </div>
           ))}
         </div>
-      ) : data && data.length > 0 ? (
+      ) : data && data.meetings.length > 0 ? (
         <>
           {/* Meetings list container */}
           <div className="rounded-xl border border-border bg-card overflow-hidden">
-            {data.map((meeting) => (
+            {data.meetings.map((meeting) => (
               <MeetingCard key={meeting.id} meeting={meeting} />
             ))}
           </div>
@@ -105,7 +105,7 @@ export default function MeetingsPage() {
           {/* Pagination */}
           <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0">
             <p className="text-xs text-muted-foreground">
-              Showing {offset + 1}–{offset + data.length}
+              Showing {offset + 1}–{offset + data.meetings.length} of {data.totalCount}
             </p>
             <div className="flex items-center gap-2">
               <Button
