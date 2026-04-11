@@ -195,7 +195,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             accessToken: refreshedTokens.access_token,
             accessTokenExpires: Date.now() + (refreshedTokens.expires_in || 900) * 1000,
             refreshToken: refreshedTokens.refresh_token || token.refreshToken,
-            error: undefined, // Clear any previous error
+            user: refreshedTokens.user || token.user,
+            error: undefined,
           };
         } catch (error) {
           console.error('[NextAuth] Error during JWT refresh callback', error);
