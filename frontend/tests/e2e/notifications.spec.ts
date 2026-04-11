@@ -1,6 +1,6 @@
 import { test, expect, chromium } from '@playwright/test';
 
-const USER_A_EMAIL = 'test@test.com'; // Admin
+const USER_A_EMAIL = 'test@harbaat.me'; // Admin
 const USER_B_EMAIL = 'user_b@harbaat.test'; // Target for mention (assuming exists or using random)
 const PASSWORD = 'Test@123';
 

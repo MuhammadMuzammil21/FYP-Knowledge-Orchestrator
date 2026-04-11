@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 // Configuration constants
-const TEST_EMAIL = 'test@test.com';
+const TEST_EMAIL = 'test@harbaat.me';
 const TEST_PASSWORD = 'Test@123';
 const TEST_NAME = 'Test User';
 

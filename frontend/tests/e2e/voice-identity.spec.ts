@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import path from 'path';
 
 // Configuration
-const TEST_EMAIL = 'test@test.com';
+const TEST_EMAIL = 'test@harbaat.me';
 const TEST_PASSWORD = 'Test@123';
 
 test.describe('Voice Identity Registration (F4)', () => {
