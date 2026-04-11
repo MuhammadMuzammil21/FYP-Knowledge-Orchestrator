@@ -17,6 +17,7 @@ interface CytoscapeGraphProps {
   onNodeSelect: (info: SelectedNodeInfo | null) => void;
   onBackgroundTap: () => void;
   height?: number | string;
+  darkMode?: boolean;
 }
 
 function getNodeDisplayName(node: GraphNode): string {
@@ -75,6 +76,7 @@ export function CytoscapeGraph({
   onNodeSelect,
   onBackgroundTap,
   height = 560,
+  darkMode = false,
 }: CytoscapeGraphProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const initializedRef = useRef(false);
@@ -207,6 +209,7 @@ export function CytoscapeGraph({
         borderRadius: '12px',
         border: '0.5px solid var(--color-border-tertiary, hsl(var(--border)))',
         overflow: 'hidden',
+        background: darkMode ? '#0f172a' : 'transparent',
       }}
     />
   );

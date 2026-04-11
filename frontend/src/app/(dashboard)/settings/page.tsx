@@ -22,6 +22,17 @@ import { getErrorMessage } from '@/lib/api/client';
 import { User, Lock, Bell, Palette, Mic } from 'lucide-react';
 import { VoiceIdentityTab } from './VoiceIdentityTab';
 import { NotificationsTab } from './NotificationsTab';
+import { useWorkspace } from '@/contexts/WorkspaceContext';
+import { useDeleteTeam } from '@/hooks/useTeams';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Loader2 } from 'lucide-react';
 
 export default function SettingsPage() {
   const { data: session, status, update } = useSession();
@@ -32,6 +43,10 @@ export default function SettingsPage() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const { theme, setTheme } = useTheme();
+
+  const { isTeamWorkspace, activeTeamSlug, can } = useWorkspace();
+  const deleteTeam = useDeleteTeam();
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   // Reset name when session is available
   useEffect(() => {
@@ -88,6 +103,16 @@ export default function SettingsPage() {
       setNewPassword('');
       setConfirmPassword('');
     }
+  };
+
+  const handleDeleteTeam = () => {
+    if (!activeTeamSlug) return;
+    deleteTeam.mutate(activeTeamSlug, {
+      onSuccess: () => {
+        setIsDeleteDialogOpen(false);
+        router.push('/dash'); // Back to workspace selector or personal dashboard
+      },
+    });
   };
 
   if (status === 'loading' || !session) {
@@ -178,6 +203,46 @@ export default function SettingsPage() {
                 </form>
               </CardContent>
             </Card>
+
+            {isTeamWorkspace && can('manage_settings') && (
+              <div className="mt-6 rounded-xl border border-destructive/50 bg-destructive/5 p-6">
+                <h3 className="font-semibold text-destructive mb-1">Danger Zone</h3>
+                <p className="text-sm text-muted-foreground mb-6">
+                  Permanently delete this team and all its data. This action cannot be undone.
+                </p>
+                <Button variant="destructive" onClick={() => setIsDeleteDialogOpen(true)}>
+                  Delete Team
+                </Button>
+              </div>
+            )}
+
+            <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Are you absolutely sure?</DialogTitle>
+                  <DialogDescription>
+                    This action cannot be undone. This will permanently delete the active team and remove all data associated with it.
+                  </DialogDescription>
+                </DialogHeader>
+                <DialogFooter className="mt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsDeleteDialogOpen(false)}
+                    disabled={deleteTeam.isPending}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    onClick={handleDeleteTeam}
+                    disabled={deleteTeam.isPending}
+                  >
+                    {deleteTeam.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                    Yes, delete team
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
           </TabsContent>
 
           {/* Security Tab */}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useMemo, useEffect, useCallback } from 'react';
+import { useTheme } from 'next-themes';
 import { useGraphInteraction } from './useGraphInteraction';
 import { CytoscapeGraph } from './CytoscapeGraph';
 import { GraphDetailPanel } from './GraphDetailPanel';
@@ -17,8 +18,8 @@ interface KnowledgeGraphViewerProps {
 
 export function KnowledgeGraphViewer({ nodes, edges }: KnowledgeGraphViewerProps) {
   const interaction = useGraphInteraction();
-  const darkMode =
-    typeof window !== 'undefined' ? matchMedia('(prefers-color-scheme: dark)').matches : false;
+  const { resolvedTheme } = useTheme();
+  const darkMode = resolvedTheme === 'dark';
 
   const stylesheet = useMemo(() => buildStylesheet(darkMode), [darkMode]);
 
@@ -108,6 +109,7 @@ export function KnowledgeGraphViewer({ nodes, edges }: KnowledgeGraphViewerProps
           onNodeSelect={handleNodeSelect}
           onBackgroundTap={handleBackgroundTap}
           height="100%"
+          darkMode={darkMode}
         />
         <GraphDetailPanel
           node={interaction.selectedNode}
