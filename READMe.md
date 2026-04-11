@@ -1,519 +1,551 @@
-# HarBaat AI (formerly Knowledge Orchestrator)
+# HarBaat AI — Knowledge Orchestrator
 
-An enterprise-grade, multi-tenant workspace for transforming your meetings into structured, searchable knowledge with AI-powered transcription and entity extraction.
+> **Final Year Project · FAST-NUCES, Karachi Campus**
 
-## 🚀 Features
+An enterprise-grade, multi-tenant workspace that transforms meeting recordings into structured, searchable knowledge using AI-powered transcription, speaker diarization, entity extraction, and an interactive knowledge graph.
 
-### Core Features
-- **Multi-Tenant Workspaces**: Dedicated, isolated projects and team environments.
-- **Role-Based Access Control (RBAC)**: Manage granular permissions across projects and meetings.
-- **Audio Upload**: Support for MP3, WAV, M4A, and OGG formats with mandatory recording consent flows.
-- **Meeting Library**: View all processed meetings with scoped data fetching and advanced analytics.
-- **Premium Audio Playback**: Synchronized audio and transcript editing suite.
-- **Speaker Diarization**: Automatic identification of different speakers.
-- **Smart Search**: Find specific content within transcripts.
-- **Entity Extraction & Knowledge Graph**: Automatic extraction of tasks/decisions, visualized via an interactive Cytoscape.js graph.
+---
 
-### Authentication & User Management
-- **User Registration & Login**: Secure account creation and authentication.
-- **Email Verification**: Verify email addresses with secure tokens (7-day expiry).
-- **Password Reset**: Forgot password flow with secure reset tokens (1-hour expiry).
-- **User Profiles**: View and edit profile information.
-- **Session Management**: JWT-based authentication with NextAuth.
+## ✨ Feature Overview
+
+### 🔐 Authentication & User Management
+- **Secure Registration & Login** — JWT-based sessions via NextAuth.js v5
+- **Email Verification** — Token-based verification (7-day expiry)
+- **Password Reset** — Single-use reset tokens (1-hour expiry)
+- **User Profiles** — Editable name, email, and avatar
+- **Session Middleware** — Route protection with role-aware redirects
+
+### 🏢 Multi-Tenancy & Teams
+- **Team Workspaces** — Isolated, scoped environments per team
+- **Role-Based Access Control (RBAC)** — Owner / Admin / Member roles with granular permissions
+- **Team Management** — Invite, remove members; manage roles; delete team (Danger Zone)
+- **Workspace Context** — Global React Context for active workspace switching
+
+### 🎙️ Meeting Management
+- **Audio Upload** — Drag-and-drop and file-browse UI; supports MP3, WAV, M4A, OGG (up to 100 MB)
+- **Recording Consent Flow** — Mandatory consent prompt before upload
+- **Real-time Processing Status** — Polling-based status tracker (uploading → transcribing → extracting → complete)
+- **Meeting Library** — Card/list view with date, duration, speaker count, and status
+- **Voice Recording** — In-browser microphone capture via `useVoiceRecorder`
+
+### 📄 Transcript & Playback
+- **Synchronized Audio Player** — Wavesurfer.js waveform synchronized with transcript segments
+- **Speaker-labeled Segments** — Color-coded per speaker with timestamp navigation
+- **Transcript Streaming** — Progressive rendering via `useTranscriptStream`
+- **Smart Search** — Highlight matching terms, navigate results, show match count
+- **Copy to Clipboard** — One-click export of transcript content
+
+### 🧠 Entity Extraction & Knowledge Graph
+- **Entities Panel** — Tasks (owner, deadline, status), Decisions, and Key Points
+- **Timestamp Jump** — Click any entity to seek the audio/transcript to that moment
+- **Interactive Knowledge Graph** — Cytoscape.js with multiple layout engines (Dagre, Cose, Grid)
+- **Graph Controls** — Command bar for layout switching, zoom, export
+- **Conflict Detection** — Highlighted conflict edges (red dotted lines) in the graph
+- **Dark Mode Graph** — Node underlay glows, dark-first styling
+- **Graph Detail Panel** — Click a node or edge for context and metadata
+
+### 👥 Speaker Management
+- **Speaker Diarization** — Automatic speaker identification from ASR output
+- **Known Speakers** — Register voice profiles for identity linking
+- **Voice Identity** — Record and submit speaker enrollment audio
+- **Speaker Linking** — Link diarized speakers to known profiles
+
+### 🔔 Notifications
+- **In-app Notifications** — Badge counter with real-time mention alerts
+- **Cross-user Mentions** — Trigger notification flows across team members
+
+### 📁 Projects
+- **Project Dashboard** — Meeting count, members, and recent activity
+- **Project Knowledge Graph** — Aggregated graph across all project meetings
+- **People View** — Per-person task tracking via `usePersonTasks`
+
+### ⚙️ Settings
+- **Profile Settings** — Update user information
+- **Team Settings** — Manage team membership and roles
+- **Danger Zone** — Irreversible team deletion with confirmation guard
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+| Technology | Role |
+|---|---|
+| **Next.js 16** (App Router) | React framework & routing |
+| **React 19** | UI library |
+| **TypeScript** | Static type safety |
+| **Tailwind CSS v4** | Dark-first utility styling |
+| **shadcn/ui + Radix UI** | Accessible UI primitives |
+| **NextAuth.js v5** | Authentication & session management |
+| **TanStack Query v5** | Server state, caching & deduplication |
+| **Zustand** | Lightweight client state management |
+| **Cytoscape.js + d3-force** | Knowledge graph visualization |
+| **Wavesurfer.js** | Waveform audio playback |
+| **Axios** | Typed HTTP client |
+| **React Hook Form + Zod** | Form handling & validation |
+| **Sonner** | Toast notification system |
+| **Lucide React + React Icons** | Icon libraries |
+| **next-themes** | Light/dark mode theming |
+| **react-markdown + remark-gfm** | Markdown rendering |
+
+### Backend
+| Technology | Role |
+|---|---|
+| **FastAPI** | Python ASGI web framework |
+| **Uvicorn** | High-performance ASGI server |
+| **Pydantic** | Data validation & serialization |
+| **aiofiles** | Async file I/O |
+| **bcrypt** | Password hashing |
+| **secrets** | Cryptographically secure token generation |
+
+### Testing & Quality
+| Technology | Role |
+|---|---|
+| **Jest 30** | Unit & component test runner |
+| **React Testing Library** | User-centric component testing |
+| **Playwright** | Cross-browser E2E test automation |
+| **Prettier** | Code formatting |
+| **ESLint** | Static code linting |
+| **Husky + lint-staged** | Pre-commit quality gates |
+
+---
 
 ## 📋 Prerequisites
 
-- Python 3.8+
-- Node.js 16+
-- npm or yarn
+- **Node.js** 18+
+- **npm** 9+
+- **Python** 3.8+
 
-## 🛠️ Installation
+---
+
+## 🚀 Getting Started
 
 ### Backend Setup
 
-1. Navigate to the backend directory:
 ```bash
+# 1. Navigate to the backend directory
 cd backend
-```
 
-2. Create and activate virtual environment:
-```bash
+# 2. Create and activate a virtual environment
 # Windows
 python -m venv venv
 venv\Scripts\activate
 
-# Linux/Mac
+# Linux / macOS
 python3 -m venv venv
 source venv/bin/activate
-```
 
-3. Install dependencies:
-```bash
+# 3. Install Python dependencies
 pip install -r requirements.txt
-```
 
-4. Run the backend server:
-```bash
+# 4. Start the API server
 python main.py
 ```
 
-The API will be available at `http://localhost:8000`
+The API will be available at **`http://localhost:8000`**. Interactive docs: `http://localhost:8000/docs`.
+
+---
 
 ### Frontend Setup
 
-1. Navigate to the frontend directory:
 ```bash
+# 1. Navigate to the frontend directory
 cd frontend
-```
 
-2. Install dependencies:
-```bash
+# 2. Install Node dependencies
 npm install
-```
 
-3. Start the development server:
-```bash
+# 3. Configure environment
+cp .env.example .env.local   # then fill in values (see below)
+
+# 4. Start the development server
 npm run dev
 ```
 
-The application will open at `http://localhost:3000`
+The app will be available at **`http://localhost:3000`**.
 
-**Note**: For production builds, use:
+#### Required Environment Variables (`frontend/.env.local`)
+
+```env
+# Backend API base URL
+NEXT_PUBLIC_API_URL=http://localhost:8000/api
+
+# NextAuth configuration
+NEXTAUTH_SECRET=your-strong-secret-here
+NEXTAUTH_URL=http://localhost:3000
+```
+
+#### Production Build
+
 ```bash
 npm run build
 npm start
 ```
+
+---
 
 ## 📁 Project Structure
 
 ```
 FYP-Knowledge-Orchestrator/
 ├── backend/
-│   ├── main.py              # FastAPI application
-│   ├── auth.py              # Authentication endpoints
-│   ├── requirements.txt     # Python dependencies
-│   └── uploads/            # Uploaded audio files (created automatically)
+│   ├── main.py                 # FastAPI application entry point
+│   ├── auth.py                 # Authentication endpoints & logic
+│   ├── email_service.py        # Branded HTML email templates
+│   ├── requirements.txt        # Python dependencies
+│   └── uploads/                # Stored audio files (auto-created)
 │
 ├── frontend/
-│   ├── public/             # Static assets
-│   ├── tests/              # E2E Infrastructure
-│   │   ├── e2e/            # Playwright specifications
-│   │   └── fixtures/       # Test audio samples
 │   ├── src/
-│   │   ├── app/            # Next.js App Router pages
-│   │   │   ├── (dashboard)/ # Grouped dashboard routes
-│   │   │   ├── auth/       # Authentication pages
-│   │   │   └── providers.tsx # Context providers
-│   │   ├── components/     # React components
-│   │   │   ├── layout/     # Layout components
-│   │   │   │   └── __tests__/ # Layout unit tests
-│   │   │   └── ui/         # UI primitives (shadcn/ui)
-│   │   │       └── __tests__/ # UI unit tests
-│   │   ├── contexts/       # React Contexts (Workspace, MobileMenu)
-│   │   ├── hooks/          # Custom React hooks
-│   │   │   └── __tests__/  # Hook unit tests
-│   │   ├── lib/            # Shared libraries & services
-│   │   ├── types/          # TypeScript definitions
-│   │   └── config/         # System configuration
-│   ├── jest.config.ts      # Jest configuration
-│   ├── jest.setup.ts       # Global test mocks
-│   ├── playwright.config.ts # Playwright configuration
-│   ├── package.json
-│   ├── next.config.ts      # Next.js configuration
-│   ├── tailwind.config.ts  # Tailwind CSS configuration
-│   └── tsconfig.json       # TypeScript configuration
+│   │   ├── app/                # Next.js App Router
+│   │   │   ├── (auth)/         # Authentication pages (signin, signup, verify, reset)
+│   │   │   ├── (dashboard)/    # Protected dashboard routes
+│   │   │   │   ├── dashboard/  # Landing dashboard
+│   │   │   │   ├── meetings/   # Meeting list & detail ([id]/) pages
+│   │   │   │   ├── projects/   # Project dashboard & graph
+│   │   │   │   ├── teams/      # Team management
+│   │   │   │   ├── people/     # People & tasks view
+│   │   │   │   ├── settings/   # App & team settings
+│   │   │   │   └── profile/    # User profile
+│   │   │   ├── api/            # Next.js Route Handlers
+│   │   │   └── providers.tsx   # Root context providers
+│   │   ├── components/
+│   │   │   ├── auth/           # Login, signup, verify, reset forms
+│   │   │   ├── meetings/       # MeetingCard, TranscriptViewer, EntitiesPanel
+│   │   │   ├── graph/          # CytoscapeGraph, KnowledgeGraphViewer, GraphDetailPanel
+│   │   │   ├── speakers/       # SpeakerCard, UnlinkedSpeakerPrompt, VoiceIdentity
+│   │   │   ├── recording/      # VoiceRecorder UI
+│   │   │   ├── projects/       # ProjectCard, ProjectGraph, MeetingCount
+│   │   │   ├── teams/          # TeamMemberList, InviteForm, DangerZone
+│   │   │   ├── conflicts/      # ConflictViewer
+│   │   │   ├── landing/        # Landing page hero
+│   │   │   ├── layout/         # Sidebar, Topbar, MobileMenu
+│   │   │   └── ui/             # shadcn/ui primitives (Button, Dialog, Select…)
+│   │   ├── contexts/
+│   │   │   ├── WorkspaceContext.tsx   # Active team/project scope
+│   │   │   └── MobileMenuContext.tsx  # Mobile navigation state
+│   │   ├── hooks/              # Custom React hooks
+│   │   │   ├── useMeetings.ts
+│   │   │   ├── useMeetingDetail.ts
+│   │   │   ├── useMeetingStatus.ts
+│   │   │   ├── useTranscriptStream.ts
+│   │   │   ├── useKnowledgeGraph.ts
+│   │   │   ├── useGraph.ts
+│   │   │   ├── useConflicts.ts
+│   │   │   ├── useSpeakers.ts
+│   │   │   ├── useKnownSpeakers.ts
+│   │   │   ├── useVoiceRecorder.ts
+│   │   │   ├── useVoiceIdentity.ts
+│   │   │   ├── useAudioVisualizer.ts
+│   │   │   ├── useNotifications.ts
+│   │   │   ├── useProjects.ts
+│   │   │   ├── useTeams.ts
+│   │   │   ├── usePersonTasks.ts
+│   │   │   └── useMediaQuery.ts
+│   │   ├── lib/
+│   │   │   ├── api/            # Axios client, per-domain API modules
+│   │   │   │   ├── client.ts   # Axios instance with auth interceptors
+│   │   │   │   ├── meetings.ts
+│   │   │   │   ├── speakers.ts
+│   │   │   │   ├── projects.ts
+│   │   │   │   ├── teams.ts
+│   │   │   │   ├── knownSpeakers.ts
+│   │   │   │   ├── conflicts.ts
+│   │   │   │   └── graph.ts
+│   │   │   ├── services/       # Domain service classes
+│   │   │   ├── audio/          # Audio processing utilities
+│   │   │   ├── config/         # Runtime configuration
+│   │   │   ├── utils/          # Shared utility functions
+│   │   │   └── constants.ts    # App-wide constants (colors, limits)
+│   │   ├── providers/          # TanStack Query & theme providers
+│   │   ├── types/              # TypeScript definitions
+│   │   │   ├── index.ts        # Core domain types
+│   │   │   ├── domain.types.ts
+│   │   │   ├── generics.types.ts
+│   │   │   └── chat.types.ts
+│   │   ├── auth.ts             # NextAuth configuration
+│   │   └── middleware.ts       # Route protection middleware
+│   ├── tests/
+│   │   ├── e2e/                # Playwright specifications
+│   │   │   ├── auth.spec.ts
+│   │   │   ├── meeting-analysis.spec.ts
+│   │   │   ├── notifications.spec.ts
+│   │   │   ├── voice-identity.spec.ts
+│   │   │   ├── dashboard-projects.spec.ts
+│   │   │   ├── settings.spec.ts
+│   │   │   ├── teams.spec.ts
+│   │   │   └── known-speakers.spec.ts
+│   │   ├── fixtures/           # Sample audio files for E2E tests
+│   │   └── global-setup.ts     # Shared auth state setup
+│   ├── jest.config.ts
+│   ├── jest.setup.ts
+│   ├── playwright.config.ts
+│   ├── next.config.ts
+│   ├── tailwind.config.ts
+│   └── tsconfig.json
+│
+├── Docs/
+│   ├── PRD.md                          # Product Requirements Document
+│   ├── FRONTEND_API_REFERENCE.md       # Full API surface reference
+│   ├── FRONTEND_TESTING_GUIDE.md       # Testing patterns & conventions
+│   ├── FEATURE_COMPONENTS_GUIDE.MD     # Component usage guide
+│   ├── DATABASE_IMPLEMENTATION_PLAN.md # DB migration plan
+│   ├── IMPLEMENTATION_GAP_ANALYSIS.md  # Phase gap analysis
+│   ├── team_feature_plan.md            # Team feature specification
+│   └── Auth_Implementation.md          # Auth implementation notes
 │
 └── README.md
 ```
 
-## 🎯 Usage
+---
+
+## 🎯 Usage Guide
 
 ### Authentication
 
-#### 1. Create an Account
-1. Navigate to `/auth/signup`
-2. Enter your name, email, and password
-3. Click "Sign Up"
-4. Check your email for verification link (or use the token in development mode)
+| Step | Action |
+|---|---|
+| **Sign Up** | Navigate to `/auth/signup` → fill in name, email & password |
+| **Verify Email** | Click the link sent to your inbox, or visit `/auth/verify-email?token=…` |
+| **Sign In** | Navigate to `/auth/signin` |
+| **Reset Password** | Click "Forgot password?" on the sign-in page → follow email link |
+| **Profile** | Click avatar → Profile → edit name or email |
 
-#### 2. Verify Your Email
-1. Click the verification link in your email
-2. Or visit `/auth/verify-email?token={your_token}`
-3. Your email will be verified and you can access all features
+### Meeting Workflow
 
-#### 3. Sign In
-1. Navigate to `/auth/signin`
-2. Enter your email and password
-3. Click "Sign In"
+1. **Upload** — Drag & drop or browse for an audio file on the dashboard
+2. **Consent** — Confirm the recording consent prompt
+3. **Process** — Watch the real-time status tracker advance through pipeline stages
+4. **Transcript** — Click the meeting card to open the synchronized transcript viewer
+5. **Search** — Use the search bar to highlight and navigate matching terms
+6. **Entities** — Review AI-extracted tasks, decisions, and key points
+7. **Knowledge Graph** — Switch to the Graph tab for an interactive visual representation
 
-#### 4. Reset Password
-1. On the sign-in page, click "Forgot password?"
-2. Enter your email address
-3. Check your email for reset link (or use the token in development mode)
-4. Click the link and enter your new password
+### Team Management
 
-#### 5. Manage Profile
-1. Click on your avatar in the top right
-2. Select "Profile"
-3. Edit your name or email
-4. View email verification status
-5. Resend verification email if needed
+1. Navigate to **Settings → Team**
+2. Invite members by email and assign roles (Admin / Member)
+3. Manage existing members via the member list
+4. Use the **Danger Zone** to permanently delete the team
 
-### Meeting Management
+---
 
-#### 1. Upload a Meeting
+## 🔧 API Reference
 
-1. Sign in to your account
-2. Go to the home page
-3. Drag & drop or browse for an audio file
-4. Click "Upload & Process"
-5. Wait for processing to complete
+### Authentication
 
-#### 2. View Transcript
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/auth/signup` | Register new user |
+| `POST` | `/api/auth/login` | Authenticate user |
+| `POST` | `/api/auth/forgot-password` | Request password reset |
+| `POST` | `/api/auth/reset-password` | Apply password reset |
+| `POST` | `/api/auth/verify-email` | Verify email token |
+| `POST` | `/api/auth/resend-verification` | Resend verification email |
+| `GET` | `/api/auth/profile/{user_id}` | Fetch user profile |
+| `PUT` | `/api/auth/profile/{user_id}` | Update user profile |
 
-1. Click on any meeting from the list
-2. View the full transcript with speaker labels
-3. Use the search bar to find specific content
-4. Click on timestamps to jump to relevant sections
+### Meetings
 
-#### 3. Review Extracted Entities
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/api/meetings/upload` | Upload audio file |
+| `GET` | `/api/meetings` | List all meetings |
+| `GET` | `/api/meetings/{id}` | Get meeting details |
+| `GET` | `/api/meetings/{id}/transcript` | Get diarized transcript |
+| `GET` | `/api/meetings/{id}/search?q=` | Search transcript |
+| `GET` | `/api/meetings/{id}/entities` | Get extracted entities |
+| `GET` | `/api/meetings/{id}/status` | Poll processing status |
+| `POST` | `/api/meetings/{id}/mock-complete` | Simulate completion (dev only) |
 
-- **Tasks**: View assigned tasks with owners and deadlines
-- **Decisions**: See key decisions made during the meeting
-- Click timestamp buttons to jump to relevant transcript sections
-
-## 🔧 API Endpoints
-
-### Authentication Endpoints
-
-#### User Registration
-```
-POST /api/auth/signup
-Content-Type: application/json
-Body: { "name": "string", "email": "string", "password": "string" }
-```
-
-#### User Login
-```
-POST /api/auth/login
-Content-Type: application/json
-Body: { "email": "string", "password": "string" }
-```
-
-#### Forgot Password
-```
-POST /api/auth/forgot-password
-Content-Type: application/json
-Body: { "email": "string" }
-```
-
-#### Reset Password
-```
-POST /api/auth/reset-password
-Content-Type: application/json
-Body: { "token": "string", "new_password": "string" }
-```
-
-#### Verify Email
-```
-POST /api/auth/verify-email
-Content-Type: application/json
-Body: { "token": "string" }
-```
-
-#### Resend Verification Email
-```
-POST /api/auth/resend-verification
-Content-Type: application/json
-Body: { "email": "string" }
-```
-
-#### Get User Profile
-```
-GET /api/auth/profile/{user_id}
-```
-
-#### Update User Profile
-```
-PUT /api/auth/profile/{user_id}
-Content-Type: application/json
-Body: { "name": "string" (optional), "email": "string" (optional) }
-```
-
-### Meeting Endpoints
-
-#### Upload Meeting
-```
-POST /api/meetings/upload
-Content-Type: multipart/form-data
-```
-
-#### Get All Meetings
-```
-GET /api/meetings
-```
-
-#### Get Meeting Details
-```
-GET /api/meetings/{meeting_id}
-```
-
-#### Get Transcript
-```
-GET /api/meetings/{meeting_id}/transcript
-```
-
-#### Search Transcript
-```
-GET /api/meetings/{meeting_id}/search?q={query}
-```
-
-#### Get Extracted Entities
-```
-GET /api/meetings/{meeting_id}/entities
-```
-
-#### Get Processing Status
-```
-GET /api/meetings/{meeting_id}/status
-```
-
-#### Mock Complete (Testing)
-```
-POST /api/meetings/{meeting_id}/mock-complete
-```
+---
 
 ## 🧪 Testing
 
-HarBaat AI maintains a robust testing environment split into three distinct layers: Component/Unit Testing, End-to-End Testing, and Code Quality.
+HarBaat AI maintains a three-layer testing strategy.
 
-### 1. Component & Unit Testing (Jest & RTL)
-We use **Jest** and **React Testing Library** for verifying individual components and business logic. All critical components follow "Gold Standard" patterns:
-- **UI Primitives**: Atomic testing of variants, accessibility, and basic interactions (e.g., `Button`).
-- **Business Logic**: Integration testing for complex components (e.g., `Sidebar` RBAC logic).
-- **Custom Hooks**: State machine verification for specialized hooks (e.g., `useVoiceRecorder`).
+### 1. Unit & Component Tests (Jest + React Testing Library)
 
-**Commands:**
+Tests cover UI primitives, business logic, and custom hook state machines.
+
 ```bash
 # Run all unit tests
 npm test
 
-# Run tests in watch mode
+# Watch mode (re-runs on file changes)
 npm run test:watch
 
 # Generate coverage report
 npm run test:coverage
 ```
 
-### 2. End-to-End Testing (Playwright)
-**Playwright** handles multi-browser verification of critical user flows. E2E tests target our hosted backend at `https://asim-ai.duckdns.org`.
+**Coverage areas:**
+- `useVoiceRecorder` — full state machine (idle → recording → reviewing → submitting)
+- `useMeetings` — fetch, cache, and error states
+- `Sidebar` — RBAC-driven navigation rendering
+- `Button` — variant, size, and accessibility
 
-**Covered Flows:**
-- **Authentication**: Signup, Email Verification, Login, and Session Revocation.
-- **Voice Identity**: Automated registration using audio fixtures.
-- **Meeting Analysis**: File upload processing and real-time status tracking.
-- **Mentions**: Cross-user notification triggers and badge updates.
+### 2. End-to-End Tests (Playwright)
 
-**Commands:**
+E2E tests run against the hosted staging backend at `https://asim-ai.duckdns.org`. A global setup step pre-authenticates and caches the session.
+
 ```bash
-# Run E2E tests (Headless)
+# Run all E2E tests (headless, all browsers)
 npm run test:e2e
 
-# Run E2E tests with UI Mode
+# Open Playwright UI mode (interactive runner)
 npm run test:e2e:ui
 ```
 
-### 3. Code Quality & Formatting
-We use **Prettier**, **ESLint**, and **Husky** to ensure consistent code quality and prevent regressions.
+**Covered flows:**
 
-**Commands:**
+| Spec | Coverage |
+|---|---|
+| `auth.spec.ts` | Signup, email verification, login, session revocation |
+| `meeting-analysis.spec.ts` | Upload audio, poll status, view transcript & entities |
+| `notifications.spec.ts` | Cross-user mentions, badge counter, notification list |
+| `voice-identity.spec.ts` | Speaker enrollment using fixture audio |
+| `dashboard-projects.spec.ts` | Project creation, meeting count, graph view |
+| `settings.spec.ts` | Profile update, team settings |
+| `teams.spec.ts` | Team creation, member invite, role management |
+| `known-speakers.spec.ts` | Known speaker registration and linking |
+
+### 3. Code Quality
+
 ```bash
-# Format codebase
+# Format entire codebase
 npm run format
 
 # Lint codebase
 npm run lint
 ```
 
-### 4. Testing with Mock Data
-For development purposes, you can simulate completed processing on the backend:
+Husky pre-commit hooks run `lint-staged` to format and lint changed files automatically.
 
-```bash
-curl -X POST http://localhost:8000/api/meetings/{meeting_id}/mock-complete
-```
+---
 
-## 🎨 Customization
+## ⚙️ Customization
 
-### Modify Supported File Types
+### Supported Audio Formats
 
 Edit `backend/main.py`:
 ```python
 allowed_extensions = {".mp3", ".wav", ".m4a", ".ogg", ".flac"}
 ```
 
-### Change Upload Size Limit
+### Upload Size Limit
 
-Edit `frontend/src/config/constants.ts`:
+Edit `frontend/src/lib/constants.ts`:
 ```typescript
 export const APP_CONFIG = {
-  maxFileSize: parseInt(process.env.NEXT_PUBLIC_MAX_FILE_SIZE || '104857600'), // 100MB
-  // ...
+  maxFileSize: parseInt(process.env.NEXT_PUBLIC_MAX_FILE_SIZE || '104857600'), // 100 MB
 };
 ```
 
-### Adjust Speaker Colors
+### Speaker Colors
 
-Edit `frontend/src/config/constants.ts`:
+Edit `frontend/src/lib/constants.ts`:
 ```typescript
 export const SPEAKER_COLORS = [
-  '#1890ff',
-  '#52c41a',
-  '#fa8c16',
-  '#eb2f96',
-  '#722ed1',
-  '#13c2c2',
+  '#1890ff', '#52c41a', '#fa8c16',
+  '#eb2f96', '#722ed1', '#13c2c2',
 ] as const;
 ```
 
-### Change API Base URL
+### Knowledge Graph Default Layout
 
-Create a `.env.local` file in the `frontend` directory:
-```env
-NEXT_PUBLIC_API_URL=http://localhost:8000/api
-```
+Edit `frontend/src/components/graph/graphLayouts.ts` to change the default Cytoscape layout (dagre, cose, grid, breadthfirst, circle).
 
-## 🛠️ Tech Stack
+---
 
-### Frontend
-- **Next.js 16** - React framework with App Router
-- **React 19** - UI library
-- **TypeScript** - Type safety
-- **Tailwind CSS v4** - Styling & Dark-first premium design
-- **NextAuth.js** - Authentication and session management
-- **TanStack Query** - Data fetching and caching
-- **Zustand** - State management
-- **Cytoscape.js** - Knowledge graph visualization
-- **Wavesurfer.js** - Audio playback synchronization
-- **Axios** - HTTP client
-- **Lucide React** - Icons
-- **Sonner** - Toast notifications
-- **shadcn/ui** - UI component library
-- **next-themes** - Dark/Light mode support
+## 🔒 Security
 
-### Backend
-- **FastAPI** - Python web framework
-- **Uvicorn** - ASGI server
-- **Pydantic** - Data validation
-- **aiofiles** - Async file operations
-- **bcrypt** - Password hashing
-- **secrets** - Secure token generation
+| Feature | Details |
+|---|---|
+| **Password hashing** | bcrypt with salt rounds |
+| **Token generation** | `secrets.token_urlsafe()` — cryptographically secure |
+| **Email verification tokens** | 7-day expiry, single-use |
+| **Password reset tokens** | 1-hour expiry, single-use |
+| **Session management** | JWT via NextAuth.js, server-validated on every request |
+| **Route protection** | Next.js middleware enforces authentication on all dashboard routes |
+| **CORS** | Restricted origin allowlist on the FastAPI backend |
 
-## 📝 Next Steps (Future Development)
-
-- [ ] Integrate actual ASR pipeline (WhisperX)
-- [ ] Add LLM-based entity extraction
-- [x] Implement interactive knowledge graph (Cytoscape.js) ✅
-- [x] Add audio playback synchronized with transcript ✅
-- [ ] Support real-time transcription
-- [x] Add user authentication ✅
-- [x] Email verification ✅
-- [x] Password reset functionality ✅
-- [x] User profile management ✅
-- [x] Implement Multi-Tenancy & Teams ✅
-- [x] Add role-based access control (RBAC) ✅
-- [ ] Implement task management features
-- [ ] Export functionality (PDF, Word)
-- [ ] Add database persistence (currently in-memory)
-- [ ] Integrate email service (SendGrid/AWS SES) for production
-- [ ] Implement OAuth providers (Google, GitHub)
+---
 
 ## 🐛 Troubleshooting
 
 ### CORS Errors
-Make sure the backend is running on port 8000 and frontend on port 3000. The backend CORS middleware is configured to allow requests from `http://localhost:3000`.
+Ensure the backend runs on port `8000` and the frontend on port `3000`. If using a custom port, update the CORS origin list in `backend/main.py`.
 
 ### File Upload Fails
-Check that the `uploads` directory exists in the backend folder and has write permissions. It should be created automatically on first run.
+Verify the `backend/uploads/` directory exists and has write permissions — it is created automatically on first run.
 
 ### Port Already in Use
-Kill the process using the port:
 ```bash
 # Windows
 netstat -ano | findstr :8000
 taskkill /PID <PID> /F
 
-# Linux/Mac
+# Linux / macOS
 lsof -ti:8000 | xargs kill -9
 ```
 
-### Next.js Build Errors
-If you encounter TypeScript errors during build, ensure all dependencies are installed:
+### NextAuth / Session Issues
+- Ensure `NEXTAUTH_SECRET` is set and consistent across restarts
+- `NEXTAUTH_URL` must match the exact URL the app is served from
+- Clearing browser cookies resolves stale session issues
+
+### Token Expiry
+- Email verification tokens expire after **7 days** — use the "Resend Verification" button
+- Password reset tokens expire after **1 hour** — request a new reset if needed
+
+### Playwright Tests Fail (browser binaries)
 ```bash
-cd frontend
-npm install
+npx playwright install
 ```
 
-### Environment Variables
-If the API URL is not working, check that `NEXT_PUBLIC_API_URL` is set correctly in your `.env.local` file or use the default `http://localhost:8000/api`.
+---
 
-Create a `.env.local` file in the `frontend` directory:
-```env
-NEXT_PUBLIC_API_URL=http://localhost:8000/api
-NEXTAUTH_SECRET=your-secret-key-here
-NEXTAUTH_URL=http://localhost:3000
-```
+## 📝 Roadmap
 
-### Authentication Issues
-- **Token not working**: Verification and reset tokens expire (7 days for email verification, 1 hour for password reset). Request a new one if expired.
-- **Email not verified**: Check your email inbox or use the "Resend Verification" button in your profile.
-- **Can't reset password**: Make sure you're using the correct token from the email. Tokens are single-use and expire after 1 hour.
+| Status | Item |
+|---|---|
+| ✅ | Audio upload with consent flow |
+| ✅ | ASR + speaker diarization pipeline |
+| ✅ | Synchronized transcript & audio playback |
+| ✅ | Entity extraction (tasks, decisions, key points) |
+| ✅ | Interactive knowledge graph (Cytoscape.js) |
+| ✅ | User authentication & profile management |
+| ✅ | Email verification & password reset |
+| ✅ | Multi-tenancy with team workspaces |
+| ✅ | RBAC (Owner / Admin / Member roles) |
+| ✅ | Speaker identity registration & linking |
+| ✅ | In-app notifications & mentions |
+| ✅ | Project knowledge graph |
+| ✅ | Danger Zone (team deletion) |
+| ✅ | Dark mode with glassmorphism design |
+| ✅ | Playwright E2E test suite (8 specs) |
+| ✅ | Jest unit & hook test suite |
+| ✅ | Husky pre-commit quality gates |
+| ⬜ | Real-time transcription (WebSocket streaming) |
+| ⬜ | Transcript export (PDF / Word) |
+| ⬜ | Task management (mark complete, reassign) |
+| ⬜ | Database persistence (currently in-memory / file-based) |
+| ⬜ | OAuth providers (Google, GitHub) |
+| ⬜ | Calendar integration |
 
-### Development Mode Notes
-- In development, verification and reset tokens are returned in API responses for testing purposes
-- **Remove token exposure in production** - implement actual email sending service
-- Currently using in-memory storage - migrate to database for production use
+---
 
 ## 👥 Team
 
-- **Asim Majeed** (22K-4535) - ASR & Transcription
-- **Muhammad Muzammil** (22K-4267) - Dashboard, Multi-Tenancy & LLM Integration
-- **Ayan Hasan** (22K-4367) - Knowledge Graph & Entity Extraction
+| Name | Roll No | Responsibility |
+|---|---|---|
+| **Asim Majeed** | 22K-4535 | ASR Pipeline & Transcription |
+| **Muhammad Muzammil** | 22K-4267 | Dashboard, Multi-Tenancy & LLM Integration |
+| **Ayan Hasan** | 22K-4367 | Knowledge Graph & Entity Extraction |
+
+---
 
 ## 📄 License
 
-This project is part of the Final Year Project at FAST-NUCES, Karachi Campus.
-
-## 🔒 Security Features
-
-- **Password Hashing**: All passwords are hashed using bcrypt before storage
-- **Secure Tokens**: Verification and reset tokens use cryptographically secure random generation
-- **Token Expiration**: 
-  - Email verification tokens expire after 7 days
-  - Password reset tokens expire after 1 hour
-- **Single-Use Tokens**: Reset and verification tokens are deleted after use
-- **Session Management**: JWT-based sessions with NextAuth.js
-- **CORS Protection**: Configured CORS middleware for secure cross-origin requests
-
-## 📧 Email Integration (TODO)
-
-Currently, the application generates verification and reset tokens but doesn't send emails. For production:
-
-1. **Choose an email service**:
-   - SendGrid
-   - AWS SES
-   - Mailgun
-   - Resend
-
-2. **Create email templates** for:
-   - Email verification
-   - Password reset
-   - Welcome emails
-
-3. **Update backend** to send emails instead of returning tokens
-
-4. **Configure environment variables**:
-   ```env
-   EMAIL_SERVICE_API_KEY=your-api-key
-   EMAIL_FROM=noreply@yourapp.com
-   ```
-
+This project is part of the Final Year Project at **FAST-NUCES, Karachi Campus**.
