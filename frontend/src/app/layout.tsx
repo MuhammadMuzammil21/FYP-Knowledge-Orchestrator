@@ -21,8 +21,9 @@ export const metadata: Metadata = {
   description: 'AI-powered meeting transcription and analysis',
   icons: {
     icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
-      { url: '/favicon.ico', sizes: 'any' },
+      // { url: '/favicon.svg', type: 'image/svg+xml' },
+      // { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon.png', type: 'image/png' },
     ],
   },
 };
