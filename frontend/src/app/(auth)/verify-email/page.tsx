@@ -34,8 +34,8 @@ function VerifyEmailContent() {
       setIsVerified(true);
       toast.success('Email verified successfully!');
 
-      // Update session
-      await update();
+      // Update session with a full refresh to pick up email_verified: true
+      await update({ forceRefresh: true });
 
       setTimeout(() => {
         router.push('/dashboard');
@@ -115,18 +115,16 @@ function VerifyEmailContent() {
                   <Button
                     onClick={async () => {
                       try {
-                        await update();
-                        // Check if email is now verified
-                        const response = await fetch('/api/auth/session');
-                        const updatedSession = await response.json();
-                        if (updatedSession?.user?.email_verified) {
+                        const newSession = await update({ forceRefresh: true });
+                        if (newSession?.user?.email_verified) {
                           toast.success('Email verified! Redirecting...');
-                          setTimeout(() => router.push('/dashboard'), 1000);
+                          router.push('/dashboard');
                         } else {
-                          toast.info('Email not verified yet');
+                          toast.info('Email not verified yet. Please check your inbox.');
                         }
                       } catch (error) {
-                        toast.error('Failed to check status');
+                        toast.error('Failed to check verification status');
+                        console.error('Update session error:', error);
                       }
                     }}
                     variant="default"
