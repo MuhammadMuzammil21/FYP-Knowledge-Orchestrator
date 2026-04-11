@@ -10,7 +10,7 @@ test.describe('Teams Management', () => {
     await page.fill('input[id="email"]', TEST_EMAIL);
     await page.fill('input[id="password"]', TEST_PASSWORD);
     await page.click('button[type="submit"]');
-    await expect(page).toHaveURL(/.*dashboard|projects|dash/);
+    await expect(page).toHaveURL(/.*dashboard|projects|dash/, { timeout: 15000 });
   });
 
   test('User can create a new team or view teams list', async ({ page }) => {

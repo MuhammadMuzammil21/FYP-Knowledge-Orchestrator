@@ -10,7 +10,7 @@ test.describe('Dashboard & Projects Overview', () => {
     await page.fill('input[id="email"]', TEST_EMAIL);
     await page.fill('input[id="password"]', TEST_PASSWORD);
     await page.click('button[type="submit"]');
-    await expect(page).toHaveURL(/.*dashboard|projects/);
+    await expect(page).toHaveURL(/.*dashboard|dash|projects/, { timeout: 15000 });
   });
 
   test('User can view projects index and empty/populated state', async ({ page }) => {

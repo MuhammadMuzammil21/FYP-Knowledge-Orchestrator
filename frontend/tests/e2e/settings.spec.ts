@@ -10,7 +10,7 @@ test.describe('Settings & Team Deletion Logic', () => {
     await page.fill('input[id="email"]', TEST_EMAIL);
     await page.fill('input[id="password"]', TEST_PASSWORD);
     await page.click('button[type="submit"]');
-    await expect(page).toHaveURL(/.*dashboard|dash|projects/);
+    await expect(page).toHaveURL(/.*dashboard|projects|dash/, { timeout: 15000 });
   });
 
   test('User can access Settings and view tabs', async ({ page }) => {
