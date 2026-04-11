@@ -1,33 +1,49 @@
 import { defineConfig, devices } from '@playwright/test';
+import path from 'path';
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
+const AUTH_FILE = path.join(__dirname, 'tests', '.auth', 'user.json');
 
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
 export default defineConfig({
   testDir: './tests/e2e',
+
+  /* Global setup: logs in once and saves auth state */
+  globalSetup: './tests/global-setup.ts',
+
   /* Run tests in files in parallel */
   fullyParallel: true,
+
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
+
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 0,
+
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
+
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: 'html',
-  /* Shared settings for all the projects below. See https://playwright.dev/docs/test-use-options. */
+
+  /* Default timeout for each test */
+  timeout: 60000,
+
+  /* Default expect timeout */
+  expect: {
+    timeout: 10000,
+  },
+
+  /* Shared settings for all the projects below. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: 'http://localhost:3000',
 
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
+    /* Reuse saved authentication state for all tests */
+    storageState: AUTH_FILE,
+
+    /* Collect trace when retrying the failed test. */
     trace: 'on-first-retry',
 
     /* Take screenshots on failure */
@@ -35,50 +51,48 @@ export default defineConfig({
 
     /* Take videos on failure */
     video: 'retain-on-failure',
+
+    /* Navigation timeout */
+    navigationTimeout: 30000,
+
+    /* Action timeout */
+    actionTimeout: 15000,
   },
 
   /* Configure projects for major browsers */
   projects: [
+    /* Setup project — runs global-setup before anything else */
+    {
+      name: 'setup',
+      testMatch: '**/*.setup.ts',
+    },
+
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      use: {
+        ...devices['Desktop Chrome'],
+        storageState: AUTH_FILE,
+      },
     },
 
     {
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      use: {
+        ...devices['Desktop Firefox'],
+        storageState: AUTH_FILE,
+      },
     },
 
     {
       name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
+      use: {
+        ...devices['Desktop Safari'],
+        storageState: AUTH_FILE,
+        // WebKit needs explicit context options for localhost cookies
+        contextOptions: {
+          ignoreHTTPSErrors: true,
+        },
+      },
     },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
-    // {
-    //   name: 'Google Chrome',
-    //   use: { ...devices['Desktop Chrome'], channel: 'chrome' },
-    // },
   ],
-
-  /* Run your local dev server before starting the tests */
-  // webServer: {
-  //   command: 'npm run start',
-  //   url: 'http://127.0.0.1:3000',
-  //   reuseExistingServer: !process.env.CI,
-  // },
 });
