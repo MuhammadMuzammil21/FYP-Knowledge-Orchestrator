@@ -545,7 +545,3 @@ npx playwright install
 | **Ayan Hasan** | 22K-4367 | Knowledge Graph & Entity Extraction |
 
 ---
-
-## 📄 License
-
-This project is part of the Final Year Project at **FAST-NUCES, Karachi Campus**.
