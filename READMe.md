@@ -541,7 +541,7 @@ npx playwright install
 | Name | Roll No | Responsibility |
 |---|---|---|
 | **Asim Majeed** | 22K-4535 | ASR Pipeline & Transcription |
-| **Muhammad Muzammil** | 22K-4267 | Dashboard, Multi-Tenancy & LLM Integration |
+| **Muhammad Muzammil** | 22K-4267 | Dashboard & LLM Integration |
 | **Ayan Hasan** | 22K-4367 | Knowledge Graph & Entity Extraction |
 
 ---
