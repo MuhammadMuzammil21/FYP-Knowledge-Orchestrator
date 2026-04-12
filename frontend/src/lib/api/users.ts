@@ -1,6 +1,8 @@
 import apiClient from './client';
 import { API_ENDPOINTS } from '../constants';
 import type { VoiceIdentityResponse, NotificationResponse, NotificationPreferences } from '@/types';
+import type { Notification, NotificationList } from '@/types/domain.types';
+import * as adapter from './adapters/ResponseAdapter';
 
 /**
  * VOICE IDENTITY ENDPOINTS
@@ -31,12 +33,12 @@ export async function deleteVoiceIdentity(): Promise<void> {
 
 export async function getNotifications(
   unreadOnly = false
-): Promise<{ notifications: NotificationResponse[] }> {
+): Promise<NotificationList> {
   const response = await apiClient.get<{ notifications: NotificationResponse[] }>(
     API_ENDPOINTS.USER_NOTIFICATIONS,
     { params: { unread_only: unreadOnly } }
   );
-  return response.data;
+  return adapter.adaptNotificationList(response.data);
 }
 
 export async function getUnreadNotificationsCount(): Promise<{ count: number }> {
@@ -46,11 +48,11 @@ export async function getUnreadNotificationsCount(): Promise<{ count: number }> 
   return response.data;
 }
 
-export async function markNotificationAsRead(id: number): Promise<NotificationResponse> {
+export async function markNotificationAsRead(id: number): Promise<Notification> {
   const response = await apiClient.put<NotificationResponse>(
     API_ENDPOINTS.USER_NOTIFICATION_READ(id)
   );
-  return response.data;
+  return adapter.adaptNotification(response.data);
 }
 
 export async function markAllNotificationsAsRead(): Promise<void> {

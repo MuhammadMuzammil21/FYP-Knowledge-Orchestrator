@@ -10,6 +10,7 @@ import {
   updateTranscript,
   getTranscriptHistory,
   getMeetingAudioUrl,
+  reprocessInsights,
   type UpdateTranscriptRequest,
 } from '@/lib/api/meetings';
 import { APP_CONFIG } from '@/lib/config/app.config';
@@ -130,4 +131,20 @@ export function useMeetingAudio(meetingId: string) {
   }, [meetingId]);
 
   return { audioUrl, isLoading, error };
+}
+
+/**
+ * Hook to trigger insight reprocessing.
+ */
+export function useReprocessInsights(meetingId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => reprocessInsights(meetingId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['meeting', meetingId] });
+      queryClient.invalidateQueries({ queryKey: ['entities', meetingId] });
+      toast.success('Insight reprocessing started in background');
+    },
+    onError: (error) => toast.error(getErrorMessage(error)),
+  });
 }

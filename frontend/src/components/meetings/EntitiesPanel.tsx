@@ -1,18 +1,57 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { Entities } from '@/types';
-import { Users, Tag, CheckSquare, FileText } from 'lucide-react';
+import { Users, Tag, CheckSquare, FileText, Sparkles, Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 interface EntitiesPanelProps {
   entities: Entities;
+  onReprocess?: () => void;
+  isReprocessing?: boolean;
 }
 
-export function EntitiesPanel({ entities }: EntitiesPanelProps) {
+export function EntitiesPanel({ entities, onReprocess, isReprocessing }: EntitiesPanelProps) {
   // Handle undefined entities gracefully
   const { speakers = [], topics = [], tasks = [], decisions = [] } = entities || {};
 
+  const isEmpty = speakers.length === 0 &&
+    topics.length === 0 &&
+    tasks.length === 0 &&
+    decisions.length === 0;
+
   return (
     <div className="space-y-4">
+      {/* Empty State */}
+      {isEmpty && (
+        <Card className="border-dashed border-2 py-8 bg-muted/20">
+          <CardContent className="flex flex-col items-center justify-center text-center gap-4">
+            <div className="p-4 rounded-full bg-primary/10 text-primary">
+              <Sparkles className="h-8 w-8" />
+            </div>
+            <div className="max-w-[400px]">
+              <h3 className="text-lg font-semibold mb-1">No AI Insights Found</h3>
+              <p className="text-sm text-muted-foreground mb-6">
+                This meeting hasn't been processed for insights yet, or the transcript was changed. 
+              </p>
+              {onReprocess && (
+                <Button 
+                  onClick={onReprocess} 
+                  disabled={isReprocessing}
+                  className="gap-2"
+                >
+                  {isReprocessing ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-4 w-4" />
+                  )}
+                  Generate AI Insights
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Speakers */}
       {speakers.length > 0 && (
         <Card>
@@ -128,17 +167,7 @@ export function EntitiesPanel({ entities }: EntitiesPanelProps) {
         </Card>
       )}
 
-      {/* Empty State */}
-      {speakers.length === 0 &&
-        topics.length === 0 &&
-        tasks.length === 0 &&
-        decisions.length === 0 && (
-          <Card>
-            <CardContent className="flex h-32 items-center justify-center text-muted-foreground">
-              No entities extracted yet
-            </CardContent>
-          </Card>
-        )}
+
     </div>
   );
 }

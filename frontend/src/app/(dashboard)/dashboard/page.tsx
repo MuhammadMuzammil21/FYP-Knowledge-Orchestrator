@@ -148,10 +148,16 @@ export default function DashboardPage() {
       }
 
       const response = await uploadMeeting(file, projectId, metadata);
+      
+      if (!response?.meetingId) {
+        console.error('Upload succeeded but no meetingId in response:', response);
+        toast.error('Processing error: no meeting ID returned');
+        return;
+      }
 
       toast.success('Meeting uploaded successfully!');
       setInputMode('upload');
-      router.push(`/meetings/${response.meeting_id}`);
+      router.push(`/meetings/${response.meetingId}`);
     } catch (error) {
       toast.error(getErrorMessage(error));
     } finally {

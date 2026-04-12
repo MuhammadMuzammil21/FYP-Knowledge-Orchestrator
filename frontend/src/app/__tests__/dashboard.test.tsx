@@ -75,8 +75,8 @@ describe('DashboardPage', () => {
 
   it('should upload meeting and redirect on success', async () => {
     const mockResponse = {
-      meeting_id: 'meeting-123',
-      project_id: 'default-project',
+      meetingId: 'meeting-123',
+      projectId: 'default-project',
       status: 'queued' as const,
       stage: 'asr_pending' as const,
       message: 'Meeting uploaded successfully',
@@ -107,8 +107,8 @@ describe('DashboardPage', () => {
 
   it('should upload meeting with context', async () => {
     const mockResponse = {
-      meeting_id: 'meeting-123',
-      project_id: 'default-project',
+      meetingId: 'meeting-123',
+      projectId: 'default-project',
       status: 'queued' as const,
       stage: 'asr_pending' as const,
       message: 'Meeting uploaded successfully',

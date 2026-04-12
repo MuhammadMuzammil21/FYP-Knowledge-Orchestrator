@@ -47,6 +47,7 @@ import {
   FolderOpen,
   Mic,
 } from 'lucide-react';
+import { formatDate } from '@/lib/utils/date';
 import type { TeamRole } from '@/types';
 
 export default function TeamDetailsPage({ params }: { params: Promise<{ slug: string }> }) {
@@ -345,7 +346,7 @@ export default function TeamDetailsPage({ params }: { params: Promise<{ slug: st
                     <div>
                       <p className="font-medium text-sm">{invite.email}</p>
                       <p className="text-xs text-muted-foreground mt-0.5">
-                        Expires: {new Date(invite.expires_at).toLocaleDateString()}
+                        Expires: {formatDate(invite.expires_at)}
                       </p>
                     </div>
                     <div className="flex items-center gap-3">

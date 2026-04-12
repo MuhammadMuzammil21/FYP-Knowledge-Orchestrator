@@ -20,19 +20,21 @@ import { RAGChat } from '@/components/meetings/RAGChat';
 import { ProgressBar } from '@/components/meetings/ProgressBar';
 import { StatusBadge } from '@/components/meetings/StatusBadge';
 import { SpeakersPanel } from '@/components/speakers/SpeakersPanel';
+import { ReprocessNotice } from '@/components/meetings/ReprocessNotice';
 import {
   useMeeting,
   useTranscript,
   useEntities,
   useDeleteMeeting,
   useMeetingAudio,
+  useReprocessInsights,
 } from '@/hooks/useMeetingDetail';
 import { useMeetingStatus } from '@/hooks/useMeetingStatus';
 import { useProjectConflicts } from '@/hooks/useKnowledgeGraph';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { useProject } from '@/hooks/useProjects';
 import { useTeams } from '@/hooks/useTeams';
-import { ArrowLeft, Network, Trash2, Loader2, AudioWaveform, ShieldAlert, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Network, Trash2, Loader2, AudioWaveform, ShieldAlert, ChevronRight, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { formatDateTime } from '@/lib/utils/date';
@@ -68,6 +70,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
   );
   const { audioUrl, isLoading: audioLoading } = useMeetingAudio(id);
   const deleteMeeting = useDeleteMeeting();
+  const reprocessInsights = useReprocessInsights(id);
 
   const { data: project } = useProject(meeting?.projectId || '');
   const { data: teams } = useTeams();
@@ -121,6 +124,10 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
 
   const formattedDate = formatDateTime(meeting.createdAt);
   const isCompleted = meeting.status === 'completed';
+  const isStale =
+    transcriptData?.updatedAt && meeting?.updatedAt
+      ? transcriptData.updatedAt.getTime() > meeting.updatedAt.getTime() + 5000
+      : false;
 
   return (
     <div className="min-h-full overflow-y-auto p-3 sm:p-4 md:p-8">
@@ -169,12 +176,27 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
           </div>
           <div className="flex flex-wrap items-center gap-2">
             {isCompleted && (
-              <Link href={`/meetings/${id}/graph`}>
-                <Button variant="outline" className="w-full sm:w-auto">
-                  <Network className="mr-2 h-4 w-4" />
-                  View Graph
+              <>
+                <Button
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                  disabled={reprocessInsights.isPending}
+                  onClick={() => reprocessInsights.mutate()}
+                >
+                  {reprocessInsights.isPending ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="mr-2 h-4 w-4" />
+                  )}
+                  Reprocess Insights
                 </Button>
-              </Link>
+                <Link href={`/meetings/${id}/graph`}>
+                  <Button variant="outline" className="w-full sm:w-auto">
+                    <Network className="mr-2 h-4 w-4" />
+                    View Graph
+                  </Button>
+                </Link>
+              </>
             )}
             {can('delete_meeting') && (
               <Button
@@ -290,16 +312,19 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
               <Skeleton className="h-32" />
               <Skeleton className="h-32" />
             </div>
-          ) : entitiesData ? (
-            <EntitiesPanel entities={entitiesData} />
           ) : (
-            <Card className="flex h-full items-center justify-center">
-              <p className="text-muted-foreground/70">
-                {isCompleted
-                  ? 'No entities extracted'
-                  : 'Entities will be available once processing is complete'}
-              </p>
-            </Card>
+            <div className="space-y-4">
+              <ReprocessNotice 
+                isStale={isStale}
+                isReprocessing={reprocessInsights.isPending}
+                onReprocess={() => reprocessInsights.mutate()}
+              />
+              <EntitiesPanel 
+                entities={entitiesData!} 
+                onReprocess={() => reprocessInsights.mutate()}
+                isReprocessing={reprocessInsights.isPending}
+              />
+            </div>
           )}
         </TabsContent>
 
@@ -323,16 +348,15 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
               <Skeleton className="h-24" />
               <Skeleton className="h-24" />
             </div>
-          ) : conflictsData ? (
-            <ConflictsPanel conflicts={conflictsData} />
           ) : (
-            <Card className="flex h-full items-center justify-center">
-              <p className="text-muted-foreground/70">
-                {isCompleted
-                  ? 'No conflicts detected'
-                  : 'Conflicts will be checked once processing is complete'}
-              </p>
-            </Card>
+            <div className="space-y-4">
+              <ReprocessNotice 
+                isStale={isStale}
+                isReprocessing={reprocessInsights.isPending}
+                onReprocess={() => reprocessInsights.mutate()}
+              />
+              <ConflictsPanel conflicts={conflictsData || []} />
+            </div>
           )}
         </TabsContent>
 

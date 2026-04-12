@@ -8,7 +8,7 @@ import { MeetingCard } from '@/components/meetings/MeetingCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, Network } from 'lucide-react';
-import { formatLongDate } from '@/lib/utils/date';
+import { formatLongDate, parseUTCDate } from '@/lib/utils/date';
 
 interface ProjectPageProps {
   params: Promise<{ id: string }>;
@@ -101,7 +101,7 @@ export default function ProjectPage({ params }: ProjectPageProps) {
                 id: meeting.meeting_id,
                 title: meeting.title,
                 status: meeting.status,
-                createdAt: new Date(meeting.created_at),
+                createdAt: parseUTCDate(meeting.created_at),
               };
               return <MeetingCard key={meeting.meeting_id} meeting={domainMeeting} />;
             })}

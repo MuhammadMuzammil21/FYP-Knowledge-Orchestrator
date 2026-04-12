@@ -33,8 +33,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useUpdateTranscript, useTranscriptHistory } from '@/hooks/useMeetingDetail';
-
-// ─── Types ──────────────────────────────────────────────────────────────────
+import { formatDateTime } from '@/lib/utils/date';
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
@@ -452,13 +451,13 @@ export function TranscriptViewer({
                     <div className="flex items-center gap-2">
                       <Clock className="h-3.5 w-3.5 text-muted-foreground flex-shrink-0" />
                       <span className="text-xs font-medium">
-                        {new Date(v.created_at).toLocaleString()}
+                        {formatDateTime(v.created_at)}
                       </span>
                     </div>
                     {v.edited_by && (
                       <p className="text-xs text-muted-foreground pl-5">Edited by {v.edited_by}</p>
                     )}
-                    <p className="text-xs text-muted-foreground pl-5 line-clamp-2">{v.preview}…</p>
+                    <p className="text-xs text-muted-foreground pl-5 line-clamp-2">{v.content_preview}…</p>
                   </div>
                 ))}
               </div>

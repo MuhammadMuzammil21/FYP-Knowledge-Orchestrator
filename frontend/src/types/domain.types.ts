@@ -113,7 +113,10 @@ export interface Transcript {
   meetingId: string;
   type: 'raw' | 'final';
   content: string;
+  version: number;
   isLlmRewritten: boolean;
+  createdAt: Date;
+  updatedAt?: Date;
 }
 
 /**
@@ -245,4 +248,33 @@ export interface TaskInfo {
 export interface PersonTasks {
   personName: string;
   tasks: TaskInfo[];
+}
+/**
+ * Notification domain models
+ */
+export interface MeetingUploadResponse {
+  meetingId: string;
+  projectId: string;
+  status: string;
+  stage: string;
+  message: string;
+}
+
+export interface Notification {
+  id: number;
+  meetingId?: string;
+  type: 'mention' | 'summary' | 'conflict' | 'action_item';
+  title: string;
+  message: string;
+  extraData: {
+    absent?: boolean;
+    projectId?: string;
+    [key: string]: any;
+  };
+  read: boolean;
+  createdAt: Date;
+}
+
+export interface NotificationList {
+  notifications: Notification[];
 }

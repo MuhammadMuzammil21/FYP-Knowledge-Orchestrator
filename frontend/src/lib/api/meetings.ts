@@ -1,19 +1,25 @@
 import apiClient from './client';
 import { API_ENDPOINTS } from '../constants';
 import type {
-  Meeting,
-  MeetingDetail,
-  MeetingStatusDetail,
-  MeetingUploadResponse,
   MeetingUploadMetadata,
-  MeetingListResponse,
-  TranscriptResponse,
+  MeetingUploadResponse as ApiMeetingUploadResponse,
   EntityResponse,
   ConflictResponse,
   SearchResponse,
   RAGResponse,
   PaginationParams,
+  MeetingListResponse,
+  TranscriptResponse,
 } from '@/types';
+import type {
+  Meeting,
+  MeetingDetail,
+  MeetingStatusDetail,
+  MeetingList,
+  Transcript,
+  MeetingUploadResponse,
+} from '@/types/domain.types';
+import * as adapter from './adapters/ResponseAdapter';
 
 // --- Types for new endpoints ---
 export interface TranscriptSegmentUpdate {
@@ -30,13 +36,17 @@ export interface UpdateTranscriptRequest {
 
 export interface TranscriptVersion {
   id: number;
+  type: string;
+  version: number;
+  is_llm_rewritten: boolean;
   created_at: string;
   edited_by: string | null;
-  preview: string; // first ~80 chars of content
+  content_preview: string;
 }
 
 export interface TranscriptHistoryResponse {
   meeting_id: string;
+  total_versions: number;
   versions: TranscriptVersion[];
 }
 
@@ -52,7 +62,7 @@ export async function uploadMeeting(
     formData.append('metadata', JSON.stringify(metadata));
   }
 
-  const response = await apiClient.post<MeetingUploadResponse>(
+  const response = await apiClient.post<ApiMeetingUploadResponse>(
     API_ENDPOINTS.MEETINGS_UPLOAD,
     formData,
     {
@@ -61,21 +71,21 @@ export async function uploadMeeting(
       },
     }
   );
-  return response.data;
+  return adapter.adaptMeetingUploadResponse(response.data);
 }
 
 export async function getMeetings(
   params?: PaginationParams & { project_id?: string }
-): Promise<MeetingListResponse> {
+): Promise<MeetingList> {
   const response = await apiClient.get<MeetingListResponse>(API_ENDPOINTS.MEETINGS_LIST, {
     params,
   });
-  return response.data;
+  return adapter.adaptMeetingList(response.data);
 }
 
 export async function getMeeting(meetingId: string): Promise<MeetingDetail> {
-  const response = await apiClient.get<MeetingDetail>(API_ENDPOINTS.MEETING_DETAIL(meetingId));
-  return response.data;
+  const response = await apiClient.get<any>(API_ENDPOINTS.MEETING_DETAIL(meetingId));
+  return adapter.adaptMeetingDetail(response.data);
 }
 
 export async function deleteMeeting(meetingId: string): Promise<{ message: string }> {
@@ -86,21 +96,21 @@ export async function deleteMeeting(meetingId: string): Promise<{ message: strin
 }
 
 export async function getMeetingStatus(meetingId: string): Promise<MeetingStatusDetail> {
-  const response = await apiClient.get<MeetingStatusDetail>(
+  const response = await apiClient.get<any>(
     API_ENDPOINTS.MEETING_STATUS(meetingId)
   );
-  return response.data;
+  return adapter.adaptMeetingStatus(response.data);
 }
 
 export async function getTranscript(
   meetingId: string,
   type: 'raw' | 'final' = 'final'
-): Promise<TranscriptResponse> {
+): Promise<Transcript> {
   const response = await apiClient.get<TranscriptResponse>(
     API_ENDPOINTS.MEETING_TRANSCRIPT(meetingId),
     { params: { type } }
   );
-  return response.data;
+  return adapter.adaptTranscript(response.data);
 }
 
 export async function getEntities(meetingId: string): Promise<EntityResponse> {
@@ -162,6 +172,16 @@ export async function updateTranscript(
 export async function getTranscriptHistory(meetingId: string): Promise<TranscriptHistoryResponse> {
   const response = await apiClient.get<TranscriptHistoryResponse>(
     `/api/meetings/${meetingId}/transcript/history`
+  );
+  return response.data;
+}
+
+/**
+ * Trigger insight reprocessing (LLM extraction + KG sync) for a meeting.
+ */
+export async function reprocessInsights(meetingId: string): Promise<{ message: string }> {
+  const response = await apiClient.post<{ message: string }>(
+    `/api/meetings/${meetingId}/reprocess`
   );
   return response.data;
 }

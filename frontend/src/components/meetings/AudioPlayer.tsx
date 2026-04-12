@@ -97,16 +97,30 @@ export const AudioPlayer = forwardRef<AudioPlayerHandle, AudioPlayerProps>(funct
     ws.on('pause', () => setIsPlaying(false));
     ws.on('finish', () => setIsPlaying(false));
 
-    ws.on('error', (e) => {
+    const handleError = (e: Error) => {
+      if (e.name === 'AbortError') return;
       setError('Could not load audio.');
       setIsLoading(false);
       console.error('WaveSurfer error:', e);
-    });
+    };
+
+    ws.on('error', handleError);
 
     ws.load(src);
 
     return () => {
-      ws.destroy();
+      ws.un('error', handleError);
+      ws.un('ready', () => {});
+      ws.un('audioprocess', () => {});
+      
+      try {
+        if (ws.isPlaying()) {
+          ws.pause();
+        }
+        ws.destroy();
+      } catch (err) {
+        console.warn('Wavesurfer destroy error (safe to ignore):', err);
+      }
       wavesurferRef.current = null;
       setIsReady(false);
       setIsLoading(true);

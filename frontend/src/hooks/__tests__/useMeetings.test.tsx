@@ -33,14 +33,17 @@ describe('useMeetings', () => {
   });
 
   it('should fetch meetings successfully', async () => {
-    const mockData = [
-      {
-        id: '1',
-        title: 'Test Meeting',
-        status: 'completed' as const,
-        createdAt: new Date('2025-01-01'),
-      },
-    ];
+    const mockData = {
+      meetings: [
+        {
+          id: '1',
+          title: 'Test Meeting',
+          status: 'completed' as const,
+          createdAt: new Date('2025-01-01'),
+        },
+      ],
+      totalCount: 1,
+    };
 
     mockedGetMeetings.mockResolvedValue(mockData);
 
@@ -55,7 +58,7 @@ describe('useMeetings', () => {
   });
 
   it('should pass pagination params to API', async () => {
-    const mockData: any[] = [];
+    const mockData = { meetings: [], totalCount: 0 };
     mockedGetMeetings.mockResolvedValue(mockData);
 
     const { result } = renderHook(() => useMeetings({ limit: 10, offset: 20 }), {

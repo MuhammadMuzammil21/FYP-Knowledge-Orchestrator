@@ -20,7 +20,10 @@ import type {
   Conflict,
   TokenResponse,
   MeetingList,
+  Notification,
+  NotificationList,
 } from '@/types/domain.types';
+import { parseUTCDate } from '@/lib/utils/date';
 
 /**
  * Adapt user response from API
@@ -31,7 +34,7 @@ export const adaptUser = (apiUser: any): User => {
     name: apiUser.name,
     email: apiUser.email,
     emailVerified: apiUser.email_verified ?? false,
-    createdAt: new Date(apiUser.created_at),
+    createdAt: parseUTCDate(apiUser.created_at),
   };
 };
 
@@ -43,7 +46,7 @@ export const adaptMeeting = (apiMeeting: any): Meeting => {
     id: apiMeeting.meeting_id,
     title: apiMeeting.title,
     status: apiMeeting.status,
-    createdAt: new Date(apiMeeting.created_at),
+    createdAt: parseUTCDate(apiMeeting.created_at),
   };
 };
 
@@ -68,8 +71,8 @@ export const adaptMeetingDetail = (apiDetail: any): MeetingDetail => {
     status: apiDetail.status,
     stage: apiDetail.stage,
     durationSeconds: apiDetail.duration_seconds,
-    createdAt: new Date(apiDetail.created_at),
-    updatedAt: new Date(apiDetail.updated_at),
+    createdAt: parseUTCDate(apiDetail.created_at),
+    updatedAt: parseUTCDate(apiDetail.updated_at),
     insightsReady: apiDetail.insights_ready ?? false,
   };
 };
@@ -110,6 +113,9 @@ export const adaptTranscript = (apiTranscript: any): Transcript => {
     type: apiTranscript.type,
     content: apiTranscript.transcript,
     isLlmRewritten: apiTranscript.is_llm_rewritten ?? false,
+    version: apiTranscript.version ?? 1,
+    createdAt: parseUTCDate(apiTranscript.created_at),
+    updatedAt: parseUTCDate(apiTranscript.updated_at),
   };
 };
 
@@ -181,10 +187,13 @@ export const adaptTokenResponse = (apiResponse: any): TokenResponse => {
 /**
  * Adapt meeting upload response from API
  */
-export const adaptMeetingUploadResponse = (apiResponse: any) => {
+export const adaptMeetingUploadResponse = (apiResponse: any): import('@/types/domain.types').MeetingUploadResponse => {
+  if (!apiResponse) {
+    throw new Error('Empty response from meeting upload');
+  }
   return {
-    meetingId: apiResponse.meeting_id,
-    projectId: apiResponse.project_id,
+    meetingId: apiResponse.meeting_id || apiResponse.meetingId || apiResponse.id,
+    projectId: apiResponse.project_id || apiResponse.projectId,
     status: apiResponse.status,
     stage: apiResponse.stage,
     message: apiResponse.message,
@@ -243,5 +252,30 @@ export const adaptPersonTasks = (apiResponse: any): import('@/types/domain.types
         meetingId: task.meeting_id,
         meetingTitle: task.meeting_title,
       })) ?? [],
+  };
+};
+
+/**
+ * Adapt notification response from API
+ */
+export const adaptNotification = (apiNotification: any): Notification => {
+  return {
+    id: apiNotification.id,
+    meetingId: apiNotification.meeting_id,
+    type: apiNotification.type,
+    title: apiNotification.title,
+    message: apiNotification.message,
+    extraData: apiNotification.extra_data || {},
+    read: apiNotification.read ?? false,
+    createdAt: parseUTCDate(apiNotification.created_at),
+  };
+};
+
+/**
+ * Adapt notification list response from API
+ */
+export const adaptNotificationList = (apiResponse: any): NotificationList => {
+  return {
+    notifications: apiResponse.notifications?.map(adaptNotification) ?? [],
   };
 };

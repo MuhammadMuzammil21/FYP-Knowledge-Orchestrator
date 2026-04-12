@@ -110,6 +110,8 @@ export interface TranscriptResponse {
   type: 'raw' | 'final';
   transcript: string;
   is_llm_rewritten: boolean;
+  version: number;
+  created_at: string;
 }
 
 // Entity Types

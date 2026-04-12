@@ -25,10 +25,11 @@ import {
   CheckCircle2,
   MessageSquare,
 } from 'lucide-react';
-import type { NotificationResponse } from '@/types';
+import type { Notification } from '@/types/domain.types';
+import { parseUTCDate } from '@/lib/utils/date';
 
-function formatTimeAgo(dateString: string): string {
-  const date = new Date(dateString);
+function formatTimeAgo(dateInput: string | Date): string {
+  const date = typeof dateInput === 'string' ? parseUTCDate(dateInput) : dateInput;
   const now = new Date();
   const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
@@ -57,19 +58,19 @@ export function NotificationMenu() {
   const markAllAsRead = useMarkAllNotificationsAsRead();
   const deleteNotification = useDeleteNotification();
 
-  const handleNotificationClick = (notification: NotificationResponse) => {
+  const handleNotificationClick = (notification: Notification) => {
     if (!notification.read) {
       markAsRead.mutate(notification.id);
     }
 
     // Navigate if there's a link
-    if (notification.extra_data?.link) {
+    if (notification.extraData?.link) {
       setOpen(false);
-      router.push(notification.extra_data.link);
+      router.push(notification.extraData.link);
     }
   };
 
-  const getIcon = (type: NotificationResponse['type']) => {
+  const getIcon = (type: Notification['type']) => {
     switch (type) {
       case 'mention':
         return <MessageSquare className="h-4 w-4 text-blue-500" />;
@@ -163,7 +164,7 @@ export function NotificationMenu() {
                       {notification.message}
                     </p>
                     <span className="text-xs text-muted-foreground">
-                      {formatTimeAgo(notification.created_at)}
+                      {formatTimeAgo(notification.createdAt)}
                     </span>
                   </div>
                   <Button

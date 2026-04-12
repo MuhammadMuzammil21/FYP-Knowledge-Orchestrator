@@ -6,6 +6,21 @@
  */
 
 /**
+ * Ensures a date string is treated as UTC if it doesn't have a timezone indicator.
+ */
+function ensureUTCDate(date: string | Date): Date {
+  if (date instanceof Date) return date;
+  if (!date) return new Date();
+  
+  // If the string doesn't end with Z or a timezone offset (e.g. +05:00 or -0400), append Z
+  // This is critical because naive ISO strings (without Z) are parsed as LOCAL by browsers.
+  // We check for Z at the end, or a +/- followed by 2 or 4 digits at the end.
+  const hasTimezone = /[Z]$|[+-]\d{2}(?::?\d{2})?$/.test(date);
+  const utcStr = hasTimezone ? date : `${date}Z`;
+  return new Date(utcStr);
+}
+
+/**
  * Formats a date string or Date object to a localized date string
  * @param date - UTC date string or Date object
  * @param options - Intl.DateTimeFormatOptions for customization
@@ -19,8 +34,8 @@ export function formatDate(
     year: 'numeric',
   }
 ): string {
-  const dateObj = typeof date === 'string' ? new Date(date) : date;
-  return dateObj.toLocaleDateString('en-US', options);
+  const dateObj = ensureUTCDate(date);
+  return dateObj.toLocaleDateString(undefined, options);
 }
 
 /**
@@ -36,8 +51,8 @@ export function formatTime(
     minute: '2-digit',
   }
 ): string {
-  const dateObj = typeof date === 'string' ? new Date(date) : date;
-  return dateObj.toLocaleTimeString('en-US', options);
+  const dateObj = ensureUTCDate(date);
+  return dateObj.toLocaleTimeString(undefined, options);
 }
 
 /**
@@ -56,8 +71,8 @@ export function formatDateTime(
     minute: '2-digit',
   }
 ): string {
-  const dateObj = typeof date === 'string' ? new Date(date) : date;
-  return dateObj.toLocaleDateString('en-US', options);
+  const dateObj = ensureUTCDate(date);
+  return dateObj.toLocaleString(undefined, options);
 }
 
 /**
@@ -89,5 +104,5 @@ export function formatLongDate(date: string | Date): string {
  * @returns Date object
  */
 export function parseUTCDate(utcDateString: string): Date {
-  return new Date(utcDateString);
+  return ensureUTCDate(utcDateString);
 }
