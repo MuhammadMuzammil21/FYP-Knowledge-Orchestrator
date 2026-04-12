@@ -186,6 +186,16 @@ export async function reprocessInsights(meetingId: string): Promise<{ message: s
   return response.data;
 }
 
+/**
+ * Trigger speaker re-identification (Biometric matching) for a meeting.
+ */
+export async function reidentifySpeakers(meetingId: string): Promise<{ message: string }> {
+  const response = await apiClient.post<{ message: string }>(
+    `/api/meetings/${meetingId}/reidentify-speakers`
+  );
+  return response.data;
+}
+
 // Helper function to create SSE connection for transcript streaming
 export function createTranscriptStream(
   meetingId: string,

@@ -12,9 +12,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ChevronsUpDown, Check, Users, Plus } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import type { Team } from '@/types';
 
 export function WorkspaceSwitcher() {
+  const router = useRouter();
   const { workspace, setWorkspace, isTeamWorkspace } = useWorkspace();
   const { data: teams } = useTeams();
 
@@ -36,7 +38,10 @@ export function WorkspaceSwitcher() {
           Workspaces
         </DropdownMenuLabel>
         <DropdownMenuItem
-          onClick={() => setWorkspace('personal')}
+          onClick={() => {
+            setWorkspace('personal');
+            router.push('/dashboard');
+          }}
           className="flex items-center justify-between"
         >
           <span>Personal Workspace</span>
@@ -49,7 +54,10 @@ export function WorkspaceSwitcher() {
             {teams.map((team) => (
               <DropdownMenuItem
                 key={team.id}
-                onClick={() => setWorkspace(team)}
+                onClick={() => {
+                  setWorkspace(team);
+                  router.push(`/teams/${team.slug}`);
+                }}
                 className="flex items-center justify-between"
               >
                 <span className="truncate">{team.name}</span>

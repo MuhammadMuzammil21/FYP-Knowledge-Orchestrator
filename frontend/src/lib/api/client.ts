@@ -40,6 +40,23 @@ apiClient.interceptors.request.use(
       return config;
     }
 
+    // Skip session check for public auth endpoints to avoid blocking requests
+    const publicEndpoints = [
+      '/api/auth/login',
+      '/api/auth/signup',
+      '/api/auth/forgot-password',
+      '/api/auth/reset-password',
+      '/api/auth/verify-email',
+      '/api/auth/resend-verification',
+      '/api/auth/google',
+    ];
+
+    const isPublicEndpoint = publicEndpoints.some((path) => config.url?.endsWith(path));
+
+    if (isPublicEndpoint || config.url?.endsWith('/api/auth/logout')) {
+      return config;
+    }
+
     const session = await getSession();
 
     // If NextAuth signals a refresh failure, redirect immediately to login

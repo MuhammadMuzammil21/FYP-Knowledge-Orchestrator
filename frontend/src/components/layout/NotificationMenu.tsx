@@ -24,6 +24,7 @@ import {
   Info,
   CheckCircle2,
   MessageSquare,
+  Users,
 } from 'lucide-react';
 import type { Notification } from '@/types/domain.types';
 import { parseUTCDate } from '@/lib/utils/date';
@@ -63,10 +64,15 @@ export function NotificationMenu() {
       markAsRead.mutate(notification.id);
     }
 
-    // Navigate if there's a link
-    if (notification.extraData?.link) {
+    // Build link from extraData (link property or fallback to invite/token)
+    let targetLink = notification.extraData?.link;
+    if (!targetLink && notification.type === 'team_invite' && notification.extraData?.token) {
+      targetLink = `/invite/${notification.extraData.token}`;
+    }
+
+    if (targetLink) {
       setOpen(false);
-      router.push(notification.extraData.link);
+      router.push(targetLink);
     }
   };
 
@@ -80,6 +86,8 @@ export function NotificationMenu() {
         return <AlertCircle className="h-4 w-4 text-amber-500" />;
       case 'action_item':
         return <Info className="h-4 w-4 text-purple-500" />;
+      case 'team_invite':
+        return <Users className="h-4 w-4 text-indigo-500" />;
       default:
         return <Bell className="h-4 w-4 text-muted-foreground" />;
     }
@@ -163,9 +171,23 @@ export function NotificationMenu() {
                     <p className="text-sm leading-tight text-wrap break-words">
                       {notification.message}
                     </p>
-                    <span className="text-xs text-muted-foreground">
-                      {formatTimeAgo(notification.createdAt)}
-                    </span>
+                    <div className="flex items-center justify-between mt-1">
+                      <span className="text-xs text-muted-foreground">
+                        {formatTimeAgo(notification.createdAt)}
+                      </span>
+                      {notification.type === 'team_invite' && (
+                        <Button 
+                          size="sm" 
+                          className="h-7 text-xs px-2"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleNotificationClick(notification);
+                          }}
+                        >
+                          Accept
+                        </Button>
+                      )}
+                    </div>
                   </div>
                   <Button
                     variant="ghost"

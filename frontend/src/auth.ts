@@ -50,7 +50,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         try {
           // We hit the backend directly.
-          const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+          const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://ai.harbaat.me';
           const res = await fetch(`${baseUrl}/api/auth/login`, {
             method: 'POST',
             body: JSON.stringify({
@@ -68,9 +68,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             const setCookie = res.headers.get('set-cookie');
             let refreshToken = '';
             if (setCookie) {
-              // Look for our specific cookie name
-              const match = setCookie.match(/harbaat_refresh=([^;]+)/i);
-              if (match) refreshToken = match[1];
+              // Robust parsing: handles both arrays and comma-separated strings
+              const cookies = setCookie.split(/,(?=[^;]+=[^;]+)/);
+              const refreshCookie = cookies.find(c => c.trim().startsWith('harbaat_refresh='));
+              if (refreshCookie) {
+                refreshToken = refreshCookie.split('=')[1].split(';')[0].trim();
+              }
             }
 
             return {
@@ -101,7 +104,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         // For Google, we must exchange the id_token for our backend tokens
         if (account.provider === 'google') {
           try {
-            const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+            const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://ai.harbaat.me';
             const res = await fetch(`${baseUrl}/api/auth/google`, {
               method: 'POST',
               body: JSON.stringify({
@@ -120,8 +123,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               // Extract Refresh Token from backend cookie
               const setCookie = res.headers.get('set-cookie');
               if (setCookie) {
-                const match = setCookie.match(/harbaat_refresh=([^;]+)/i);
-                if (match) refreshToken = match[1];
+                const cookies = setCookie.split(/,(?=[^;]+=[^;]+)/);
+                const refreshCookie = cookies.find(c => c.trim().startsWith('harbaat_refresh='));
+                if (refreshCookie) {
+                  refreshToken = refreshCookie.split('=')[1].split(';')[0].trim();
+                }
               }
             }
           } catch (error) {
@@ -144,7 +150,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       // Sync user data selectively without forcing a token refresh on trigger='update'
       if (trigger === 'update') {
         try {
-          const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+          const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://ai.harbaat.me';
           const meRes = await fetch(`${baseUrl}/api/auth/me`, {
             headers: { Authorization: `Bearer ${token.accessToken}` },
           });
@@ -170,7 +176,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       // Access token has expired or nearing expiry, try to update it
       if (token.refreshToken) {
         try {
-          const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+          const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://ai.harbaat.me';
           console.log(
             `[NextAuth] Refreshing token. Reason: ${shouldForceRefresh ? (isNearingExpiry ? 'Nearing expiry' : 'Manual update') : 'Expired'}`
           );

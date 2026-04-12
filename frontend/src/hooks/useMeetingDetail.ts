@@ -11,6 +11,7 @@ import {
   getTranscriptHistory,
   getMeetingAudioUrl,
   reprocessInsights,
+  reidentifySpeakers,
   type UpdateTranscriptRequest,
 } from '@/lib/api/meetings';
 import { APP_CONFIG } from '@/lib/config/app.config';
@@ -144,6 +145,22 @@ export function useReprocessInsights(meetingId: string) {
       queryClient.invalidateQueries({ queryKey: ['meeting', meetingId] });
       queryClient.invalidateQueries({ queryKey: ['entities', meetingId] });
       toast.success('Insight reprocessing started in background');
+    },
+    onError: (error) => toast.error(getErrorMessage(error)),
+  });
+}
+/**
+ * Hook to trigger speaker re-identification.
+ */
+export function useReidentifySpeakers(meetingId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => reidentifySpeakers(meetingId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['meeting', meetingId] });
+      queryClient.invalidateQueries({ queryKey: ['entities', meetingId] });
+      queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
+      toast.success('Speaker re-identification started');
     },
     onError: (error) => toast.error(getErrorMessage(error)),
   });

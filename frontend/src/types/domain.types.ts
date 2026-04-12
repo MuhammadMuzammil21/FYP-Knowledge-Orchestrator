@@ -263,7 +263,7 @@ export interface MeetingUploadResponse {
 export interface Notification {
   id: number;
   meetingId?: string;
-  type: 'mention' | 'summary' | 'conflict' | 'action_item';
+  type: 'mention' | 'summary' | 'conflict' | 'action_item' | 'team_invite';
   title: string;
   message: string;
   extraData: {

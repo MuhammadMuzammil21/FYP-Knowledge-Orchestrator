@@ -15,6 +15,9 @@ import {
   useDeleteTeam,
   useTeamDashboard,
 } from '@/hooks/useTeams';
+import { useProjects } from '@/hooks/useProjects';
+import { createProject } from '@/lib/api/projects';
+import { ProjectCard } from '@/components/projects/ProjectCard';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -46,19 +49,21 @@ import {
   LayoutDashboard,
   FolderOpen,
   Mic,
+  Plus,
 } from 'lucide-react';
 import { formatDate } from '@/lib/utils/date';
 import type { TeamRole } from '@/types';
 
 export default function TeamDetailsPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { can, activeTeamRole, setWorkspace, workspace, isTeamWorkspace } = useWorkspace();
   const { slug } = use(params);
   const router = useRouter();
-  const { can, activeTeamRole } = useWorkspace();
 
   // Data hooks
   const { data: team, isLoading: isTeamLoading } = useTeam(slug);
   const { data: invites, isLoading: isInvitesLoading } = useTeamInvites(slug);
   const { data: dashboard } = useTeamDashboard(slug);
+  const { data: teamProjects, isLoading: isProjectsLoading, refetch: refetchProjects } = useProjects(team?.id);
 
   // Mutation hooks
   const updateRole = useUpdateMemberRole(slug);
@@ -84,6 +89,13 @@ export default function TeamDetailsPage({ params }: { params: Promise<{ slug: st
       setEditDesc(team.description || '');
     }
   }, [team, editName]);
+
+  // Sync workspace on load
+  useEffect(() => {
+    if (team && (!isTeamWorkspace || (workspace as any).id !== team.id)) {
+      setWorkspace(team);
+    }
+  }, [team, workspace, isTeamWorkspace, setWorkspace]);
 
   const handleRemoveMember = (userId: string, name: string) => {
     if (window.confirm(`Are you sure you want to remove ${name} from the team?`)) {
@@ -116,6 +128,34 @@ export default function TeamDetailsPage({ params }: { params: Promise<{ slug: st
     });
   };
 
+  const [isNewProjectDialogOpen, setIsNewProjectDialogOpen] = useState(false);
+  const [newProjectName, setNewProjectName] = useState('');
+  const [newProjectDesc, setNewProjectDesc] = useState('');
+  const [isCreatingProject, setIsCreatingProject] = useState(false);
+
+  const handleCreateProject = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newProjectName || !team) return;
+    setIsCreatingProject(true);
+    try {
+      await createProject({
+        name: newProjectName,
+        description: newProjectDesc,
+        team_id: team.id,
+      });
+      setNewProjectName('');
+      setNewProjectDesc('');
+      setIsNewProjectDialogOpen(false);
+      refetchProjects();
+    } catch (error) {
+      console.error('Failed to create project:', error);
+    } finally {
+      setIsCreatingProject(false);
+    }
+  };
+
+  const [isManageDialogOpen, setIsManageDialogOpen] = useState(false);
+
   if (isTeamLoading)
     return (
       <div className="p-4 md:p-6 lg:p-8 max-w-300 mx-auto w-full">
@@ -136,342 +176,338 @@ export default function TeamDetailsPage({ params }: { params: Promise<{ slug: st
       </div>
     );
 
+
   return (
-    <div className="p-4 md:p-6 lg:p-8 max-w-300 mx-auto w-full space-y-6 md:space-y-8">
-      <div>
-        <Link
-          href="/teams"
-          className="inline-flex items-center text-sm font-medium text-primary hover:underline mb-4"
-        >
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to teams
-        </Link>
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{team.name}</h1>
-          <Badge
-            variant="outline"
-            className="capitalize border-primary/20 bg-primary/5 text-primary"
-          >
-            {team.your_role}
-          </Badge>
+    <div className="p-4 md:p-6 lg:p-8 max-w-7xl mx-auto w-full space-y-6 md:space-y-8">
+      {/* HEADER BAR */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+          <div className="flex items-center gap-3 mb-1">
+            <h1 className="text-2xl md:text-3xl font-bold tracking-tight">{team.name}</h1>
+            <Badge variant="outline" className="capitalize border-primary/20 bg-primary/5 text-primary">
+              {team.your_role}
+            </Badge>
+          </div>
+          {team.description && <p className="text-sm text-muted-foreground">{team.description}</p>}
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {can('manage_settings') && (
+            <Button variant="outline" onClick={() => setIsManageDialogOpen(true)} className="gap-2">
+              <Settings className="h-4 w-4" /> Manage Team
+            </Button>
+          )}
+          {can('upload_meeting') && (
+            <Link href="/dashboard">
+              <Button className="gap-2">
+                <Plus className="h-4 w-4" /> New Meeting
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
 
-      <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 max-w-130">
-          <TabsTrigger value="overview">
-            <LayoutDashboard className="w-4 h-4 mr-2" />
-            Overview
-          </TabsTrigger>
-          <TabsTrigger value="members">
-            <Users className="w-4 h-4 mr-2" /> Members
-          </TabsTrigger>
-          <TabsTrigger value="invites">
-            <Mail className="w-4 h-4 mr-2" /> Invites
-          </TabsTrigger>
-          <TabsTrigger value="settings">
-            <Settings className="w-4 h-4 mr-2" /> Settings
-          </TabsTrigger>
-        </TabsList>
-
-        {/* OVERVIEW TAB */}
-        <TabsContent value="overview" className="mt-6 space-y-6">
-          <div>
-            <h3 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide mb-4">
-              Team Stats
-            </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {/* Projects card */}
-              <div className="rounded-xl border border-border bg-card p-5 flex items-center gap-4">
-                <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                  <FolderOpen className="h-5 w-5 text-primary" />
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* LEFT COLUMN: Activity & Quick Stats */}
+        <div className="lg:col-span-1 space-y-6">
+          <div className="rounded-xl border border-border bg-card overflow-hidden">
+            <div className="p-4 border-b border-border bg-muted/30">
+              <h3 className="font-semibold text-sm">Team Stats</h3>
+            </div>
+            <div className="p-4 space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <FolderOpen className="h-4 w-4" />
+                  <span className="text-sm">Projects</span>
                 </div>
-                <div>
-                  <p className="text-2xl font-bold tabular-nums">
-                    {dashboard?.projects_count ?? '—'}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Projects</p>
-                </div>
+                <span className="font-medium">{dashboard?.projects_count ?? '—'}</span>
               </div>
-              {/* Meetings card */}
-              <div className="rounded-xl border border-border bg-card p-5 flex items-center gap-4">
-                <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                  <Mic className="h-5 w-5 text-primary" />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Mic className="h-4 w-4" />
+                  <span className="text-sm">Meetings</span>
                 </div>
-                <div>
-                  <p className="text-2xl font-bold tabular-nums">
-                    {dashboard?.meetings_count ?? '—'}
-                  </p>
-                  <p className="text-sm text-muted-foreground">Meetings</p>
-                </div>
+                <span className="font-medium">{dashboard?.meetings_count ?? '—'}</span>
               </div>
-              {/* Members card */}
-              <div className="rounded-xl border border-border bg-card p-5 flex items-center gap-4">
-                <div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                  <Users className="h-5 w-5 text-primary" />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Users className="h-4 w-4" />
+                  <span className="text-sm">Members</span>
                 </div>
-                <div>
-                  <p className="text-2xl font-bold tabular-nums">{team.members?.length ?? '—'}</p>
-                  <p className="text-sm text-muted-foreground">Members</p>
-                </div>
+                <span className="font-medium">{team.members?.length ?? '—'}</span>
               </div>
             </div>
           </div>
-          {team.description && (
-            <div className="rounded-xl border border-border bg-card p-5">
-              <h3 className="font-semibold mb-2 text-sm">About this team</h3>
-              <p className="text-sm text-muted-foreground leading-relaxed">{team.description}</p>
-            </div>
-          )}
-        </TabsContent>
+        </div>
 
-        {/* MEMBERS TAB */}
-        <TabsContent value="members" className="mt-6 space-y-4">
-          <div className="rounded-xl border border-border bg-card overflow-hidden">
-            <div className="p-4 border-b border-border bg-muted/30">
-              <h3 className="font-semibold">Team Members</h3>
-              <p className="text-sm text-muted-foreground">Manage who has access to this team.</p>
-            </div>
-            <div className="divide-y divide-border">
-              {team.members.map((member) => (
-                <div
-                  key={member.user_id}
-                  className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold shrink-0">
-                      {member.name.substring(0, 2).toUpperCase()}
-                    </div>
-                    <div>
-                      <p className="font-medium text-sm leading-none">{member.name}</p>
-                      <p className="text-xs text-muted-foreground mt-1">{member.email}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 self-start sm:self-auto">
-                    {can('manage_members') &&
-                    activeTeamRole === 'owner' &&
-                    member.role !== 'owner' ? (
-                      <Select
-                        defaultValue={member.role}
-                        onValueChange={(val: TeamRole) =>
-                          updateRole.mutate({ userId: member.user_id, role: val })
-                        }
-                        disabled={updateRole.isPending}
-                      >
-                        <SelectTrigger className="w-27.5 h-8 text-xs">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="admin">Admin</SelectItem>
-                          <SelectItem value="member">Member</SelectItem>
-                          <SelectItem value="viewer">Viewer</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    ) : (
-                      <Badge variant="secondary" className="capitalize text-xs font-normal">
-                        {member.role}
-                      </Badge>
-                    )}
-                    {can('manage_members') && member.role !== 'owner' && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive shrink-0"
-                        onClick={() => handleRemoveMember(member.user_id, member.name)}
-                        disabled={removeMember.isPending}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </TabsContent>
-
-        {/* INVITES TAB */}
-        <TabsContent value="invites" className="mt-6 space-y-6">
-          {can('manage_members') && (
-            <div className="rounded-xl border border-border bg-card p-6">
-              <h3 className="font-semibold mb-1">Invite Member</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                Send an email invitation to join this team.
-              </p>
-              <form onSubmit={handleInviteSubmit} className="flex flex-col sm:flex-row gap-3">
-                <div className="flex-1">
-                  <Input
-                    type="email"
-                    placeholder="Email address"
-                    value={inviteEmail}
-                    onChange={(e) => setInviteEmail(e.target.value)}
-                    required
-                  />
-                </div>
-                <div className="w-full sm:w-37.5">
-                  <Select value={inviteRole} onValueChange={(val: TeamRole) => setInviteRole(val)}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="admin">Admin</SelectItem>
-                      <SelectItem value="member">Member</SelectItem>
-                      <SelectItem value="viewer">Viewer</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <Button type="submit" disabled={inviteMember.isPending || !inviteEmail}>
-                  {inviteMember.isPending ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  ) : null}
-                  Send invite
-                </Button>
-              </form>
-            </div>
-          )}
-
-          <div className="rounded-xl border border-border bg-card overflow-hidden">
-            <div className="p-4 border-b border-border bg-muted/30">
-              <h3 className="font-semibold">Pending Invites</h3>
-            </div>
-            {isInvitesLoading ? (
-              <div className="p-4 space-y-3">
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
-              </div>
-            ) : invites && invites.length > 0 ? (
-              <div className="divide-y divide-border">
-                {invites.map((invite) => (
-                  <div key={invite.id} className="p-4 flex items-center justify-between gap-4">
-                    <div>
-                      <p className="font-medium text-sm">{invite.email}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        Expires: {formatDate(invite.expires_at)}
-                      </p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-2">
-                      {invite.is_registered ? (
-                        <Badge variant="outline" className="text-[10px] bg-green-500/10 text-green-600 border-green-500/20">
-                          Account Found
-                        </Badge>
-                      ) : (
-                        <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-600 border-amber-500/20">
-                          Pending Signup
-                        </Badge>
-                      )}
-                      <Badge variant="outline" className="capitalize text-xs font-normal">
-                        {invite.role}
-                      </Badge>
-                    </div>
-                      {can('manage_members') && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-destructive h-8 px-2"
-                          onClick={() => revokeInvite.mutate(invite.id)}
-                          disabled={revokeInvite.isPending}
-                        >
-                          Revoke
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="p-8 text-center text-sm text-muted-foreground">
-                No pending invites.
-              </div>
+        {/* RIGHT COLUMN: Projects */}
+        <div className="lg:col-span-3 space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold">Team Projects</h3>
+            {can('manage_settings') && (
+              <Button onClick={() => setIsNewProjectDialogOpen(true)} size="sm" className="gap-2">
+                <Plus className="h-4 w-4" /> New Project
+              </Button>
             )}
           </div>
-        </TabsContent>
 
-        {/* SETTINGS TAB */}
-        <TabsContent value="settings" className="mt-6">
-          {!can('manage_settings') ? (
-            <div className="rounded-xl border border-border bg-card p-8 flex flex-col items-center justify-center text-center">
-              <Settings className="h-10 w-10 text-muted-foreground mb-4 opacity-20" />
-              <h3 className="font-semibold text-lg">Access Denied</h3>
-              <p className="text-sm text-muted-foreground mt-2 max-w-sm">
-                You do not have permission to view or manage team settings. Only team owners can
-                access this section.
-              </p>
+          {isProjectsLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[...Array(2)].map((_, i) => (
+                <Skeleton key={i} className="h-40 w-full rounded-xl" />
+              ))}
+            </div>
+          ) : teamProjects && teamProjects.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {teamProjects.map((project: any) => (
+                <ProjectCard key={project.id} project={project} />
+              ))}
             </div>
           ) : (
-            <div className="space-y-6">
-              <div className="rounded-xl border border-border bg-card p-6">
-                <h3 className="font-semibold mb-1">Team Details</h3>
-                <p className="text-sm text-muted-foreground mb-6">
-                  Update your team's name and description.
-                </p>
-                <form onSubmit={handleUpdateTeam} className="space-y-4 max-w-lg">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="edit-name">Team name</Label>
-                    <Input
-                      id="edit-name"
-                      value={editName}
-                      onChange={(e) => setEditName(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-1.5">
-                    <Label htmlFor="edit-desc">Description</Label>
-                    <Input
-                      id="edit-desc"
-                      value={editDesc}
-                      onChange={(e) => setEditDesc(e.target.value)}
-                    />
-                  </div>
-                  <Button type="submit" disabled={updateTeam.isPending}>
-                    {updateTeam.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                    Save changes
-                  </Button>
-                </form>
-              </div>
-
-              <div className="rounded-xl border border-destructive/50 bg-destructive/5 p-6">
-                <h3 className="font-semibold text-destructive mb-1">Danger Zone</h3>
-                <p className="text-sm text-muted-foreground mb-6">
-                  Permanently delete this team and all its data. This action cannot be undone.
-                </p>
-                <Button variant="destructive" onClick={() => setIsDeleteDialogOpen(true)}>
-                  Delete Team
+            <div className="rounded-xl border border-dashed border-border p-12 text-center">
+              <FolderOpen className="h-10 w-10 text-muted-foreground/30 mx-auto mb-4" />
+              <h4 className="font-semibold mb-1">No team projects yet</h4>
+              <p className="text-sm text-muted-foreground mb-6">
+                Projects are where your team's meetings and insights are stored.
+              </p>
+              {can('manage_settings') && (
+                <Button onClick={() => setIsNewProjectDialogOpen(true)} variant="outline">
+                  Create First Project
                 </Button>
-              </div>
-
-              <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Are you absolutely sure?</DialogTitle>
-                    <DialogDescription>
-                      This action cannot be undone. This will permanently delete the team "
-                      {team.name}" and remove all data associated with it.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <DialogFooter className="mt-4">
-                    <Button
-                      variant="outline"
-                      onClick={() => setIsDeleteDialogOpen(false)}
-                      disabled={deleteTeam.isPending}
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      onClick={handleDeleteTeam}
-                      disabled={deleteTeam.isPending}
-                    >
-                      {deleteTeam.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                      Yes, delete team
-                    </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+              )}
             </div>
           )}
-        </TabsContent>
-      </Tabs>
+        </div>
+      </div>
+
+      {/* NEW PROJECT DIALOG */}
+      <Dialog open={isNewProjectDialogOpen} onOpenChange={setIsNewProjectDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Create Team Project</DialogTitle>
+            <DialogDescription>
+              This project will be visible to all members of {team.name}.
+            </DialogDescription>
+          </DialogHeader>
+          <form onSubmit={handleCreateProject} className="space-y-4 py-4">
+            <div className="space-y-1.5">
+              <Label htmlFor="proj-name">Project Name</Label>
+              <Input
+                id="proj-name"
+                value={newProjectName}
+                onChange={(e) => setNewProjectName(e.target.value)}
+                placeholder="e.g., Client Alpha"
+                required
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="proj-desc">Description (Optional)</Label>
+              <Input
+                id="proj-desc"
+                value={newProjectDesc}
+                onChange={(e) => setNewProjectDesc(e.target.value)}
+                placeholder="Brief overview of the project"
+              />
+            </div>
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setIsNewProjectDialogOpen(false)} disabled={isCreatingProject}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isCreatingProject || !newProjectName}>
+                {isCreatingProject && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+                Create Project
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* MANAGE TEAM DIALOG */}
+      <Dialog open={isManageDialogOpen} onOpenChange={setIsManageDialogOpen}>
+        <DialogContent className="max-w-3xl h-[85vh] flex flex-col p-0">
+          <div className="px-6 py-4 border-b border-border flex items-center justify-between shrink-0">
+            <div>
+              <DialogTitle>Manage Team</DialogTitle>
+              <DialogDescription>
+                Members, invites, and settings for {team.name}.
+              </DialogDescription>
+            </div>
+          </div>
+          <div className="flex-1 overflow-hidden flex flex-col p-6">
+            <Tabs defaultValue="members" className="w-full flex flex-col h-full">
+              <TabsList className="grid w-full grid-cols-3 shrink-0">
+                <TabsTrigger value="members">
+                  <Users className="w-4 h-4 mr-2" /> Members
+                </TabsTrigger>
+                <TabsTrigger value="invites">
+                  <Mail className="w-4 h-4 mr-2" /> Invites
+                </TabsTrigger>
+                <TabsTrigger value="settings">
+                  <Settings className="w-4 h-4 mr-2" /> Settings
+                </TabsTrigger>
+              </TabsList>
+
+              <div className="flex-1 overflow-y-auto mt-4 px-1 pb-4 space-y-4">
+                {/* MEMBERS TAB */}
+                <TabsContent value="members" className="m-0 h-full">
+                  <div className="rounded-xl border border-border bg-card overflow-hidden">
+                    <div className="divide-y divide-border">
+                      {team.members.map((member: any) => (
+                        <div key={member.user_id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                          <div className="flex items-center gap-3">
+                            <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold shrink-0">
+                              {member.name.substring(0, 2).toUpperCase()}
+                            </div>
+                            <div>
+                              <p className="font-medium text-sm leading-none">{member.name}</p>
+                              <p className="text-xs text-muted-foreground mt-1">{member.email}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 self-start sm:self-auto">
+                            {can('manage_members') && activeTeamRole === 'owner' && member.role !== 'owner' ? (
+                              <Select
+                                defaultValue={member.role}
+                                onValueChange={(val: TeamRole) => updateRole.mutate({ userId: member.user_id, role: val })}
+                              >
+                                <SelectTrigger className="w-27.5 h-8 text-xs">
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="admin">Admin</SelectItem>
+                                  <SelectItem value="member">Member</SelectItem>
+                                  <SelectItem value="viewer">Viewer</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            ) : (
+                              <Badge variant="secondary" className="capitalize text-xs font-normal">
+                                {member.role}
+                              </Badge>
+                            )}
+                            {can('manage_members') && member.role !== 'owner' && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive hover:bg-destructive/10 shrink-0"
+                                onClick={() => handleRemoveMember(member.user_id, member.name)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </TabsContent>
+
+                {/* INVITES TAB */}
+                <TabsContent value="invites" className="m-0 space-y-4">
+                  {can('manage_members') && (
+                    <div className="rounded-xl border border-border bg-card p-4">
+                      <form onSubmit={handleInviteSubmit} className="flex gap-2 items-end">
+                        <div className="flex-1 space-y-1">
+                          <Label className="text-xs">Email</Label>
+                          <Input type="email" value={inviteEmail} onChange={(e) => setInviteEmail(e.target.value)} required className="h-9" />
+                        </div>
+                        <div className="w-32 space-y-1">
+                          <Label className="text-xs">Role</Label>
+                          <Select value={inviteRole} onValueChange={(val: TeamRole) => setInviteRole(val)}>
+                            <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="admin">Admin</SelectItem>
+                              <SelectItem value="member">Member</SelectItem>
+                              <SelectItem value="viewer">Viewer</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <Button type="submit" disabled={inviteMember.isPending || !inviteEmail} className="h-9">
+                          {inviteMember.isPending && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+                          Invite
+                        </Button>
+                      </form>
+                    </div>
+                  )}
+
+                  <div className="rounded-xl border border-border bg-card overflow-hidden">
+                    <div className="p-3 border-b border-border bg-muted/30">
+                      <h3 className="text-sm font-semibold">Pending Invites</h3>
+                    </div>
+                    {isInvitesLoading ? (
+                      <div className="p-4"><Skeleton className="h-10 w-full" /></div>
+                    ) : (invites && invites.length > 0) ? (
+                      <div className="divide-y divide-border">
+                        {invites.map((invite: any) => (
+                          <div key={invite.id} className="p-3 flex items-center justify-between text-sm">
+                            <span className="font-medium">{invite.email}</span>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="outline" className="capitalize text-xs font-normal">{invite.role}</Badge>
+                              {can('manage_members') && (
+                                <Button variant="ghost" size="sm" className="text-destructive h-7 px-2 text-xs" onClick={() => revokeInvite.mutate(invite.id)}>
+                                  Revoke
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="p-6 text-center text-sm text-muted-foreground">No pending invites.</div>
+                    )}
+                  </div>
+                </TabsContent>
+
+                {/* SETTINGS TAB */}
+                <TabsContent value="settings" className="m-0 space-y-6">
+                  {!can('manage_settings') ? (
+                    <div className="text-center p-8 text-muted-foreground"><Settings className="h-10 w-10 mx-auto mb-2 opacity-20"/> No permission</div>
+                  ) : (
+                    <>
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-sm">Team Details</h4>
+                        <form onSubmit={handleUpdateTeam} className="space-y-3">
+                          <div className="space-y-1">
+                            <Label>Name</Label>
+                            <Input value={editName} onChange={(e) => setEditName(e.target.value)} required />
+                          </div>
+                          <div className="space-y-1">
+                            <Label>Description</Label>
+                            <Input value={editDesc} onChange={(e) => setEditDesc(e.target.value)} />
+                          </div>
+                          <Button type="submit" disabled={updateTeam.isPending}>Save changes</Button>
+                        </form>
+                      </div>
+
+                      <div className="rounded-xl border border-destructive/50 bg-destructive/5 p-4 mt-8">
+                        <h4 className="font-semibold text-destructive mb-1 text-sm">Danger Zone</h4>
+                        <p className="text-xs text-muted-foreground mb-4">Permanently delete this team and all data.</p>
+                        <Button variant="destructive" size="sm" onClick={() => setIsDeleteDialogOpen(true)}>Delete Team</Button>
+                      </div>
+                    </>
+                  )}
+                </TabsContent>
+              </div>
+            </Tabs>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
+      {/* DELETE DIALOG (Nested outside manage dialog) */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Are you absolutely sure?</DialogTitle>
+            <DialogDescription>
+              This action cannot be undone. This will permanently delete "{team.name}".
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>Cancel</Button>
+            <Button variant="destructive" onClick={handleDeleteTeam} disabled={deleteTeam.isPending}>
+              Yes, delete team
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
     </div>
   );
 }

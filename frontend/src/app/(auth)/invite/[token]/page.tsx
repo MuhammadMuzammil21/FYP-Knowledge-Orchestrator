@@ -26,36 +26,40 @@ function InviteContent({ params }: { params: Promise<{ token: string }> }) {
   useEffect(() => {
     if (sessionStatus === 'loading') return;
 
-    if (!session) {
-      setStatus('unauthenticated');
+    if (!token || token === '[token]') {
+      setStatus('error');
+      setErrorMessage('Invalid or missing invite token.');
       return;
     }
 
-    if (!token) {
-      setStatus('error');
-      setErrorMessage('No invite token found in URL.');
+    if (!session) {
+      setStatus('unauthenticated');
       return;
     }
 
     const processInvite = async () => {
       try {
         const result = await acceptInvite(token);
+        console.log('[Invite] Success:', result.team.name);
         setTeam(result.team);
         setStatus('success');
       } catch (error: any) {
+        console.error('[Invite] API Error:', error);
         setStatus('error');
         // Extract error message generically
         const msg = error?.response?.data?.detail
           ? typeof error.response.data.detail === 'string'
             ? error.response.data.detail
-            : error.response.data.detail[0]?.msg
+            : Array.isArray(error.response.data.detail) 
+              ? error.response.data.detail[0]?.msg 
+              : 'Failed to accept invitation.'
           : error?.message || 'Invalid or expired invite token.';
         setErrorMessage(msg as string);
       }
     };
 
     processInvite();
-  }, [token]);
+  }, [token, session, sessionStatus]);
 
   return (
     <Card className="w-full max-w-md shadow-lg border-border/50 backdrop-blur-sm bg-card/95">

@@ -83,7 +83,7 @@ function NavItem({
 export function Sidebar() {
   const { data: session } = useSession();
   const { isOpen, close } = useMobileMenu();
-  const { can } = useWorkspace();
+  const { can, isTeamWorkspace, activeTeamSlug } = useWorkspace();
 
   return (
     <>
@@ -147,10 +147,13 @@ export function Sidebar() {
           <div className="px-1 pt-3 pb-2">
             <WorkspaceSwitcher />
           </div>
-          <NavItem href="/dashboard" icon={LayoutDashboard} label="Dashboard" onClick={close} />
-          <NavItem href="/meetings" icon={Calendar} label="All meetings" onClick={close} />
-          <NavItem href="/projects" icon={FolderOpen} label="Projects" onClick={close} />
-          <NavItem href="/teams" icon={Users} label="Teams" onClick={close} />
+          {isTeamWorkspace && activeTeamSlug && (
+             <NavItem href={`/teams/${activeTeamSlug}`} icon={LayoutDashboard} label="Team Hub" onClick={close} />
+          )}
+          <NavItem href="/dashboard" icon={isTeamWorkspace ? Plus : LayoutDashboard} label={isTeamWorkspace ? "New Meeting" : "Dashboard"} onClick={close} />
+          <NavItem href="/meetings" icon={Calendar} label={isTeamWorkspace ? "Team Meetings" : "All meetings"} onClick={close} />
+          <NavItem href="/projects" icon={FolderOpen} label={isTeamWorkspace ? "Team Projects" : "Projects"} onClick={close} />
+          {!isTeamWorkspace && <NavItem href="/teams" icon={Users} label="Teams" onClick={close} />}
 
           <Separator className="my-3" />
 

@@ -28,13 +28,14 @@ import {
   useDeleteMeeting,
   useMeetingAudio,
   useReprocessInsights,
+  useReidentifySpeakers,
 } from '@/hooks/useMeetingDetail';
 import { useMeetingStatus } from '@/hooks/useMeetingStatus';
 import { useProjectConflicts } from '@/hooks/useKnowledgeGraph';
 import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { useProject } from '@/hooks/useProjects';
 import { useTeams } from '@/hooks/useTeams';
-import { ArrowLeft, Network, Trash2, Loader2, AudioWaveform, ShieldAlert, ChevronRight, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Network, Trash2, Loader2, AudioWaveform, ShieldAlert, ChevronRight, RefreshCw, UserCheck } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { formatDateTime } from '@/lib/utils/date';
@@ -71,6 +72,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
   const { audioUrl, isLoading: audioLoading } = useMeetingAudio(id);
   const deleteMeeting = useDeleteMeeting();
   const reprocessInsights = useReprocessInsights(id);
+  const reidentifySpeakers = useReidentifySpeakers(id);
 
   const { data: project } = useProject(meeting?.projectId || '');
   const { data: teams } = useTeams();
@@ -182,13 +184,28 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
                   className="w-full sm:w-auto"
                   disabled={reprocessInsights.isPending}
                   onClick={() => reprocessInsights.mutate()}
+                  title="Regenerate summary, tasks, and conflicts from the latest transcript"
                 >
                   {reprocessInsights.isPending ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
                     <RefreshCw className="mr-2 h-4 w-4" />
                   )}
-                  Reprocess Insights
+                  Reprocess
+                </Button>
+                <Button
+                  variant="outline"
+                  className="w-full sm:w-auto"
+                  disabled={reidentifySpeakers.isPending}
+                  onClick={() => reidentifySpeakers.mutate()}
+                  title="Re-run biometric speaker matching and auto-tagging"
+                >
+                  {reidentifySpeakers.isPending ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <UserCheck className="mr-2 h-4 w-4" />
+                  )}
+                  Identify Speakers
                 </Button>
                 <Link href={`/meetings/${id}/graph`}>
                   <Button variant="outline" className="w-full sm:w-auto">

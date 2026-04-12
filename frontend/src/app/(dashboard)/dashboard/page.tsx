@@ -55,7 +55,7 @@ const RECORDING_CONSENT_TEXT =
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { can } = useWorkspace();
+  const { activeTeamId, can, isTeamWorkspace, workspace, setWorkspace } = useWorkspace();
   const [file, setFile] = useState<File | null>(null);
   const [context, setContext] = useState('');
   const [isUploading, setIsUploading] = useState(false);
@@ -78,23 +78,26 @@ export default function DashboardPage() {
   const [consentGiven, setConsentGiven] = useState(false);
   const [showConsentDialog, setShowConsentDialog] = useState(false);
 
-  // Fetch projects on mount
+  // Fetch projects on mount or workspace change
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const data = await getProjects();
+        const data = await getProjects(activeTeamId ? { team_id: activeTeamId } : { personal: 'true' });
         setProjects(data.projects);
-        // Default to first project if available
+        
+        // If we have projects, select the first one. 
+        // If we switch from personal to team and team has no projects, clear selection.
         if (data.projects.length > 0) {
           setSelectedProjectId(data.projects[0].id);
+        } else {
+          setSelectedProjectId('');
         }
       } catch (error) {
         console.error('Failed to fetch projects:', error);
-        // Don't block UI, just won't show projects
       }
     };
     fetchProjects();
-  }, []);
+  }, [activeTeamId]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -137,7 +140,10 @@ export default function DashboardPage() {
       let projectId = selectedProjectId;
 
       if (isCreatingProject && newProjectName.trim()) {
-        const newProject = await createProject({ name: newProjectName });
+        const newProject = await createProject({ 
+          name: newProjectName,
+          team_id: activeTeamId || undefined 
+        });
         projectId = newProject.id;
       }
 
@@ -196,10 +202,28 @@ export default function DashboardPage() {
     <div className="p-4 md:p-6 max-w-6xl mx-auto w-full">
       {/* Page header */}
       <div className="mb-8">
-        <h1 className="text-xl font-bold tracking-tight">New meeting</h1>
-        <p className="text-sm text-muted-foreground mt-0.5">
-          Upload a recording and get AI-powered insights in minutes
-        </p>
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-xl font-bold tracking-tight">New meeting</h1>
+            <p className="text-sm text-muted-foreground mt-0.5">
+              Upload a recording and get AI-powered insights in minutes
+            </p>
+          </div>
+        </div>
+
+        {/* Workspace context banner */}
+        {isTeamWorkspace && typeof workspace !== 'string' && (
+          <div className="rounded-lg bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50 p-3 flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <div className="h-6 w-6 rounded bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
+                <Users className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />
+              </div>
+              <p className="text-sm text-indigo-900 dark:text-indigo-200">
+                Uploading to team: <span className="font-semibold">{workspace.name}</span>
+              </p>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">

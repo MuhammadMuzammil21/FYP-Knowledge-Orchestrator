@@ -230,6 +230,7 @@ export interface UpdateProjectRequest {
 export interface CreateProjectRequest {
   name: string;
   description?: string;
+  team_id?: string;
 }
 
 // Conflict Types (Project-level)
