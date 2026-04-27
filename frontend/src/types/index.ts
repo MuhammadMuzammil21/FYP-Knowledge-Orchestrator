@@ -111,6 +111,7 @@ export interface TranscriptResponse {
   transcript: string;
   is_llm_rewritten: boolean;
   version: number;
+  language?: string;
   created_at: string;
 }
 

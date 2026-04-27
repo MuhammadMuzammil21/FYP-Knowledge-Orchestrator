@@ -115,6 +115,7 @@ export interface Transcript {
   content: string;
   version: number;
   isLlmRewritten: boolean;
+  language?: string;
   createdAt: Date;
   updatedAt?: Date;
 }

@@ -21,6 +21,7 @@ import {
   FolderOpen,
   Users,
   MessageSquare,
+  ClipboardList,
 } from 'lucide-react';
 import {
   DropdownMenu,
@@ -153,6 +154,7 @@ export function Sidebar() {
           <NavItem href="/dashboard" icon={isTeamWorkspace ? Plus : LayoutDashboard} label={isTeamWorkspace ? "New Meeting" : "Dashboard"} onClick={close} />
           <NavItem href="/meetings" icon={Calendar} label={isTeamWorkspace ? "Team Meetings" : "All meetings"} onClick={close} />
           <NavItem href="/projects" icon={FolderOpen} label={isTeamWorkspace ? "Team Projects" : "Projects"} onClick={close} />
+          <NavItem href="/tasks" icon={ClipboardList} label="Tasks" onClick={close} />
           {!isTeamWorkspace && <NavItem href="/teams" icon={Users} label="Teams" onClick={close} />}
 
           <Separator className="my-3" />

@@ -114,6 +114,7 @@ export const adaptTranscript = (apiTranscript: any): Transcript => {
     content: apiTranscript.transcript,
     isLlmRewritten: apiTranscript.is_llm_rewritten ?? false,
     version: apiTranscript.version ?? 1,
+    language: apiTranscript.language,
     createdAt: parseUTCDate(apiTranscript.created_at),
     updatedAt: parseUTCDate(apiTranscript.updated_at),
   };

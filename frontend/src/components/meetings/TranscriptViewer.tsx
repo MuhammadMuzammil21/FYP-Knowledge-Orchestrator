@@ -64,6 +64,8 @@ interface TranscriptViewerProps {
   onSeek?: (seconds: number) => void;
   /** All unique speaker names in this meeting (for relabeling dropdown) */
   speakerNames?: string[];
+  /** BCP-47 language tag */
+  language?: string;
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -100,6 +102,7 @@ export function TranscriptViewer({
   currentTime = 0,
   onSeek,
   speakerNames = [],
+  language,
 }: TranscriptViewerProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [isEditing, setIsEditing] = useState(false);
@@ -240,10 +243,22 @@ export function TranscriptViewer({
 
         {/* Badges + actions */}
         <div className="flex items-center gap-2">
+          {language && (
+            <Badge
+              className={cn(
+                'border text-[10px] font-mono px-1.5 py-0 h-5',
+                language === 'original'
+                  ? 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-950/30 dark:text-amber-400 dark:border-amber-800/40'
+                  : 'bg-muted text-muted-foreground border-border'
+              )}
+            >
+              {language === 'original' ? 'Raw ASR' : language.toUpperCase()}
+            </Badge>
+          )}
           {isLlmRewritten && (
             <Badge
               variant="outline"
-              className="bg-primary/5 text-primary border-primary/20 text-xs"
+              className="bg-primary/5 text-primary border-primary/20 text-xs h-5"
             >
               AI Enhanced
             </Badge>

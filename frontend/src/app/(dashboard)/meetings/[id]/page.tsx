@@ -306,6 +306,7 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
               meetingId={id}
               transcript={transcriptData.content}
               isLlmRewritten={transcriptData.isLlmRewritten}
+              language={transcriptData.language}
               currentTime={currentTime}
               onSeek={audioUrl ? handleSegmentSeek : undefined}
               speakerNames={speakerNames}
