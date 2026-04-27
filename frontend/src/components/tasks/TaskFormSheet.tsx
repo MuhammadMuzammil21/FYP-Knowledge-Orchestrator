@@ -133,122 +133,124 @@ export function TaskFormSheet({
           </SheetDescription>
         </SheetHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Description */}
-          <div className="space-y-1.5">
-            <Label htmlFor="task-description">
-              Description <span className="text-destructive">*</span>
-            </Label>
-            <Textarea
-              id="task-description"
-              rows={3}
-              placeholder="What needs to be done?"
-              {...register('description')}
-              className={cn(errors.description && 'border-destructive')}
-            />
-            {errors.description && (
-              <p className="text-xs text-destructive flex items-center gap-1">
-                <AlertCircle className="h-3 w-3" />
-                {errors.description.message}
-              </p>
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6 pt-4">
+          <div className="px-4 flex flex-col gap-6">
+            {/* Description */}
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="task-description">
+                Description <span className="text-destructive">*</span>
+              </Label>
+              <Textarea
+                id="task-description"
+                rows={3}
+                placeholder="What needs to be done?"
+                {...register('description')}
+                className={cn(errors.description && 'border-destructive')}
+              />
+              {errors.description && (
+                <p className="text-xs text-destructive flex items-center gap-1">
+                  <AlertCircle className="h-3 w-3" />
+                  {errors.description.message}
+                </p>
+              )}
+            </div>
+
+            {/* Meeting ID (create mode) */}
+            {!isEdit && (
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="task-meeting-id">Meeting ID</Label>
+                <Input
+                  id="task-meeting-id"
+                  placeholder="UUID of the meeting"
+                  {...register('meeting_id')}
+                />
+              </div>
             )}
+
+            {/* Status + Priority row */}
+            <div className="grid grid-cols-2 gap-6">
+              <div className="flex flex-col gap-2">
+                <Label>Status</Label>
+                <Controller
+                  control={control}
+                  name="status"
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger id="task-status">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(Object.entries(TASK_STATUS_LABELS) as [TaskStatus, string][]).map(
+                          ([v, label]) => (
+                            <SelectItem key={v} value={v}>
+                              {label}
+                            </SelectItem>
+                          )
+                        )}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <Label>Priority</Label>
+                <Controller
+                  control={control}
+                  name="priority"
+                  render={({ field }) => (
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <SelectTrigger id="task-priority">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {(Object.entries(TASK_PRIORITY_LABELS) as [TaskPriority, string][]).map(
+                          ([v, label]) => (
+                            <SelectItem key={v} value={v}>
+                              {label}
+                            </SelectItem>
+                          )
+                        )}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* Assignee + Due Date row */}
+            <div className="grid grid-cols-2 gap-6">
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="task-assignee">Assignee name</Label>
+                <Input
+                  id="task-assignee"
+                  placeholder="e.g. Ali"
+                  {...register('assignee_name')}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="task-due-date">Due date</Label>
+                <Input
+                  id="task-due-date"
+                  type="date"
+                  {...register('due_date')}
+                />
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="task-notes">Notes</Label>
+              <Textarea
+                id="task-notes"
+                rows={2}
+                placeholder="Additional context…"
+                {...register('notes')}
+              />
+            </div>
           </div>
 
-          {/* Meeting ID (create mode) */}
-          {!isEdit && (
-            <div className="space-y-1.5">
-              <Label htmlFor="task-meeting-id">Meeting ID</Label>
-              <Input
-                id="task-meeting-id"
-                placeholder="UUID of the meeting"
-                {...register('meeting_id')}
-              />
-            </div>
-          )}
-
-          {/* Status + Priority row */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label>Status</Label>
-              <Controller
-                control={control}
-                name="status"
-                render={({ field }) => (
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger id="task-status">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(Object.entries(TASK_STATUS_LABELS) as [TaskStatus, string][]).map(
-                        ([v, label]) => (
-                          <SelectItem key={v} value={v}>
-                            {label}
-                          </SelectItem>
-                        )
-                      )}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Priority</Label>
-              <Controller
-                control={control}
-                name="priority"
-                render={({ field }) => (
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <SelectTrigger id="task-priority">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {(Object.entries(TASK_PRIORITY_LABELS) as [TaskPriority, string][]).map(
-                        ([v, label]) => (
-                          <SelectItem key={v} value={v}>
-                            {label}
-                          </SelectItem>
-                        )
-                      )}
-                    </SelectContent>
-                  </Select>
-                )}
-              />
-            </div>
-          </div>
-
-          {/* Assignee + Due Date row */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1.5">
-              <Label htmlFor="task-assignee">Assignee name</Label>
-              <Input
-                id="task-assignee"
-                placeholder="e.g. Ali"
-                {...register('assignee_name')}
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="task-due-date">Due date</Label>
-              <Input
-                id="task-due-date"
-                type="date"
-                {...register('due_date')}
-              />
-            </div>
-          </div>
-
-          {/* Notes */}
-          <div className="space-y-1.5">
-            <Label htmlFor="task-notes">Notes</Label>
-            <Textarea
-              id="task-notes"
-              rows={2}
-              placeholder="Additional context…"
-              {...register('notes')}
-            />
-          </div>
-
-          <SheetFooter className="pt-2">
+          <SheetFooter className="pt-6">
             <Button
               type="button"
               variant="outline"
