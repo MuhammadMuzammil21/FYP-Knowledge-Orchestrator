@@ -196,6 +196,17 @@ export async function reidentifySpeakers(meetingId: string): Promise<{ message: 
   return response.data;
 }
 
+/**
+ * Retry a failed meeting processing pipeline.
+ * Use this to unblock meetings stuck in an error state.
+ */
+export async function retryMeetingPipeline(meetingId: string): Promise<{ message: string }> {
+  const response = await apiClient.post<{ message: string }>(
+    `/api/meetings/${meetingId}/retry`
+  );
+  return response.data;
+}
+
 // Helper function to create SSE connection for transcript streaming
 export function createTranscriptStream(
   meetingId: string,

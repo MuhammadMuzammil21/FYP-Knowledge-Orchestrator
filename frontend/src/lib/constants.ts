@@ -88,6 +88,8 @@ export const API_ENDPOINTS = {
   // Known Speakers
   KNOWN_SPEAKERS_LIST: ENDPOINT_CONFIG.knownSpeakers.base,
   KNOWN_SPEAKERS_CREATE: ENDPOINT_CONFIG.knownSpeakers.base,
+  KNOWN_SPEAKER_DETAIL: (id: number) =>
+    `${ENDPOINT_CONFIG.knownSpeakers.base}${ENDPOINT_CONFIG.knownSpeakers.endpoints.detail(id)}`,
   KNOWN_SPEAKER_UPDATE: (id: number) =>
     `${ENDPOINT_CONFIG.knownSpeakers.base}${ENDPOINT_CONFIG.knownSpeakers.endpoints.update(id)}`,
   KNOWN_SPEAKER_DELETE: (id: number) =>
@@ -97,6 +99,10 @@ export const API_ENDPOINTS = {
     `${ENDPOINT_CONFIG.knownSpeakers.base}${ENDPOINT_CONFIG.knownSpeakers.endpoints.markExternal(id)}`,
   KNOWN_SPEAKER_LINK_ACCOUNT: (id: number) =>
     `${ENDPOINT_CONFIG.knownSpeakers.base}${ENDPOINT_CONFIG.knownSpeakers.endpoints.linkAccount(id)}`,
+  KNOWN_SPEAKERS_MERGE: `${ENDPOINT_CONFIG.knownSpeakers.base}${ENDPOINT_CONFIG.knownSpeakers.endpoints.merge}`,
+  KNOWN_SPEAKERS_RESET_ALL: `${ENDPOINT_CONFIG.knownSpeakers.base}${ENDPOINT_CONFIG.knownSpeakers.endpoints.resetAll}`,
+  KNOWN_SPEAKERS_BY_TEAM: (teamId: string) =>
+    `${ENDPOINT_CONFIG.knownSpeakers.base}${ENDPOINT_CONFIG.knownSpeakers.endpoints.byTeam(teamId)}`,
 
   // Users
   USER_ME: `${ENDPOINT_CONFIG.users.base}${ENDPOINT_CONFIG.users.endpoints.me}`,
@@ -130,6 +136,10 @@ export const API_ENDPOINTS = {
   TEAM_REVOKE_INVITE: (slug: string, inviteId: string) =>
     `${ENDPOINT_CONFIG.teams.base}${ENDPOINT_CONFIG.teams.endpoints.revokeInvite(slug, inviteId)}`,
   TEAM_ACCEPT_INVITE: `${ENDPOINT_CONFIG.teams.base}${ENDPOINT_CONFIG.teams.endpoints.acceptInvite()}`,
+  TEAM_LEAVE: (teamId: string) =>
+    `${ENDPOINT_CONFIG.teams.base}${ENDPOINT_CONFIG.teams.endpoints.leave(teamId)}`,
+  MEETING_RETRY: (id: string) =>
+    `${ENDPOINT_CONFIG.meetings.base}${ENDPOINT_CONFIG.meetings.endpoints.retry(id)}`,
 } as const;
 
 // Re-export file upload settings

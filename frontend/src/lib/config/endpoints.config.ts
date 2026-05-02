@@ -66,6 +66,8 @@ export const ENDPOINT_CONFIG = {
       // Manual transcript editing
       transcriptUpdate: (id: string) => `/${id}/transcript`,
       transcriptHistory: (id: string) => `/${id}/transcript/history`,
+      // Pipeline retry
+      retry: (id: string) => `/${id}/retry`,
     },
   },
 
@@ -106,9 +108,13 @@ export const ENDPOINT_CONFIG = {
       create: '',
       update: (id: number) => `/${id}`,
       delete: (id: number) => `/${id}`,
+      detail: (id: number) => `/${id}`,
       unlinkedPrompts: '/unlinked-prompts',
       markExternal: (id: number) => `/${id}/mark-external`,
       linkAccount: (id: number) => `/${id}/link-account`,
+      merge: '/merge',
+      resetAll: '/reset-all',
+      byTeam: (teamId: string) => `/team/${teamId}`,
     },
   },
 
@@ -129,6 +135,7 @@ export const ENDPOINT_CONFIG = {
       invites: (slug: string) => `/${slug}/invites`,
       revokeInvite: (slug: string, inviteId: string) => `/${slug}/invites/${inviteId}`,
       acceptInvite: () => '/invites/accept',
+      leave: (teamId: string) => `/${teamId}/leave`,
       // Team analytics
       dashboard: (slug: string) => `/${slug}/dashboard`,
     },

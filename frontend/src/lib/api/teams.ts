@@ -89,3 +89,14 @@ export async function getTeamDashboard(slug: string): Promise<TeamDashboard> {
   const response = await apiClient.get<TeamDashboard>(`/api/teams/${slug}/dashboard`);
   return response.data;
 }
+
+/**
+ * Leave a team as the currently authenticated user.
+ * Unlike removeMember (admin action), this is a self-service action for regular members.
+ */
+export async function leaveTeam(teamId: string): Promise<{ message: string }> {
+  const response = await apiClient.delete<{ message: string }>(
+    `/api/teams/${teamId}/leave`
+  );
+  return response.data;
+}

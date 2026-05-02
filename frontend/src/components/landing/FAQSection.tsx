@@ -36,16 +36,16 @@ const faqs = [
     answer:
       "After each meeting is processed, our system compares entities, decisions, and deadlines against all previous meetings in the same project. If a task was reassigned, a deadline changed, or a decision was reversed without acknowledgment, you'll see it flagged in the Conflicts tab.",
   },
-  {
-    question: 'Can I use HarBaat via API?',
-    answer:
-      'API access is available on the Pro and Team plans. Full documentation is available at docs.harbaat.ai.',
-  },
-  {
-    question: 'Is there a free trial for paid plans?',
-    answer:
-      'Yes. All paid plans include a 14-day free trial with no credit card required. You can upgrade, downgrade, or cancel at any time.',
-  },
+  // {
+  //   question: 'Can I use HarBaat via API?',
+  //   answer:
+  //     'API access is available on the Pro and Team plans. Full documentation is available at docs.harbaat.ai.',
+  // },
+  // {
+  //   question: 'Is there a free trial for paid plans?',
+  //   answer:
+  //     'Yes. All paid plans include a 14-day free trial with no credit card required. You can upgrade, downgrade, or cancel at any time.',
+  // },
 ];
 
 export function FAQSection() {

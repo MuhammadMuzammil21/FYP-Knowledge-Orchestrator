@@ -84,3 +84,47 @@ export async function linkKnownSpeakerAccount(
   );
   return response.data;
 }
+
+/**
+ * Fetch details for a specific known speaker by ID
+ */
+export async function getKnownSpeaker(id: number): Promise<KnownSpeaker> {
+  const response = await apiClient.get<KnownSpeaker>(
+    API_ENDPOINTS.KNOWN_SPEAKER_DETAIL(id)
+  );
+  return response.data;
+}
+
+/**
+ * List known speakers associated with a specific team
+ */
+export async function getKnownSpeakersByTeam(teamId: string): Promise<KnownSpeakersResponse> {
+  const response = await apiClient.get<KnownSpeakersResponse>(
+    API_ENDPOINTS.KNOWN_SPEAKERS_BY_TEAM(teamId)
+  );
+  return response.data;
+}
+
+/**
+ * Merge two known speaker profiles into one
+ */
+export async function mergeKnownSpeakers(data: {
+  source_id: number;
+  target_id: number;
+}): Promise<KnownSpeaker> {
+  const response = await apiClient.post<KnownSpeaker>(
+    API_ENDPOINTS.KNOWN_SPEAKERS_MERGE,
+    data
+  );
+  return response.data;
+}
+
+/**
+ * Reset all known speakers for the current user/team
+ */
+export async function resetAllKnownSpeakers(): Promise<{ message: string }> {
+  const response = await apiClient.post<{ message: string }>(
+    API_ENDPOINTS.KNOWN_SPEAKERS_RESET_ALL
+  );
+  return response.data;
+}
