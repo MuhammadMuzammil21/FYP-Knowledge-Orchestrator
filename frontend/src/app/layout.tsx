@@ -1,19 +1,30 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Lexend, DM_Sans, IBM_Plex_Mono } from 'next/font/google';
 import './globals.css';
 import { Providers } from './providers';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { ThemeProvider } from '@/providers/theme-provider';
 import { MobileMenuProvider } from '@/contexts/MobileMenuContext';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+const lexend = Lexend({
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-display',
+  display: 'swap',
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+const dmSans = DM_Sans({
   subsets: ['latin'],
+  weight: ['300', '400', '500', '600'],
+  variable: '--font-sans',
+  display: 'swap',
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  variable: '--font-mono',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
@@ -21,8 +32,6 @@ export const metadata: Metadata = {
   description: 'AI-powered meeting transcription and analysis',
   icons: {
     icon: [
-      // { url: '/favicon.svg', type: 'image/svg+xml' },
-      // { url: '/favicon.ico', sizes: 'any' },
       { url: '/favicon.png', type: 'image/png' },
     ],
   },
@@ -34,8 +43,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html lang="en" className={`${lexend.variable} ${dmSans.variable} ${ibmPlexMono.variable}`} suppressHydrationWarning>
+      <body className="antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

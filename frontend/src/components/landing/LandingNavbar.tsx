@@ -10,7 +10,6 @@ import { cn } from '@/lib/utils';
 const navLinks = [
   { label: 'Features', href: '#features' },
   { label: 'How it works', href: '#how-it-works' },
-  { label: 'Pricing', href: '#pricing' },
   { label: 'FAQ', href: '#faq' },
 ];
 
@@ -36,11 +35,11 @@ export function LandingNavbar() {
     >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Left — Logo */}
-        <Link href="/" className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-[oklch(0.88_0.05_150)] to-[oklch(0.65_0.12_195)] shadow-sm">
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-accent)] shadow-sm btn-shimmer">
             <MessageSquare className="h-4 w-4 text-primary-foreground" strokeWidth={2.5} />
           </div>
-          <span className="text-lg font-semibold tracking-tight">HarBaat AI</span>
+          <span className="text-lg font-display font-semibold tracking-tight">HarBaat AI</span>
         </Link>
 
         {/* Center — Nav Links (desktop) */}
@@ -49,7 +48,7 @@ export function LandingNavbar() {
             <Link
               key={link.href}
               href={link.href}
-              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              className="relative text-sm text-muted-foreground hover:text-foreground transition-colors after:absolute after:bottom-0 after:left-0 after:h-px after:w-0 after:bg-primary after:transition-all hover:after:w-full"
             >
               {link.label}
             </Link>
@@ -65,13 +64,13 @@ export function LandingNavbar() {
             </Button>
           </Link>
           <Link href="/signup">
-            <Button size="sm">Get started</Button>
+            <Button size="sm" className="btn-shimmer">Get started</Button>
           </Link>
           {/* Mobile hamburger */}
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="md:hidden transition-transform"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
           >
@@ -81,36 +80,37 @@ export function LandingNavbar() {
       </nav>
 
       {/* Mobile menu */}
-      {mobileOpen && (
-        <div className="md:hidden border-t border-border bg-background/95 backdrop-blur-md">
-          <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileOpen(false)}
-                className="px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
-            <div className="border-t border-border mt-2 pt-2 flex flex-col gap-1">
-              <Link
-                href="/login"
-                onClick={() => setMobileOpen(false)}
-                className="px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
-              >
-                Sign in
-              </Link>
-              <Link href="/signup" onClick={() => setMobileOpen(false)}>
-                <Button className="w-full mt-1" size="sm">
-                  Get started
-                </Button>
-              </Link>
-            </div>
+      <div className={cn(
+        "md:hidden absolute top-16 left-0 right-0 bg-background border-t border-border transition-all duration-300 overflow-hidden",
+        mobileOpen ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"
+      )}>
+        <div className="px-4 py-4 flex flex-col gap-1">
+          {navLinks.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setMobileOpen(false)}
+              className="py-3 px-4 text-sm text-foreground hover:bg-muted rounded-lg transition-colors"
+            >
+              {link.label}
+            </Link>
+          ))}
+          <div className="border-t border-border mt-2 pt-2 flex flex-col gap-1">
+            <Link
+              href="/login"
+              onClick={() => setMobileOpen(false)}
+              className="py-3 px-4 text-sm text-foreground hover:bg-muted rounded-lg transition-colors"
+            >
+              Sign in
+            </Link>
+            <Link href="/signup" onClick={() => setMobileOpen(false)}>
+              <Button className="w-full mt-1 btn-shimmer" size="lg">
+                Get started
+              </Button>
+            </Link>
           </div>
         </div>
-      )}
+      </div>
     </header>
   );
 }
