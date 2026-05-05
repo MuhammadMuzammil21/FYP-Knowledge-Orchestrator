@@ -63,14 +63,21 @@ export function EntitiesPanel({ entities, onReprocess, isReprocessing }: Entitie
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              {speakers.map((speaker, index) => (
-                <Badge
-                  key={index}
-                  className="bg-primary/10 text-primary border border-primary/30 dark:bg-primary/10 dark:text-primary dark:border-primary/20 whitespace-normal text-left h-auto py-1 px-3"
-                >
-                  {speaker}
-                </Badge>
-              ))}
+              {speakers.map((speaker, index) => {
+                // Backend may return a speaker object or a plain string
+                const label =
+                  typeof speaker === 'string'
+                    ? speaker
+                    : (speaker as any).display_name ?? (speaker as any).original_label ?? String(speaker);
+                return (
+                  <Badge
+                    key={index}
+                    className="bg-primary/10 text-primary border border-primary/30 dark:bg-primary/10 dark:text-primary dark:border-primary/20 whitespace-normal text-left h-auto py-1 px-3"
+                  >
+                    {label}
+                  </Badge>
+                );
+              })}
             </div>
           </CardContent>
         </Card>

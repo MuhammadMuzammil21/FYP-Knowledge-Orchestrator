@@ -26,20 +26,13 @@ export function useAudioVisualizer(
         cancelAnimationFrame(animationRef.current);
         animationRef.current = null;
       }
-      // Clear the canvas when inactive so it shows a flat baseline
+      // Clear the canvas when inactive
       if (canvas) {
         const ctx = canvas.getContext('2d');
         if (ctx) {
           canvas.width = canvas.offsetWidth;
           canvas.height = canvas.offsetHeight;
           ctx.clearRect(0, 0, canvas.width, canvas.height);
-          // Draw flat centre line as idle state indicator
-          ctx.beginPath();
-          ctx.strokeStyle = 'oklch(0.82 0.015 152)'; // --border token
-          ctx.lineWidth = 1;
-          ctx.moveTo(0, canvas.height / 2);
-          ctx.lineTo(canvas.width, canvas.height / 2);
-          ctx.stroke();
         }
       }
       return;
