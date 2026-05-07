@@ -43,7 +43,7 @@ export function LandingNavbar() {
         </Link>
 
         {/* Center — Nav Links (desktop) */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden lg:flex items-center gap-6">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -58,19 +58,19 @@ export function LandingNavbar() {
         {/* Right — Actions */}
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Link href="/login" className="hidden md:inline-flex">
+          <Link href="/login" className="hidden lg:inline-flex">
             <Button variant="ghost" size="sm">
               Sign in
             </Button>
           </Link>
-          <Link href="/signup">
+          <Link href="/signup" className="flex-shrink-0">
             <Button size="sm" className="btn-shimmer">Get started</Button>
           </Link>
           {/* Mobile hamburger */}
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden transition-transform"
+            className="lg:hidden transition-transform"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
           >
@@ -81,7 +81,7 @@ export function LandingNavbar() {
 
       {/* Mobile menu */}
       <div className={cn(
-        "md:hidden absolute top-16 left-0 right-0 bg-background border-t border-border transition-all duration-300 overflow-hidden",
+        "lg:hidden absolute top-16 left-0 right-0 w-full z-[60] bg-background border-t border-border transition-all duration-300 overflow-hidden",
         mobileOpen ? "max-h-[400px] opacity-100" : "max-h-0 opacity-0"
       )}>
         <div className="px-4 py-4 flex flex-col gap-1">
@@ -90,7 +90,7 @@ export function LandingNavbar() {
               key={link.href}
               href={link.href}
               onClick={() => setMobileOpen(false)}
-              className="py-3 px-4 text-sm text-foreground hover:bg-muted rounded-lg transition-colors"
+              className="py-3.5 px-4 text-sm text-foreground hover:bg-muted rounded-lg transition-colors"
             >
               {link.label}
             </Link>
@@ -99,7 +99,7 @@ export function LandingNavbar() {
             <Link
               href="/login"
               onClick={() => setMobileOpen(false)}
-              className="py-3 px-4 text-sm text-foreground hover:bg-muted rounded-lg transition-colors"
+              className="py-3.5 px-4 text-sm text-foreground hover:bg-muted rounded-lg transition-colors"
             >
               Sign in
             </Link>

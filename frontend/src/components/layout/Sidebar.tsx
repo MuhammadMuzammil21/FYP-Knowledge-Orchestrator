@@ -91,7 +91,7 @@ export function Sidebar() {
       {/* Mobile Backdrop */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={close}
           aria-hidden="true"
         />
@@ -103,7 +103,7 @@ export function Sidebar() {
           'fixed left-0 top-0 z-50 h-screen w-64 flex-col border-r border-border bg-card flex',
           'transition-transform duration-300 ease-in-out',
           isOpen ? 'translate-x-0' : '-translate-x-full',
-          'md:translate-x-0 md:z-40'
+          'lg:translate-x-0 lg:z-40'
         )}
       >
         {/* Header zone */}
@@ -120,7 +120,7 @@ export function Sidebar() {
               variant="ghost"
               size="icon"
               onClick={close}
-              className="md:hidden h-8 w-8"
+              className="lg:hidden h-8 w-8"
               aria-label="Close menu"
             >
               <X className="h-4 w-4" />

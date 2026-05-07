@@ -37,14 +37,14 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="py-20 lg:py-32 px-4 relative bg-background">
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-24 relative">
+    <section id="features" className="py-20 lg:py-32 px-4 relative bg-background border-t border-border/20">
+      <div className="max-w-7xl mx-auto px-6 md:px-12 2xl:px-0 flex flex-col md:flex-row md:gap-8 lg:flex-row gap-12 lg:gap-24 relative">
         
         {/* Left: Sticky Header */}
         <div className="lg:w-1/3">
           <div className="sticky top-32">
             <p className="font-mono text-sm tracking-widest text-primary uppercase mb-4">Features</p>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-foreground leading-[1.1]">
+            <h2 className="text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-display font-bold tracking-tight text-foreground leading-[1.1]">
               One upload.<br/> Infinite clarity.
             </h2>
             <p className="mt-6 text-muted-foreground text-lg md:text-xl font-sans leading-relaxed">
@@ -67,7 +67,7 @@ export function FeaturesSection() {
                       <h3 className="font-display font-semibold text-2xl md:text-3xl text-foreground mb-3 tracking-tight transition-colors group-hover:text-primary">
                         {feature.title}
                       </h3>
-                      <p className="text-lg text-muted-foreground leading-relaxed font-sans max-w-xl">
+                      <p className="text-lg text-muted-foreground leading-relaxed font-sans max-w-lg">
                         {feature.description}
                       </p>
                     </div>

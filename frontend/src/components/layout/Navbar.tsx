@@ -71,7 +71,7 @@ export function Navbar() {
           variant="ghost"
           size="icon"
           onClick={toggle}
-          className="md:hidden h-8 w-8 text-muted-foreground"
+          className="lg:hidden h-8 w-8 text-muted-foreground"
           aria-label="Toggle menu"
         >
           <Menu className="h-4 w-4" />
