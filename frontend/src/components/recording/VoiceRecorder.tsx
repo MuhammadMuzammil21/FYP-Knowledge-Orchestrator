@@ -152,6 +152,7 @@ export function VoiceRecorder({
             className="h-7 w-7 flex-shrink-0 text-muted-foreground hover:text-foreground"
             onClick={handleDiscard}
             title="Discard recording and record again"
+            aria-label="Discard recording and record again"
           >
             <Trash2 className="h-3.5 w-3.5" />
           </Button>
@@ -223,6 +224,7 @@ export function VoiceRecorder({
             className="h-8 w-8 text-muted-foreground hover:text-destructive flex-shrink-0"
             onClick={handleDiscard}
             title="Discard and start over"
+            aria-label="Discard recording"
           >
             <Trash2 className="h-3.5 w-3.5" />
           </Button>
@@ -236,6 +238,7 @@ export function VoiceRecorder({
               className="h-8 w-8 flex-shrink-0"
               onClick={recorder.pauseRecording}
               title="Pause recording"
+              aria-label="Pause recording"
             >
               <Pause className="h-3.5 w-3.5" />
             </Button>
@@ -250,6 +253,7 @@ export function VoiceRecorder({
               className="h-8 w-8 flex-shrink-0"
               onClick={recorder.resumeRecording}
               title="Resume recording"
+              aria-label="Resume recording"
             >
               <Play className="h-3.5 w-3.5" />
             </Button>
@@ -263,6 +267,7 @@ export function VoiceRecorder({
               className="gap-1.5 bg-destructive hover:bg-destructive/90 text-destructive-foreground flex-shrink-0"
               onClick={recorder.startRecording}
               disabled={disabled}
+              aria-label="Start recording"
             >
               <Mic className="h-3.5 w-3.5" />
               Record
@@ -277,6 +282,7 @@ export function VoiceRecorder({
               size="sm"
               className="gap-1.5 border-destructive/40 text-destructive hover:bg-destructive/10 flex-shrink-0"
               onClick={recorder.stopRecording}
+              aria-label="Stop recording"
             >
               <Square className="h-3.5 w-3.5" />
               Stop

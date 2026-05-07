@@ -163,7 +163,7 @@ function AssigneeCell({
 
 function ExpandedRow({ task }: { task: Task }) {
   return (
-    <div className="px-4 py-3 bg-muted/30 border-t border-border/50 space-y-3 text-sm">
+    <div id={`expanded-panel-${task.id}`} role="region" className="px-4 py-3 bg-muted/30 border-t border-border/50 space-y-3 text-sm">
       {task.notes && (
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground mb-1">Notes</p>
@@ -368,6 +368,8 @@ export function TaskListTable({ tasks = [], isLoading = false }: TaskListTablePr
                         onClick={() => toggleRow(task.id)}
                         className="text-muted-foreground hover:text-foreground"
                         aria-label="Toggle details"
+                        aria-expanded={expandedRows.has(task.id)}
+                        aria-controls={`expanded-panel-${task.id}`}
                       >
                         {expandedRows.has(task.id) ? (
                           <ChevronUp className="h-3.5 w-3.5" />
@@ -438,6 +440,8 @@ export function TaskListTable({ tasks = [], isLoading = false }: TaskListTablePr
             <button
               onClick={() => toggleRow(task.id)}
               className="text-xs text-muted-foreground flex items-center gap-1 hover:text-foreground transition-colors"
+              aria-expanded={expandedRows.has(task.id)}
+              aria-controls={`expanded-panel-${task.id}`}
             >
               {expandedRows.has(task.id) ? (
                 <>

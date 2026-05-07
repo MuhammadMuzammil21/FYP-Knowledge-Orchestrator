@@ -1,11 +1,14 @@
 'use client';
 
+import { useSession } from 'next-auth/react';
+
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { MessageSquare, Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { cn } from '@/lib/utils';
+import { UserMenu } from '@/components/layout/UserMenu';
 
 const navLinks = [
   { label: 'Features', href: '#features' },
@@ -14,8 +17,15 @@ const navLinks = [
 ];
 
 export function LandingNavbar() {
+  const { data: session } = useSession();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const user = session?.user ? {
+    name: session.user.name || '',
+    email: session.user.email || '',
+    avatarUrl: session.user.image || undefined,
+  } : null;
 
   useEffect(() => {
     const handleScroll = () => {
@@ -58,14 +68,7 @@ export function LandingNavbar() {
         {/* Right — Actions */}
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Link href="/login" className="hidden lg:inline-flex">
-            <Button variant="ghost" size="sm">
-              Sign in
-            </Button>
-          </Link>
-          <Link href="/signup" className="flex-shrink-0">
-            <Button size="sm" className="btn-shimmer">Get started</Button>
-          </Link>
+          <UserMenu user={user} />
           {/* Mobile hamburger */}
           <Button
             variant="ghost"

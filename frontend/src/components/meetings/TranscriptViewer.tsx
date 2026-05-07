@@ -222,9 +222,11 @@ export function TranscriptViewer({
       {/* ── Toolbar ── */}
       <div className="flex flex-wrap items-center gap-2">
         {/* Search */}
-        <div className="relative flex-1 min-w-[180px]">
+        <div className="relative flex-1 min-w-[180px]" role="search">
+          <label htmlFor="transcript-search" className="sr-only">Search transcript</label>
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
+            id="transcript-search"
             type="text"
             placeholder="Search transcript…"
             value={searchQuery}
@@ -235,6 +237,7 @@ export function TranscriptViewer({
             <button
               onClick={() => setSearchQuery('')}
               className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              aria-label="Clear search"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -346,6 +349,7 @@ export function TranscriptViewer({
                         onValueChange={(val) =>
                           handleSpeakerChange(globalIdx, val === '__none__' ? '' : val)
                         }
+                        aria-label="Edit speaker"
                       >
                         <SelectTrigger className="h-6 w-auto min-w-[100px] text-xs border-0 bg-muted/60 px-2">
                           <SelectValue placeholder="Speaker" />
@@ -415,6 +419,7 @@ export function TranscriptViewer({
                         'focus:border-primary/50 focus:bg-primary/5 transition-colors'
                       )}
                       onClick={(e) => e.stopPropagation()}
+                      aria-label="Edit transcript segment"
                     />
                   ) : (
                     <p className="text-sm leading-relaxed text-foreground">

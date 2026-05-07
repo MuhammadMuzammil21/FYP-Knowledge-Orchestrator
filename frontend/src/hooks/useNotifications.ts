@@ -12,12 +12,13 @@ import { toast } from 'sonner';
 import { getErrorMessage } from '@/lib/api/client';
 import type { NotificationPreferences } from '@/types';
 
-export function useNotifications(unreadOnly = false) {
+export function useNotifications(unreadOnly = false, enabled = true) {
   return useQuery({
     queryKey: ['notifications', { unreadOnly }],
     queryFn: () => getNotifications(unreadOnly),
     staleTime: 60 * 1000,
     refetchInterval: 5 * 60 * 1000, // Refetch every 5 minutes
+    enabled,
   });
 }
 

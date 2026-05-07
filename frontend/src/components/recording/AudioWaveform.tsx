@@ -24,7 +24,8 @@ export function AudioWaveform({ analyserNode, isActive, className }: AudioWavefo
       ref={canvasRef}
       className={className}
       style={{ display: 'block', width: '100%', height: '100%' }}
-      aria-hidden="true"
+      role="img"
+      aria-label="Audio waveform visualisation"
     />
   );
 }

@@ -52,7 +52,7 @@ export function NotificationMenu() {
   const unreadCount = countData?.count || 0;
 
   // Fetch full list only when opening the menu
-  const { data, isLoading } = useNotifications(false);
+  const { data, isLoading } = useNotifications(false, open);
   const notifications = data?.notifications || [];
 
   const markAsRead = useMarkNotificationAsRead();
