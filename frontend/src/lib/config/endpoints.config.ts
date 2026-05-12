@@ -52,13 +52,17 @@ export const ENDPOINT_CONFIG = {
         `/${meetingId}/speakers/${speakerId}`,
       speakerLinkUser: (meetingId: string, speakerId: number) =>
         `/${meetingId}/speakers/${speakerId}/link-user`,
+      // Backend route is /force-link-email (not /force-link)
       speakerForceLink: (meetingId: string, speakerId: number) =>
-        `/${meetingId}/speakers/${speakerId}/force-link`,
-      speakerRematch: (meetingId: string, speakerId: number) =>
-        `/${meetingId}/speakers/${speakerId}/rematch`,
+        `/${meetingId}/speakers/${speakerId}/force-link-email`,
+      // Backend rematch route has no speakerId — it rematches all unmatched speakers
+      speakerRematch: (meetingId: string, _speakerId: number) =>
+        `/${meetingId}/speakers/rematch`,
       reviewQueue: (id: string) => `/${id}/speakers/review-queue`,
-      speakerProposalAction: (meetingId: string, speakerId: number, proposalId: number, action: 'confirm' | 'correct' | 'dismiss') =>
-        `/${meetingId}/speakers/${speakerId}/proposals/${proposalId}/${action}`,
+      // Backend routes: /review-queue/{proposalId}/confirm  and  /review-queue/{proposalId}/reject
+      // 'correct' is a UI-only concept that maps to 'reject' (dismiss the proposal, open edit mode)
+      speakerProposalAction: (meetingId: string, _speakerId: number, proposalId: number, action: 'confirm' | 'correct' | 'dismiss') =>
+        `/${meetingId}/speakers/review-queue/${proposalId}/${action === 'confirm' ? 'confirm' : 'reject'}`,
       // NEW: Meeting graph endpoint
       graph: (id: string) => `/${id}/graph`,
       // Audio streaming

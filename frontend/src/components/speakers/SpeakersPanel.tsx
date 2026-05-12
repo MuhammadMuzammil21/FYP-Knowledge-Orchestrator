@@ -72,6 +72,10 @@ export function SpeakersPanel({ meetingId, onSeek }: SpeakersPanelProps) {
             setEditingId(null);
             setEditName('');
             setEditLinkedUser('none');
+            toast.success('Speaker name updated');
+          },
+          onError: () => {
+            toast.error('Failed to update speaker name');
           },
         }
       );
@@ -96,12 +100,47 @@ export function SpeakersPanel({ meetingId, onSeek }: SpeakersPanelProps) {
             setShowForceLink(null);
             setForceLinkIds({ ...forceLinkIds, [speakerId]: '' });
           },
-          onError: () => {
-            toast.error('Failed to link by email');
+          onError: (err: any) => {
+            toast.error(err?.response?.data?.detail || 'Failed to link by email');
           }
         }
       );
     }
+  };
+
+  const handleConfirmProposal = (proposal: SpeakerReviewProposal) => {
+    processReview.mutate(
+      { speakerId: proposal.speaker_mapping_id, proposalId: proposal.id, action: 'confirm' },
+      {
+        onSuccess: () => toast.success(`Confirmed: ${proposal.proposed_name}`),
+        onError: () => toast.error('Failed to confirm proposal'),
+      }
+    );
+  };
+
+  const handleDismissProposal = (proposal: SpeakerReviewProposal) => {
+    processReview.mutate(
+      { speakerId: proposal.speaker_mapping_id, proposalId: proposal.id, action: 'dismiss' },
+      {
+        onSuccess: () => toast.success('Proposal dismissed'),
+        onError: () => toast.error('Failed to dismiss proposal'),
+      }
+    );
+  };
+
+  // 'Correct' = reject the proposed name, then open the edit form so user can type the right name.
+  const handleCorrectProposal = (proposal: SpeakerReviewProposal) => {
+    const speaker = speakers?.find((s: Speaker) => s.id === proposal.speaker_mapping_id);
+    processReview.mutate(
+      { speakerId: proposal.speaker_mapping_id, proposalId: proposal.id, action: 'correct' },
+      {
+        onSuccess: () => {
+          if (speaker) handleEdit(speaker);
+          toast.info('Proposal rejected — enter the correct name below');
+        },
+        onError: () => toast.error('Failed to update proposal'),
+      }
+    );
   };
 
   if (error) {
@@ -157,7 +196,7 @@ export function SpeakersPanel({ meetingId, onSeek }: SpeakersPanelProps) {
                       variant="default"
                       className="bg-green-600 hover:bg-green-700 h-8"
                       disabled={processReview.isPending}
-                      onClick={() => processReview.mutate({ speakerId: proposal.speaker_mapping_id, proposalId: proposal.id, action: 'confirm' })}
+                      onClick={() => handleConfirmProposal(proposal)}
                     >
                       <CheckCircle2 className="h-4 w-4 mr-1.5" />
                       Confirm
@@ -167,10 +206,7 @@ export function SpeakersPanel({ meetingId, onSeek }: SpeakersPanelProps) {
                       variant="outline"
                       className="h-8"
                       disabled={processReview.isPending}
-                      onClick={() => {
-                        handleEdit(speakers?.find((s: Speaker) => s.id === proposal.speaker_mapping_id) as Speaker);
-                        processReview.mutate({ speakerId: proposal.speaker_mapping_id, proposalId: proposal.id, action: 'correct' });
-                      }}
+                      onClick={() => handleCorrectProposal(proposal)}
                     >
                       <Edit2 className="h-4 w-4 mr-1.5" />
                       Correct
@@ -180,7 +216,7 @@ export function SpeakersPanel({ meetingId, onSeek }: SpeakersPanelProps) {
                       variant="ghost"
                       className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8"
                       disabled={processReview.isPending}
-                      onClick={() => processReview.mutate({ speakerId: proposal.speaker_mapping_id, proposalId: proposal.id, action: 'dismiss' })}
+                      onClick={() => handleDismissProposal(proposal)}
                     >
                       <X className="h-4 w-4 mr-1.5" />
                       Dismiss
@@ -313,7 +349,7 @@ export function SpeakersPanel({ meetingId, onSeek }: SpeakersPanelProps) {
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    onClick={() => rematchSpeaker.mutate({ speakerId: speaker.id })} 
+                    onClick={() => rematchSpeaker.mutate({ speakerId: 0 })} 
                     disabled={rematchSpeaker.isPending}
                     title="Rematch Voice"
                     className="h-8 w-8 p-0"
