@@ -156,13 +156,13 @@ export function NotificationsTab() {
             disabled={updatePreferences.isPending}
           />
 
-          <div className="flex items-start gap-2 rounded-md bg-muted/50 p-3 text-sm text-muted-foreground">
+          {/* <div className="flex items-start gap-2 rounded-md bg-muted/50 p-3 text-sm text-muted-foreground">
             <Info className="h-4 w-4 shrink-0 mt-0.5" />
             <p>
               Email delivery is currently being set up. Toggling this preference will take effect
               once the email service is enabled.
             </p>
-          </div>
+          </div> */}
         </CardContent>
       </Card>
     </div>
