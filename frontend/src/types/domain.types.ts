@@ -40,6 +40,7 @@ export interface MeetingDetail {
   id: string;
   projectId: string;
   teamId?: string | null;
+  title?: string | null;
   status: MeetingStatus;
   stage: ProcessingStage;
   durationSeconds: number | null;
@@ -107,12 +108,24 @@ export interface BackgroundStatus {
 }
 
 /**
+ * Transcript segment (with timestamp info for audio sync)
+ */
+export interface TranscriptSegment {
+  speaker: string;
+  text: string;
+  start: number;
+  end: number;
+  start_formatted?: string;
+}
+
+/**
  * Transcript domain model
  */
 export interface Transcript {
   meetingId: string;
   type: 'raw' | 'final';
   content: string;
+  segments?: TranscriptSegment[];
   version: number;
   isLlmRewritten: boolean;
   language?: string;

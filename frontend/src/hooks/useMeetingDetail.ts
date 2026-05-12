@@ -160,6 +160,7 @@ export function useReidentifySpeakers(meetingId: string) {
       queryClient.invalidateQueries({ queryKey: ['meeting', meetingId] });
       queryClient.invalidateQueries({ queryKey: ['entities', meetingId] });
       queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
+      queryClient.invalidateQueries({ queryKey: ['speakers', meetingId, 'reviewQueue'] }); // Bug 5
       toast.success('Speaker re-identification started');
     },
     onError: (error) => toast.error(getErrorMessage(error)),

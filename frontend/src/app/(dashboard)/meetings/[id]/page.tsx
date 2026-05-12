@@ -31,15 +31,16 @@ import {
   useReidentifySpeakers,
 } from '@/hooks/useMeetingDetail';
 import { useMeetingStatus } from '@/hooks/useMeetingStatus';
-import { useProjectConflicts } from '@/hooks/useKnowledgeGraph';
+import { useMeetingConflicts } from '@/hooks/useKnowledgeGraph'; // Bug 1
 import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { useProject } from '@/hooks/useProjects';
 import { useTeams } from '@/hooks/useTeams';
-import { ArrowLeft, Network, Trash2, Loader2, AudioWaveform, ShieldAlert, ChevronRight, RefreshCw, UserCheck } from 'lucide-react';
+import { ArrowLeft, Network, Trash2, Loader2, AudioWaveform, ShieldAlert, ChevronRight, RefreshCw, UserCheck, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { formatDateTime } from '@/lib/utils/date';
 import { cn } from '@/lib/utils';
+import { retryMeetingPipeline } from '@/lib/api/meetings';
 
 interface MeetingDetailPageProps {
   params: Promise<{ id: string }>;
@@ -61,18 +62,25 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
 
   const { data: meeting, isLoading: meetingLoading } = useMeeting(id);
   const { data: status } = useMeetingStatus(id, true);
-  const isTranscriptReady = status?.asr?.transcriptRawAvailable || status?.finalTranscriptReady || meeting?.status === 'completed';
   const isEntitiesReady = status?.insightsReady || meeting?.status === 'completed';
 
-  const { data: transcriptData, isLoading: transcriptLoading } = useTranscript(id, 'final', isTranscriptReady);
+  const { data: transcriptData, isLoading: transcriptLoading } = useTranscript(id, 'final', !!id);
   const { data: entitiesData, isLoading: entitiesLoading } = useEntities(id, isEntitiesReady);
-  const { data: conflictsData, isLoading: conflictsLoading } = useProjectConflicts(
-    meeting?.projectId || ''
-  );
+  // Bug 1: use meeting-specific conflicts endpoint
+  const { data: conflictsData, isLoading: conflictsLoading } = useMeetingConflicts(id);
   const { audioUrl, isLoading: audioLoading } = useMeetingAudio(id);
   const deleteMeeting = useDeleteMeeting();
   const reprocessInsights = useReprocessInsights(id);
   const reidentifySpeakers = useReidentifySpeakers(id);
+
+  // Bug 12: retry handler for failed meetings
+  const handleRetry = async () => {
+    try {
+      await retryMeetingPipeline(id);
+    } catch {
+      // ignore — toast shown by API layer
+    }
+  };
 
   const { data: project } = useProject(meeting?.projectId || '');
   const { data: teams } = useTeams();
@@ -172,9 +180,16 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
           <div>
             <h1 className="mb-2 text-2xl md:text-3xl font-bold">
-              Meeting {meeting.id.slice(0, 8)}
+              {/* Bug 2: show real title, fall back to short id */}
+              {meeting.title ?? `Meeting ${meeting.id.slice(0, 8)}`}
             </h1>
             <p className="text-muted-foreground">{formattedDate}</p>
+            {/* Bug 9: show duration when available */}
+            {meeting.durationSeconds != null && meeting.durationSeconds > 0 && (
+              <p className="text-sm text-muted-foreground mt-0.5">
+                Duration: {Math.floor(meeting.durationSeconds / 60)}m {meeting.durationSeconds % 60}s
+              </p>
+            )}
           </div>
           <div className="flex flex-wrap items-center gap-2">
             {isCompleted && (
@@ -246,6 +261,31 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
         </div>
       </div>
 
+      {/* Bug 12: error state banner with retry */}
+      {meeting.status === 'error' && (
+        <Card className="mb-4 p-4 border-destructive/30 bg-destructive/5">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="h-4 w-4 text-destructive flex-shrink-0" />
+            <p className="text-sm text-destructive flex-1">
+              Processing failed. Check the transcript for partial results, or retry the pipeline.
+            </p>
+            <Button size="sm" variant="outline" onClick={handleRetry}>
+              Retry
+            </Button>
+          </div>
+        </Card>
+      )}
+
+      {/* Bug 11: reprocess / re-identify status banner */}
+      {(reprocessInsights.isPending || reidentifySpeakers.isPending) && (
+        <Card className="mb-4 p-3 border-primary/30 bg-primary/5">
+          <div className="flex items-center gap-2 text-sm text-primary">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            {reprocessInsights.isPending ? 'Re-extracting insights…' : 'Re-identifying speakers…'}
+          </div>
+        </Card>
+      )}
+
       {/* Progress Bar */}
       {status && meeting.status === 'processing' && (
         <Card className="mb-6 p-4">
@@ -302,9 +342,11 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
               ))}
             </div>
           ) : transcriptData ? (
+            // Bug 10: pass structured segments when available for audio timestamp sync
             <TranscriptViewer
               meetingId={id}
-              transcript={transcriptData.content}
+              segments={transcriptData.segments}
+              transcript={transcriptData.segments ? undefined : transcriptData.content}
               isLlmRewritten={transcriptData.isLlmRewritten}
               language={transcriptData.language}
               currentTime={currentTime}
@@ -348,7 +390,8 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
 
         {/* Speakers Tab */}
         <TabsContent value="speakers" className="min-h-[300px] overflow-y-auto">
-          {isCompleted ? (
+          {/* Bug 7: show speakers once ASR is done, not only on full completion */}
+          {(isCompleted || status?.asr?.done) ? (
             <SpeakersPanel meetingId={id} onSeek={audioUrl ? handleSegmentSeek : undefined} />
           ) : (
             <Card className="flex h-full items-center justify-center">

@@ -15,18 +15,25 @@ export function useMeetingStatus(meetingId: string, enablePolling: boolean = fal
     queryKey: ['meeting-status', meetingId],
     queryFn: () => meetingService.getMeetingStatus(meetingId),
     enabled: !!meetingId,
-    refetchInterval: enablePolling ? APP_CONFIG.polling.statusInterval : false,
+    // Auto-stop polling once the meeting reaches a terminal state
+    refetchInterval: (query) => {
+      if (!enablePolling) return false;
+      const status = query.state.data?.status;
+      if (status === 'completed' || status === 'error') return false;
+      return APP_CONFIG.polling.statusInterval;
+    },
     staleTime: 0, // Always fetch fresh status
   });
 
   // Invalidate related queries when processing completes
   useEffect(() => {
     if (query.data?.status === 'completed' || query.data?.status === 'error') {
-      // Stop polling by invalidating the query
       queryClient.invalidateQueries({ queryKey: ['meeting', meetingId] });
       queryClient.invalidateQueries({ queryKey: ['transcript', meetingId] });
       queryClient.invalidateQueries({ queryKey: ['entities', meetingId] });
       queryClient.invalidateQueries({ queryKey: ['conflicts', meetingId] });
+      queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
+      queryClient.invalidateQueries({ queryKey: ['speakers', meetingId, 'reviewQueue'] });
     }
   }, [query.data?.status, meetingId, queryClient]);
 
