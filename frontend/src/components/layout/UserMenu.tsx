@@ -13,9 +13,10 @@ export interface UserMenuProps {
     email: string;
     avatarUrl?: string;
   } | null;
+  isLoading?: boolean;
 }
 
-export function UserMenu({ user }: UserMenuProps) {
+export function UserMenu({ user, isLoading = false }: UserMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -31,6 +32,14 @@ export function UserMenu({ user }: UserMenuProps) {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
+
+  // While Next-Auth is resolving the session, render a neutral skeleton so
+  // we never flash "Sign in" / "Get started" for an authenticated user.
+  if (isLoading) {
+    return (
+      <div className="h-[36px] w-[36px] rounded-full bg-zinc-800 animate-pulse" />
+    );
+  }
 
   if (!user) {
     return (

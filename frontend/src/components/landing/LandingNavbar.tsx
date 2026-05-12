@@ -17,11 +17,11 @@ const navLinks = [
 ];
 
 export function LandingNavbar() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  const user = session?.user ? {
+  const user = status === 'authenticated' && session?.user ? {
     name: session.user.name || '',
     email: session.user.email || '',
     avatarUrl: session.user.image || undefined,
@@ -68,7 +68,7 @@ export function LandingNavbar() {
         {/* Right — Actions */}
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <UserMenu user={user} />
+          <UserMenu user={user} isLoading={status === 'loading'} />
           {/* Mobile hamburger */}
           <Button
             variant="ghost"
