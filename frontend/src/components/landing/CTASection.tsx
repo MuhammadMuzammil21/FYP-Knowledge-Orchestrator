@@ -30,15 +30,15 @@ export function CTASection() {
               Get started for free
             </Button>
           </Link>
-          <Link href="mailto:hello@harbaat.ai" className="w-full sm:w-auto">
+          {/* <Link href="mailto:hello@harbaat.ai" className="w-full sm:w-auto">
             <Button variant="outline" size="lg" className="w-full border-border/80 text-foreground hover:border-primary/40 rounded-full px-8 py-6 text-base font-medium">
               Book a demo
             </Button>
-          </Link>
+          </Link> */}
         </div>
 
         {/* Stats Row */}
-        <div className="mt-16 grid grid-cols-3 gap-2 sm:gap-0 w-full max-w-3xl mx-auto border-t border-border/50 pt-8">
+        {/* <div className="mt-16 grid grid-cols-3 gap-2 sm:gap-0 w-full max-w-3xl mx-auto border-t border-border/50 pt-8">
           <div className="text-center border-r border-border/50 px-1 sm:px-4">
             <div className="font-display text-xl sm:text-3xl font-800 text-foreground">500+</div>
             <div className="text-xs sm:text-sm text-muted-foreground font-sans mt-1">Teams</div>
@@ -51,7 +51,7 @@ export function CTASection() {
             <div className="font-display text-xl sm:text-3xl font-800 text-foreground">99%</div>
             <div className="text-xs sm:text-sm text-muted-foreground font-sans mt-1">Accuracy</div>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );
