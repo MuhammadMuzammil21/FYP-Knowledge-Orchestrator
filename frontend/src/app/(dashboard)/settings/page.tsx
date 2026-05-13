@@ -8,6 +8,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+const OUTPUT_LANG_KEY = 'harbaat_output_lang';
+const OUTPUT_LANG_OPTIONS = [
+  { value: 'english', label: 'English' },
+  { value: 'arabic', label: 'Arabic' },
+  { value: 'french', label: 'French' },
+  { value: 'german', label: 'German' },
+  { value: 'spanish', label: 'Spanish' },
+  { value: 'urdu', label: 'Urdu' },
+  { value: 'hindi', label: 'Hindi' },
+  { value: 'chinese', label: 'Chinese' },
+];
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -43,6 +55,7 @@ export default function SettingsPage() {
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const { theme, setTheme } = useTheme();
+  const [outputLang, setOutputLang] = useState('english');
 
   const { isTeamWorkspace, activeTeamSlug, can } = useWorkspace();
   const deleteTeam = useDeleteTeam();
@@ -54,6 +67,22 @@ export default function SettingsPage() {
       setName(session.user.name);
     }
   }, [session]);
+
+  // Load preferred output language from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem(OUTPUT_LANG_KEY);
+      if (saved) setOutputLang(saved);
+    }
+  }, []);
+
+  const handleOutputLangChange = (lang: string) => {
+    setOutputLang(lang);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(OUTPUT_LANG_KEY, lang);
+    }
+    toast.success(`Output language set to ${OUTPUT_LANG_OPTIONS.find(o => o.value === lang)?.label ?? lang}`);
+  };
 
   // Secure navigation
   useEffect(() => {
@@ -347,14 +376,25 @@ export default function SettingsPage() {
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="font-medium">Language</p>
+                      <p className="font-medium">Output Language</p>
                       <p className="text-sm text-muted-foreground">
-                        Select your preferred language
+                        Language used for multilingual meeting transcripts
                       </p>
                     </div>
-                    <Button variant="outline" size="sm">
-                      English
-                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="outline" size="sm" className="capitalize min-w-[110px]">
+                          {OUTPUT_LANG_OPTIONS.find(o => o.value === outputLang)?.label ?? 'English'}
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        {OUTPUT_LANG_OPTIONS.map(opt => (
+                          <DropdownMenuItem key={opt.value} onClick={() => handleOutputLangChange(opt.value)}>
+                            {opt.label}
+                          </DropdownMenuItem>
+                        ))}
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </div>
               </CardContent>

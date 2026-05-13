@@ -36,8 +36,12 @@ import {
   LayoutGrid,
   Users,
   ClipboardList,
+  Folder,
+  X,
 } from 'lucide-react';
 import { useTasks } from '@/hooks/useTasks';
+import { useProjects } from '@/hooks/useProjects';
+import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { useRematchSpeakers } from '@/hooks/useTaskMutations';
 import { DailyReminderBanner } from '@/components/tasks/DailyReminderBanner';
 import { TaskListTable } from '@/components/tasks/TaskListTable';
@@ -49,11 +53,32 @@ import { TASK_STATUS_LABELS, TASK_PRIORITY_LABELS } from '@/types/task.types';
 type ViewMode = 'list' | 'board';
 
 export default function TasksPage() {
+  const { activeTeamId } = useWorkspace();
+
   // ── Filters ──
   const [status, setStatus] = useState<TaskStatus | 'all'>('all');
   const [priority, setPriority] = useState<TaskPriority | 'all'>('all');
   const [assigneeName, setAssigneeName] = useState('');
   const [meetingIdFilter, setMeetingIdFilter] = useState('');
+  const [projectIdFilter, setProjectIdFilter] = useState<string>('all');
+
+  // ── Projects for filter dropdown ──
+  const { data: projects = [] } = useProjects(activeTeamId ?? null);
+
+  const hasActiveFilters =
+    status !== 'all' ||
+    priority !== 'all' ||
+    assigneeName.trim() !== '' ||
+    meetingIdFilter.trim() !== '' ||
+    projectIdFilter !== 'all';
+
+  const clearFilters = () => {
+    setStatus('all');
+    setPriority('all');
+    setAssigneeName('');
+    setMeetingIdFilter('');
+    setProjectIdFilter('all');
+  };
 
   // ── View mode ──
   const [viewMode, setViewMode] = useState<ViewMode>('list');
@@ -69,8 +94,9 @@ export default function TasksPage() {
     if (priority !== 'all') f.priority = priority;
     if (assigneeName.trim()) f.assignee_name = assigneeName.trim();
     if (meetingIdFilter.trim()) f.meeting_id = meetingIdFilter.trim();
+    if (projectIdFilter !== 'all') f.project_id = projectIdFilter;
     return f;
-  }, [status, priority, assigneeName, meetingIdFilter]);
+  }, [status, priority, assigneeName, meetingIdFilter, projectIdFilter]);
 
   const { data: tasks = [], isLoading } = useTasks(filters);
   const rematchSpeakers = useRematchSpeakers();
@@ -154,6 +180,22 @@ export default function TasksPage() {
 
       {/* ── Filter bar ── */}
       <div className="flex flex-wrap gap-2 items-center">
+        {/* Project filter */}
+        <Select value={projectIdFilter} onValueChange={setProjectIdFilter}>
+          <SelectTrigger id="filter-project" className="h-8 w-[160px] text-xs">
+            <Folder className="h-3 w-3 mr-1 text-muted-foreground" />
+            <SelectValue placeholder="All projects" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All projects</SelectItem>
+            {projects.map((p) => (
+              <SelectItem key={p.id} value={p.id}>
+                {p.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
         {/* Status */}
         <Select
           value={status}
@@ -207,6 +249,19 @@ export default function TasksPage() {
           onChange={(e) => setMeetingIdFilter(e.target.value)}
           className="h-8 w-[200px] text-xs font-mono"
         />
+
+        {/* Clear filters button */}
+        {hasActiveFilters && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 px-2 text-xs text-muted-foreground hover:text-foreground gap-1"
+            onClick={clearFilters}
+          >
+            <X className="h-3 w-3" />
+            Clear
+          </Button>
+        )}
 
         {/* View toggle (desktop) */}
         <div className="ml-auto">

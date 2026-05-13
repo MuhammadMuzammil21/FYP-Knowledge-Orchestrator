@@ -43,6 +43,8 @@ export function useUpdateSpeaker(meetingId: string) {
       queryClient.invalidateQueries({ queryKey: ['speakers', meetingId] });
       queryClient.invalidateQueries({ queryKey: ['transcript', meetingId] });
       queryClient.invalidateQueries({ queryKey: ['entities', meetingId] });
+      // Renaming in a meeting propagates to the linked KnownSpeaker — refresh that list too.
+      queryClient.invalidateQueries({ queryKey: ['known-speakers'] });
     },
   });
 }

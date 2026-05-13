@@ -32,6 +32,7 @@ export interface MeetingUploadMetadata {
   num_speakers?: number;
   min_speakers?: number;
   context?: string;
+  target_language?: string; // Output language for multilingual transcript stitching
 }
 
 // Meeting Types
@@ -368,7 +369,9 @@ export interface KnownSpeaker {
   status: 'unlinked' | 'named' | 'account_linked';
   is_external?: boolean;
   meeting_count: number;
+  linked_user_email?: string | null; // Set when the speaker is linked to a user account
   created_at: string;
+  updated_at?: string;
 }
 
 export interface UnlinkedSpeakerPrompt {

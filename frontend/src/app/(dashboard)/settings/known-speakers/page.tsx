@@ -234,13 +234,22 @@ export default function KnownSpeakersPage() {
                     ) : (
                       <>
                         <h3 className="font-semibold text-lg truncate">{speaker.name}</h3>
-                        <p className="text-sm text-muted-foreground truncate flex items-center gap-2">
-                          Appears in {speaker.meeting_count} meeting{speaker.meeting_count !== 1 ? 's' : ''}
+                        <p className="text-sm text-muted-foreground truncate flex items-center gap-2 flex-wrap mt-0.5">
+                          <span>Appears in {speaker.meeting_count} meeting{speaker.meeting_count !== 1 ? 's' : ''}</span>
                           {speaker.status && (
                             <>
                               <span>•</span>
                               <span className="uppercase text-[10px] tracking-wide font-medium bg-muted px-1.5 py-0.5 rounded">
                                 {speaker.status}
+                              </span>
+                            </>
+                          )}
+                          {speaker.linked_user_email && (
+                            <>
+                              <span>•</span>
+                              <span className="inline-flex items-center gap-1 text-[11px] text-primary font-medium">
+                                <LinkIcon className="h-3 w-3" />
+                                {speaker.linked_user_email}
                               </span>
                             </>
                           )}

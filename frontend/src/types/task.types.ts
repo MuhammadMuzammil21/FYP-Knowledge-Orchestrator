@@ -56,7 +56,7 @@ export interface Task {
 
 /** Filters for GET /api/tasks */
 export interface TaskFilters {
-  project_id?: number;
+  project_id?: string;   // Project UUID (string)
   meeting_id?: string;
   status?: TaskStatus;
   priority?: TaskPriority;

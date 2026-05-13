@@ -24,7 +24,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { User, Edit2, Check, X, Link as LinkIcon, RefreshCw, Mail, Play, CheckCircle2, AlertCircle } from 'lucide-react';
+import { User, Edit2, Check, X, Link as LinkIcon, RefreshCw, Mail, Play, CheckCircle2, AlertCircle, Unlink } from 'lucide-react';
 import type { Speaker, SpeakerReviewProposal } from '@/types';
 import { toast } from 'sonner';
 
@@ -59,15 +59,21 @@ export function SpeakersPanel({ meetingId, onSeek }: SpeakersPanelProps) {
   };
 
   const handleSave = (speakerId: number) => {
+    const originalSpeaker = speakers?.find((s: Speaker) => s.id === speakerId);
+    const originalLinkedUser = originalSpeaker?.linked_user_id || 'none';
+
     if (editName.trim()) {
       updateSpeaker.mutate(
         { speakerId, displayName: editName.trim() },
         {
           onSuccess: () => {
-            if (editLinkedUser === 'none') {
-              unlinkSpeaker.mutate({ speakerId });
-            } else if (editLinkedUser) {
-              linkSpeaker.mutate({ speakerId, userId: editLinkedUser });
+            // Only trigger link/unlink if the selection actually changed
+            if (editLinkedUser !== originalLinkedUser) {
+              if (editLinkedUser === 'none') {
+                unlinkSpeaker.mutate({ speakerId });
+              } else {
+                linkSpeaker.mutate({ speakerId, userId: editLinkedUser });
+              }
             }
             setEditingId(null);
             setEditName('');
@@ -341,9 +347,18 @@ export function SpeakersPanel({ meetingId, onSeek }: SpeakersPanelProps) {
                   <Button variant="outline" size="sm" onClick={() => handleEdit(speaker)} className="h-8 px-2 text-xs">
                     <Edit2 className="mr-1.5 h-3 w-3" /> Edit
                   </Button>
-                  {!speaker.linked_user_id && (
-                    <Button variant="outline" size="sm" onClick={() => setShowForceLink(speaker.id)} className="h-8 px-2 text-xs">
-                      <Mail className="mr-1.5 h-3 w-3" /> Link Email
+                  <Button variant="outline" size="sm" onClick={() => setShowForceLink(speaker.id)} className="h-8 px-2 text-xs">
+                    <Mail className="mr-1.5 h-3 w-3" /> {speaker.linked_user_id ? 'Relink' : 'Link Email'}
+                  </Button>
+                  {speaker.linked_user_id && (
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => unlinkSpeaker.mutate({ speakerId: speaker.id })} 
+                      disabled={unlinkSpeaker.isPending} 
+                      className="h-8 px-2 text-xs text-destructive hover:bg-destructive/10 border-destructive/20"
+                    >
+                      <Unlink className="mr-1.5 h-3 w-3" /> Unlink
                     </Button>
                   )}
                   <Button 
