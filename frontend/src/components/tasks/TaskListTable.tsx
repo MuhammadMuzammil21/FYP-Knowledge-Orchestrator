@@ -191,6 +191,12 @@ function ExpandedRow({ task }: { task: Task }) {
         </div>
       </div>
       <div className="flex items-center gap-3 flex-wrap">
+        {task.project_id && (
+          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+            <span className="font-medium">Project:</span>
+            <span className="font-mono text-[11px]">{task.project_id}</span>
+          </div>
+        )}
         {task.meeting_id && (
           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
             <span className="font-medium">Meeting:</span>

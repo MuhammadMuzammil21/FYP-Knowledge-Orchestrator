@@ -128,6 +128,11 @@ export default function DashboardPage() {
     setIsUploading(true);
 
     try {
+      // Read user's preferred output language from settings (stored in localStorage)
+      const targetLanguage =
+        (typeof window !== 'undefined' && localStorage.getItem('harbaat_output_lang')) ||
+        'english';
+
       const metadata: MeetingUploadMetadata = {
         title: title || undefined,
         language: language && language !== 'auto' ? language : undefined,
@@ -135,6 +140,7 @@ export default function DashboardPage() {
         max_speakers: maxSpeakers ? Number(maxSpeakers) : undefined,
         num_speakers: numSpeakers ? Number(numSpeakers) : undefined,
         context: context || undefined,
+        target_language: targetLanguage,
       };
 
       let projectId = selectedProjectId;

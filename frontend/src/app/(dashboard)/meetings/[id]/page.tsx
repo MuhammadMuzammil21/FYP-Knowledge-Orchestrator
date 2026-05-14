@@ -35,7 +35,7 @@ import { useMeetingConflicts } from '@/hooks/useKnowledgeGraph'; // Bug 1
 import { useWorkspace } from '@/contexts/WorkspaceContext';
 import { useProject } from '@/hooks/useProjects';
 import { useTeams } from '@/hooks/useTeams';
-import { ArrowLeft, Network, Trash2, Loader2, AudioWaveform, ShieldAlert, ChevronRight, RefreshCw, UserCheck, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Network, Trash2, Loader2, AudioWaveform, ShieldAlert, ChevronRight, RefreshCw, UserCheck, AlertCircle, FileText, Wand2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { formatDateTime } from '@/lib/utils/date';
@@ -64,7 +64,15 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
   const { data: status } = useMeetingStatus(id, true);
   const isEntitiesReady = status?.insightsReady || meeting?.status === 'completed';
 
-  const { data: transcriptData, isLoading: transcriptLoading } = useTranscript(id, 'final', !!id);
+  const [transcriptView, setTranscriptView] = useState<'final' | 'raw'>('final');
+
+  const { data: finalTranscriptData, isLoading: finalTranscriptLoading } = useTranscript(id, 'final', !!id);
+  const { data: rawTranscriptData, isLoading: rawTranscriptLoading } = useTranscript(id, 'raw', transcriptView === 'raw');
+
+  // Active transcript data based on which view is selected
+  const transcriptData = transcriptView === 'raw' ? rawTranscriptData : finalTranscriptData;
+  const transcriptLoading = transcriptView === 'raw' ? rawTranscriptLoading : finalTranscriptLoading;
+
   const { data: entitiesData, isLoading: entitiesLoading } = useEntities(id, isEntitiesReady);
   // Bug 1: use meeting-specific conflicts endpoint
   const { data: conflictsData, isLoading: conflictsLoading } = useMeetingConflicts(id);
@@ -334,6 +342,36 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
 
         {/* Transcript Tab */}
         <TabsContent value="transcript" className="min-h-[300px]">
+          {/* Raw / Final toggle — only shown once the meeting is completed */}
+          {isCompleted && (
+            <div className="flex items-center gap-1 mb-3 p-0.5 rounded-md bg-muted/50 border border-border/50 w-fit">
+              <button
+                onClick={() => setTranscriptView('final')}
+                className={cn(
+                  'flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium transition-all',
+                  transcriptView === 'final'
+                    ? 'bg-background shadow-sm text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                <Wand2 className="h-3 w-3" />
+                Final
+              </button>
+              <button
+                onClick={() => setTranscriptView('raw')}
+                className={cn(
+                  'flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium transition-all',
+                  transcriptView === 'raw'
+                    ? 'bg-background shadow-sm text-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                <FileText className="h-3 w-3" />
+                Raw ASR
+              </button>
+            </div>
+          )}
+
           {transcriptLoading ? (
             <div className="space-y-3">
               <Skeleton className="h-10 w-full" />
@@ -342,7 +380,6 @@ export default function MeetingDetailPage({ params }: MeetingDetailPageProps) {
               ))}
             </div>
           ) : transcriptData ? (
-            // Bug 10: pass structured segments when available for audio timestamp sync
             <TranscriptViewer
               meetingId={id}
               segments={transcriptData.segments}

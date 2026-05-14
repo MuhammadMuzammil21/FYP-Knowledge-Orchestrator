@@ -133,40 +133,40 @@ export default function SettingsPage() {
         </div>
 
         <Tabs defaultValue="account" className="space-y-6">
-          <TabsList className="flex w-full overflow-x-auto h-auto p-1 bg-muted/50 scrollbar-hide">
+          <TabsList className="w-full justify-start overflow-x-auto h-auto p-1 bg-muted/50 scrollbar-hide">
             <TabsTrigger
               value="account"
-              className="flex-none px-3 text-xs sm:text-sm whitespace-nowrap"
+              className="flex-1 min-w-[90px] text-xs sm:text-sm whitespace-nowrap"
             >
-              <User className="mr-1.5 h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <User className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
               Account
             </TabsTrigger>
             <TabsTrigger
               value="security"
-              className="flex-none px-3 text-xs sm:text-sm whitespace-nowrap"
+              className="flex-1 min-w-[90px] text-xs sm:text-sm whitespace-nowrap"
             >
-              <Lock className="mr-1.5 h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <Lock className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
               Security
             </TabsTrigger>
             <TabsTrigger
               value="notifications"
-              className="flex-none px-3 text-xs sm:text-sm whitespace-nowrap"
+              className="flex-1 min-w-[110px] text-xs sm:text-sm whitespace-nowrap"
             >
-              <Bell className="mr-1.5 h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <Bell className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
               Notifications
             </TabsTrigger>
             <TabsTrigger
               value="voice"
-              className="flex-none px-3 text-xs sm:text-sm whitespace-nowrap"
+              className="flex-1 min-w-[110px] text-xs sm:text-sm whitespace-nowrap"
             >
-              <Mic className="mr-1.5 h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <Mic className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
               Voice Identity
             </TabsTrigger>
             <TabsTrigger
               value="appearance"
-              className="flex-none px-3 text-xs sm:text-sm whitespace-nowrap"
+              className="flex-1 min-w-[100px] text-xs sm:text-sm whitespace-nowrap"
             >
-              <Palette className="mr-1.5 h-3.5 w-3.5 sm:h-4 sm:w-4" />
+              <Palette className="mr-1.5 sm:mr-2 h-3.5 w-3.5 sm:h-4 sm:w-4" />
               Appearance
             </TabsTrigger>
           </TabsList>
@@ -205,12 +205,12 @@ export default function SettingsPage() {
             </Card>
 
             {isTeamWorkspace && can('manage_settings') && (
-              <div className="mt-6 rounded-xl border border-destructive/50 bg-destructive/5 p-4 sm:p-6">
+              <div className="mt-6 rounded-xl border border-destructive/50 bg-destructive/5 p-6">
                 <h3 className="font-semibold text-destructive mb-1">Danger Zone</h3>
-                <p className="text-sm text-muted-foreground mb-4">
+                <p className="text-sm text-muted-foreground mb-6">
                   Permanently delete this team and all its data. This action cannot be undone.
                 </p>
-                <Button variant="destructive" onClick={() => setIsDeleteDialogOpen(true)} className="w-full sm:w-auto">
+                <Button variant="destructive" onClick={() => setIsDeleteDialogOpen(true)}>
                   Delete Team
                 </Button>
               </div>
@@ -224,12 +224,11 @@ export default function SettingsPage() {
                     This action cannot be undone. This will permanently delete the active team and remove all data associated with it.
                   </DialogDescription>
                 </DialogHeader>
-                <DialogFooter className="mt-4 flex-col-reverse gap-2 sm:flex-row sm:gap-0">
+                <DialogFooter className="mt-4">
                   <Button
                     variant="outline"
                     onClick={() => setIsDeleteDialogOpen(false)}
                     disabled={deleteTeam.isPending}
-                    className="w-full sm:w-auto"
                   >
                     Cancel
                   </Button>
@@ -237,7 +236,6 @@ export default function SettingsPage() {
                     variant="destructive"
                     onClick={handleDeleteTeam}
                     disabled={deleteTeam.isPending}
-                    className="w-full sm:w-auto"
                   >
                     {deleteTeam.isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                     Yes, delete team
@@ -318,7 +316,7 @@ export default function SettingsPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-center justify-between">
                     <div>
                       <p className="font-medium">Theme</p>
                       <p className="text-sm text-muted-foreground">
@@ -327,7 +325,7 @@ export default function SettingsPage() {
                     </div>
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm" className="capitalize w-full sm:w-auto min-w-[110px]">
+                        <Button variant="outline" size="sm" className="capitalize min-w-[100px]">
                           {theme || 'system'} Mode
                         </Button>
                       </DropdownMenuTrigger>
@@ -347,14 +345,14 @@ export default function SettingsPage() {
 
                   <Separator />
 
-                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-center justify-between">
                     <div>
                       <p className="font-medium">Language</p>
                       <p className="text-sm text-muted-foreground">
                         Select your preferred language
                       </p>
                     </div>
-                    <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                    <Button variant="outline" size="sm">
                       English
                     </Button>
                   </div>
