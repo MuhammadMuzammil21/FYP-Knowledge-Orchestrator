@@ -63,22 +63,24 @@ function PreferenceRow({
   disabled,
 }: PreferenceRowProps) {
   return (
-    <div className="flex items-center justify-between gap-4">
-      <div className="flex items-start gap-3">
+    <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-3">
+      <div className="flex items-start gap-3 min-w-0">
         <div className="mt-0.5 shrink-0 text-muted-foreground">{icon}</div>
-        <div className="space-y-0.5">
+        <div className="space-y-0.5 min-w-0">
           <Label htmlFor={id} className="text-base cursor-pointer">
             {label}
           </Label>
           <p className="text-sm text-muted-foreground">{description}</p>
         </div>
       </div>
-      <ToggleSwitch
-        id={id}
-        checked={checked}
-        onCheckedChange={onCheckedChange}
-        disabled={disabled}
-      />
+      <div className="shrink-0">
+        <ToggleSwitch
+          id={id}
+          checked={checked}
+          onCheckedChange={onCheckedChange}
+          disabled={disabled}
+        />
+      </div>
     </div>
   );
 }
